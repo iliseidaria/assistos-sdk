@@ -21,4 +21,5 @@ module.exports = {
         }
         return moduleCache[moduleName];
     },
+    constants: require('./constants.js'),
 };

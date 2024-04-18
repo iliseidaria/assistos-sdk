@@ -1,27 +1,38 @@
 module.exports = {
-    OBJECT_TYPES: {
-        document: "document",
-        documentMetadata: "documentMetadata",
-        title: "title",
-        topic: "topic",
-        abstract: "abstract",
-        alternativeAbstract: "alternativeAbstract",
-        mainIdea: "mainIdea",
-        alternativeTitle: "alternativeTitle",
-        chapter: "chapter",
-        chapterMetadata: "chapterMetadata",
-        chapterTitle: "chapterTitle",
-        chapterAlternativeTitle: "chapterAlternativeTitle",
-        alternativeChapter: "alternativeChapter",
-        chapterMainIdea: "chapterMainIdea",
-        paragraph: "paragraph",
-        paragraphMetadata: "paragraphMetadata",
-        alternativeParagraph: "alternativeParagraph",
-        paragraphMainIdea: "paragraphMainIdea",
-        paragraphText: "paragraphText"
-    },
-    DB_NAMES: {
-        DOCUMENTS: "documents"
+    OBJECT_SCHEMAS: {
+        documents: {
+            position: "number",
+            title: "string",
+            topic: "string",
+            abstract: "string",
+            alternativeAbstracts: "array",
+            mainIdeas: "array",
+            alternativeTitles: "array",
+            chapters: {
+                type: "array",
+                items: {
+                    position: "number",
+                    title: "string",
+                    alternativeTitles: "array",
+                    alternativeChapters: "array",
+                    mainIdeas: "array",
+                    paragraphs: {
+                        type: "array",
+                        items: {
+                            position: "number",
+                            alternativeParagraphs: "array",
+                            mainIdeas: "array",
+                            text: "string"
+                        }
+                    }
+                }
+            }
+        }
     },
     DEFAULT_ID_LENGTH: 16
 }
+/* conventii:
+*  container object e mereu la nivelul 0 din OBJECT_TYPES
+*  container object e mereu obiect
+*  embedded objects pot fi "string", "number" , "array"(are elemente identice ca structura) sau array cu o structura din obiecte specifice
+*  embedded objects cu array */
