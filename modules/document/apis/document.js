@@ -91,7 +91,7 @@ async function deleteAlternativeAbstract(spaceId, documentId, alternativeAbstrac
     return await sendRequest(`/spaces/${spaceId}/alternativeAbstract/${objectId}`, "DELETE");
 }
 
-export default {
+module.exports = {
     getDocument,
     addDocument,
     updateDocument,

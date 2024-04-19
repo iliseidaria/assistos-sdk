@@ -4,9 +4,9 @@ const path = require('path');
 const data = (async () => {
     return {
         templates: {
-            activationFailTemplate: await fsPromises.readFile(path.join(__dirname, 'data/templates/html/activationFailTemplate.html'), 'utf8'),
-            activationSuccessTemplate: await fsPromises.readFile(path.join(__dirname, '/data/templates/html/activationSuccessTemplate.html'), 'utf8'),
-            activationEmailTemplate: await fsPromises.readFile(path.join(__dirname, 'data/templates/html/activationEmailTemplate.html'), 'utf8'),
+            activationFailTemplate: require(path.join(__dirname, 'data/templates/html/activationFailTemplate.html'), 'utf8'),
+            activationSuccessTemplate: require(path.join(__dirname, '/data/templates/html/activationSuccessTemplate.html'), 'utf8'),
+            activationEmailTemplate: require(path.join(__dirname, 'data/templates/html/activationEmailTemplate.html'), 'utf8'),
         }
     };
 })();

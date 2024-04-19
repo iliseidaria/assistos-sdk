@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const emailConfig = require('../config.json');
+const emailConfig = require('../data/json/config_1.json');
 const fsPromises = require('fs').promises;
 
 const path = require('path');
@@ -10,7 +10,7 @@ const Loader = require('../../../index.js')
 const utilModule = Loader.loadModule('util')
 const data = utilModule.loadAPIs('data')
 
-const {ENVIRONMENT_MODE, PRODUCTION_BASE_URL, DEVELOPMENT_BASE_URL} = require('../../../../config.json')
+const {ENVIRONMENT_MODE, PRODUCTION_BASE_URL, DEVELOPMENT_BASE_URL} = require('../data/json/config.json')
 
 class Email {
     constructor() {

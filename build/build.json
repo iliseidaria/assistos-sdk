@@ -1,0 +1,6 @@
+{
+    "assistOS":{
+        "deps":"assistos-sdk, assistos-sdk/modules/document, assistos-sdk/modules/email, assistos-sdk/modules/space, assistos-sdk/modules/user, assistos-sdk/modules/util",
+        "autoLoad":true
+    }
+}
