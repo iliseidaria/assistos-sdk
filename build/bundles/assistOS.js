@@ -1794,26 +1794,23 @@ function loadData(...dataTypes) {
 module.exports = { loadAPIs, loadData };
 
 },{"./apis/chapter.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/chapter.js","./apis/document.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/document.js","./apis/paragraph.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/paragraph.js","./data/templates/document.json":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/data/templates/document.json"}],"assistos-sdk/modules/email":[function(require,module,exports){
-(function (__dirname){(function (){
 const service = require('./api');
 const fsPromises = require('fs').promises;
 const path = require('path');
-const data = (async () => {
-    return {
-        templates: {
-            activationFailTemplate: require(path.join(__dirname, 'data/templates/html/activationFailTemplate.html'), 'utf8'),
-            activationSuccessTemplate: require(path.join(__dirname, '/data/templates/html/activationSuccessTemplate.html'), 'utf8'),
-            activationEmailTemplate: require(path.join(__dirname, 'data/templates/html/activationEmailTemplate.html'), 'utf8'),
-        }
-    };
-})();
+// const data = (async () => {
+//     return {
+//         templates: {
+//             activationFailTemplate: require(path.join(__dirname, 'data/templates/html/activationFailTemplate.html'), 'utf8'),
+//             activationSuccessTemplate: require(path.join(__dirname, '/data/templates/html/activationSuccessTemplate.html'), 'utf8'),
+//             activationEmailTemplate: require(path.join(__dirname, 'data/templates/html/activationEmailTemplate.html'), 'utf8'),
+//         }
+//     };
+// })();
 
 module.exports = {
     service,
-    data
+    //data
 };
-
-}).call(this)}).call(this,"/modules/email")
 
 },{"./api":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/email/api/index.js","fs":false,"path":false}],"assistos-sdk/modules/space":[function(require,module,exports){
 const apiModules = {
@@ -2063,36 +2060,27 @@ function loadAPIs(...apiNames) {
 
 module.exports = { loadAPIs };
 },{"./apis/crypto.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/util/apis/crypto.js","./apis/data.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/util/apis/data.js","./apis/date.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/util/apis/date.js","./apis/file.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/util/apis/file.js","./apis/openAI.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/util/apis/openAI.js"}],"assistos-sdk":[function(require,module,exports){
-(function (__dirname){(function (){
-const moduleCache = {};
-const path = require('path');
-
-const modulePaths = {
-    util: './util',
-    document: './document',
-    space: './space',
-    user: './user',
-    services: './services',
-    constants: './constants.js',
-};
-
 module.exports = {
     loadModule: function(moduleName) {
-        const modulePath = path.join(__dirname, modulePaths[moduleName]);
-        if (!modulePath) {
-            throw new Error(`Module '${moduleName}' not found`);
+        switch (moduleName) {
+            case 'util':
+                return require('./modules/util');
+            case 'document':
+                return require('./modules/document');
+            case 'space':
+                return require('./modules/space');
+            case 'user':
+                return require('./modules/user');
+            case 'services':
+                return require('./modules/email');
+            default:
+                return null;
         }
-        if (!moduleCache[moduleName]) {
-            moduleCache[moduleName] = require(modulePath);
-        }
-        return moduleCache[moduleName];
     },
     constants: require('./constants.js'),
 };
 
-}).call(this)}).call(this,"/")
-
-},{"./constants.js":"/home/mircea/Desktop/assistOS/assistos-sdk/constants.js","path":false}]},{},["/home/mircea/Desktop/assistOS/assistos-sdk/builds/tmp/assistOS_intermediar.js"])
+},{"./constants.js":"/home/mircea/Desktop/assistOS/assistos-sdk/constants.js","./modules/document":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/index.js","./modules/email":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/email/index.js","./modules/space":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/space/index.js","./modules/user":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/user/index.js","./modules/util":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/util/index.js"}]},{},["/home/mircea/Desktop/assistOS/assistos-sdk/builds/tmp/assistOS_intermediar.js"])
                     ;(function(global) {
                         global.bundlePaths = {"assistOS":"build/bundles/assistOS.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
