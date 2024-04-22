@@ -27,12 +27,32 @@ module.exports = {
                     }
                 }
             }
+        },
+        car:{
+            front:{
+                type: "object",
+                properties:{
+                    steeringWheel: {
+                        type: "array",
+                        items: {
+                            material: "string",
+                            buttons: "number",
+                            color: "string",
+                            heating: "array"
+                        }
+                    },
+                    doors: "number",
+                    seats: "number"
+                }
+            },
+            back:{
+                type: "object",
+                properties:{
+                    doors: "number",
+                    seats: "number"
+                }
+            }
         }
     },
     DEFAULT_ID_LENGTH: 16
 }
-/* conventii:
-*  container object e mereu la nivelul 0 din OBJECT_TYPES
-*  container object e mereu obiect
-*  embedded objects pot fi "string", "number" , "array"(are elemente identice ca structura) sau array cu o structura din obiecte specifice
-*  embedded objects cu array */
