@@ -16,80 +16,50 @@ async function sendRequest(url, method, data){
     }
     return await result.text();
 }
+const documentType = "documents";
 function getObjectId(objectType, objectId){
     return `${objectType}_${objectId}`;
 }
 async function getDocument(spaceId, documentId){
-    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId("documents", documentId)}`, "GET");
+    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId(documentType, documentId)}`, "GET");
 }
 async function addDocument(spaceId, documentData){
-    return await sendRequest(`/spaces/containerObject/${spaceId}/documents`, "POST", documentData);
+    return await sendRequest(`/spaces/containerObject/${spaceId}/${documentType}`, "POST", documentData);
 }
 async function updateDocument(spaceId, documentId, documentData){
-    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId("documents", documentId)}`, "PUT", documentData);
+    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId(documentType, documentId)}`, "PUT", documentData);
 }
 async function deleteDocument(spaceId, documentId){
-    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId("documents", documentId)}`, "DELETE");
+    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId(documentType, documentId)}`, "DELETE");
 }
 async function updateDocumentTitle(spaceId, documentId, title) {
-    let objectId = `document.${documentId}`;
-    return await sendRequest(`/spaces/${spaceId}/title/${objectId}`, "PUT", title);
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/title`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", title);
 }
 async function updateDocumentTopic(spaceId, documentId, topic) {
-    let objectId = `document.${documentId}`;
-    return await sendRequest(`/spaces/${spaceId}/topic/${objectId}`, "PUT", topic);
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/topic`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", topic);
 }
 async function updateDocumentAbstract(spaceId, documentId, abstract) {
-    let objectId = `document.${documentId}`;
-    return await sendRequest(`/spaces/${spaceId}/abstract/${objectId}`, "PUT", abstract);
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/abstract`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", abstract);
 }
 
-async function addDocumentMainIdea(spaceId, documentId, mainIdea){
-    let mainIdeaObj= {
-        documentId: documentId,
-        mainIdea: mainIdea
-    }
-    return await sendRequest(`/spaces/${spaceId}/mainIdea`, "POST", mainIdeaObj);
-}
-async function updateDocumentMainIdea(spaceId, documentId, mainIdeaId, mainIdea){
-    let objectId = `document.${documentId}.mainIdea.${mainIdeaId}`;
-    return await sendRequest(`/spaces/${spaceId}/mainIdea/${objectId}`, "PUT", mainIdea);
-}
-async function deleteDocumentMainIdea(spaceId, documentId, mainIdeaId){
-    let objectId = `document.${documentId}.mainIdea.${mainIdeaId}`;
-    return await sendRequest(`/spaces/${spaceId}/mainIdea/${objectId}`, "DELETE");
+async function updateDocumentMainIdeas(spaceId, documentId, mainIdeas){
+    //mainIdeas is an array of strings
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/mainIdeas`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", mainIdeas);
 }
 
-async function addAlternativeTitle(spaceId, documentId, alternativeTitle){
-    let alternativeTitleOb= {
-        documentId: documentId,
-        alternativeTitle: alternativeTitle
-    }
-    return await sendRequest(`/spaces/${spaceId}/alternativeTitle`, "POST", alternativeTitleOb);
+async function updateAlternativeTitles(spaceId, documentId, alternativeTitles){
+    //alternativeTitles is an array of strings
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/alternativeTitles`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", alternativeTitles);
 }
-async function updateAlternativeTitle(spaceId, documentId, alternativeTitleId, alternativeTitle){
-    let objectId = `document.${documentId}.alternativeTitle.${alternativeTitleId}`;
-    return await sendRequest(`/spaces/${spaceId}/alternativeTitle/${objectId}`, "PUT", alternativeTitle);
-}
-async function deleteAlternativeTitle(spaceId, documentId, alternativeTitleId){
-    let objectId = `document.${documentId}.alternativeTitle.${alternativeTitleId}`;
-    return await sendRequest(`/spaces/${spaceId}/alternativeTitle/${objectId}`, "DELETE");
-}
-
-async function addAlternativeAbstract(spaceId, documentId, alternativeAbstract){
-    let alternativeAbstractOb= {
-        documentId: documentId,
-        alternativeAbstract: alternativeAbstract
-    }
-    return await sendRequest(`/spaces/${spaceId}/alternativeAbstract`, "POST", alternativeAbstractOb);
-}
-async function updateAlternativeAbstract(spaceId, documentId, alternativeAbstractId, alternativeAbstract){
-    let objectId = `document.${documentId}.alternativeAbstract.${alternativeAbstractId}`;
-    return await sendRequest(`/spaces/${spaceId}/alternativeAbstract/${objectId}`, "PUT", alternativeAbstract);
-}
-async function deleteAlternativeAbstract(spaceId, documentId, alternativeAbstractId){
-    let objectId = `document.${documentId}.alternativeAbstract.${alternativeAbstractId}`;
-    return await sendRequest(`/spaces/${spaceId}/alternativeAbstract/${objectId}`, "DELETE");
+async function updateAlternativeAbstracts(spaceId, documentId, alternativeAbstracts){
+    //alternativeAbstracts is an array of strings
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/updateAlternativeAbstracts`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", alternativeAbstracts);
 }
 
 module.exports = {
@@ -100,13 +70,7 @@ module.exports = {
     updateDocumentTitle,
     updateDocumentTopic,
     updateDocumentAbstract,
-    addDocumentMainIdea,
-    updateDocumentMainIdea,
-    deleteDocumentMainIdea,
-    addAlternativeTitle,
-    updateAlternativeTitle,
-    deleteAlternativeTitle,
-    addAlternativeAbstract,
-    updateAlternativeAbstract,
-    deleteAlternativeAbstract,
+    updateDocumentMainIdeas,
+    updateAlternativeTitles,
+    updateAlternativeAbstracts
 };
