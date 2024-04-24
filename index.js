@@ -7,8 +7,6 @@ module.exports = {
                 return require('./modules/space');
             case 'user':
                 return require('./modules/user');
-            case 'services':
-                return require('../apihub-components/email');
             default:
                 return null;
         }
