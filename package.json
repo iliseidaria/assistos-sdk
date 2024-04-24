@@ -18,6 +18,5 @@
   },
   "homepage": "https://github.com/AssistOS-AI/assistos-sdk#readme",
   "dependencies":{
-    "nodemailer": "^6.9.13"
   }
 }
