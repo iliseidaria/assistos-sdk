@@ -1,8 +1,6 @@
 module.exports = {
     loadModule: function(moduleName) {
         switch (moduleName) {
-            case 'util':
-                return require('./modules/util');
             case 'document':
                 return require('./modules/document');
             case 'space':

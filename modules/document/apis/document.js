@@ -16,20 +16,21 @@ async function sendRequest(url, method, data){
     }
     return await result.text();
 }
-
-async function getDocument(){
-//not used
+function getObjectId(objectType, objectId){
+    return `${objectType}_${objectId}`;
+}
+async function getDocument(spaceId, documentId){
+    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId("documents", documentId)}`, "GET");
 }
 async function addDocument(spaceId, documentData){
-    return await sendRequest(`/spaces/${spaceId}/document`, "POST", documentData);
+    return await sendRequest(`/spaces/containerObject/${spaceId}/documents`, "POST", documentData);
 }
 async function updateDocument(spaceId, documentId, documentData){
-    return await sendRequest(`/spaces/${spaceId}/document/${documentId}`, "PUT", documentData);
+    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId("documents", documentId)}`, "PUT", documentData);
 }
 async function deleteDocument(spaceId, documentId){
-    return await sendRequest(`/spaces/${spaceId}/document/${documentId}`, "DELETE");
+    return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId("documents", documentId)}`, "DELETE");
 }
-
 async function updateDocumentTitle(spaceId, documentId, title) {
     let objectId = `document.${documentId}`;
     return await sendRequest(`/spaces/${spaceId}/title/${objectId}`, "PUT", title);
