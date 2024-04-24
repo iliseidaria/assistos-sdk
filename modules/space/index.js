@@ -8,7 +8,7 @@ const apiModules = {
 const dataModules = {
     templates: {
         get defaultApiKeyTemplate() {
-            const data = require('../../../apihub-components/spaces-storage/templates/json/defaultApiKeyTemplate.json');
+            const data = require('../../../apihub-components/spaces-storage/templates/defaultApiKeyTemplate.json');
             Object.defineProperty(dataModules, 'defaultApiKeyTemplate', {
                 value: data,
                 writable: false,
@@ -17,7 +17,7 @@ const dataModules = {
             return data;
         },
         get defaultSpaceAnnouncement() {
-            const data = require('../../../apihub-components/spaces-storage/templates/json/defaultSpaceAnnouncement.json');
+            const data = require('../../../apihub-components/spaces-storage/templates/defaultSpaceAnnouncement.json');
             Object.defineProperty(dataModules, 'defaultSpaceAnnouncement', {
                 value: data,
                 writable: false,
@@ -26,7 +26,7 @@ const dataModules = {
             return data;
         },
         get defaultSpaceTemplate() {
-            const data = require('../../../apihub-components/spaces-storage/templates/json/defaultSpaceTemplate.json');
+            const data = require('../../../apihub-components/spaces-storage/templates/defaultSpaceTemplate.json');
             Object.defineProperty(dataModules, 'defaultSpaceTemplate', {
                 value: data,
                 writable: false,
@@ -35,7 +35,7 @@ const dataModules = {
             return data;
         },
         get defaultSpaceNameTemplate() {
-            const data = require('../../../apihub-components/spaces-storage/templates/json/defaultSpaceNameTemplate.json');
+            const data = require('../../../apihub-components/spaces-storage/templates/defaultSpaceNameTemplate.json');
             Object.defineProperty(dataModules, 'defaultSpaceNameTemplate', {
                 value: data,
                 writable: false,
@@ -44,7 +44,7 @@ const dataModules = {
             return data;
         },
         get spaceValidationSchema() {
-            const data = require('../../../apihub-components/spaces-storage/templates/json/spaceValidationSchema.json');
+            const data = require('../../../apihub-components/spaces-storage/templates/spaceValidationSchema.json');
             Object.defineProperty(dataModules, 'spaceValidationSchema', {
                 value: data,
                 writable: false,
