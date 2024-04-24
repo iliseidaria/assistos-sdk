@@ -39,9 +39,13 @@ async function deleteParagraph(spaceId, documentId, chapterId, paragraphId){
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT");
 }
 
-async function swapParagraphs(spaceId, documentId, paragraphId, paragraphId2){
-    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(paragraphType, paragraphId)}/position`);
-    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", paragraphId2);
+async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2){
+    let body = {
+        item1: paragraphId,
+        item2: paragraphId2
+    }
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(chapterType, chapterId)}/paragraphs`);
+    return await sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
     let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(paragraphType, paragraphId)}/text`);
