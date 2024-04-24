@@ -1,314 +1,4 @@
-assistOSRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/axiologic/Desktop/assistos-workspace/apihub-components/apihub-component-utils/data.js":[function(require,module,exports){
-function fillTemplate(templateObject, fillObject, depth = 0) {
-    /* Todo: Implement a detection mechanism for circular dependencies instead of a hardcoded nested depth limit */
-
-    if (depth > 10) {
-        throw new Error("Depth Overreach. Possible Circular Dependency");
-    }
-
-    const containsPlaceholder = (templateObjectValueString) => {
-        const placeholderPattern = /\$\$[a-zA-Z0-9_]+(\?)?/g;
-        return placeholderPattern.test(templateObjectValueString);
-    }
-
-    if (typeof templateObject === 'string') {
-        if (containsPlaceholder(templateObject)) {
-            let resultString = "";
-            let buffer = "";
-            let placeholder = "";
-            let i = 0;
-
-            while (i < templateObject.length) {
-                if (templateObject[i] === '$' && templateObject[i + 1] === '$') {
-                    if (buffer.length > 0) {
-                        resultString += buffer;
-                        buffer = "";
-                    }
-                    i += 2;
-                    while (i < templateObject.length &&
-                    /[\w?]/.test(templateObject[i])) {
-                        placeholder += templateObject[i];
-                        i++;
-                    }
-                    const optionalPlaceholder = placeholder.endsWith('?');
-                    const placeholderKey = optionalPlaceholder ? placeholder.slice(0, -1) : placeholder;
-                    if (fillObject.hasOwnProperty(placeholderKey)) {
-                        let placeholderValue = fillObject[placeholderKey];
-                        let isFullReplacement = templateObject.trim() === `$$${placeholderKey}` || templateObject.trim() === `$$${placeholderKey}?`;
-
-                        if (typeof placeholderValue === 'object') {
-                            if (!Array.isArray(placeholderValue) && !isFullReplacement) {
-                                resultString += JSON.stringify(placeholderValue);
-                            } else if (Array.isArray(placeholderValue) && !isFullReplacement) {
-                                resultString += JSON.stringify(placeholderValue);
-                            } else {
-                                return placeholderValue;
-                            }
-                        } else if (placeholderValue === undefined && optionalPlaceholder) {
-                            resultString += "";
-                        } else {
-                            resultString += placeholderValue.toString();
-                        }
-                    } else if (!optionalPlaceholder) {
-                        throw new Error(`Missing required fill data for "${placeholderKey}"`);
-                    }
-                    placeholder = "";
-                } else {
-                    buffer += templateObject[i];
-                    i++;
-                }
-            }
-            resultString += buffer;
-            return resultString;
-        } else {
-            return templateObject;
-        }
-    } else if (Array.isArray(templateObject)) {
-        return templateObject.reduce((acc, currentElement) => {
-            const replacedElement = fillTemplate(currentElement, fillObject, depth + 1);
-            if (replacedElement !== "") {
-                acc.push(replacedElement);
-            }
-            return acc;
-        }, []);
-
-    } else if (typeof templateObject === 'object') {
-        const newObj = {};
-        for (const [key, value] of Object.entries(templateObject)) {
-            newObj[key] = fillTemplate(value, fillObject, depth + 1);
-        }
-        return newObj;
-    }else{
-        return templateObject;
-    }
-}
-
-function validateObject(schema, data) {
-    function validateProperty(schema, data) {
-        if (Array.isArray(schema.type)) {
-            const typeValidationResult = validateTypeArray(schema.type, data);
-            if (!typeValidationResult.status) return typeValidationResult;
-        } else if (!matchesType(schema.type, data)) {
-            return { status: false, errorMessage: `Type mismatch. Expected ${schema.type}.` };
-        }
-
-        if (schema.type === "object" && typeof data === 'object') {
-            return validateObject(schema, data);
-        } else if (schema.type === "array" && Array.isArray(data)) {
-            for (let i = 0; i < data.length; i++) {
-                const itemValidationResult = validateObject(schema.items, data[i]);
-                if (!itemValidationResult.status) {
-                    return { status: false, errorMessage: `At index ${i}: ${itemValidationResult.errorMessage}` };
-                }
-            }
-        } else {
-            return validateType(schema, data);
-        }
-
-        return { status: true };
-    }
-
-    function matchesType(type, data) {
-        if (type === "array") return Array.isArray(data);
-        if (type === "object") return typeof data === "object" && data !== null && !Array.isArray(data);
-        if (type === "null") return data === null;
-        return typeof data === type || (type === 'number' && typeof data === 'number');
-    }
-
-    function validateTypeArray(types, data) {
-        for (const type of types) {
-            if (matchesType(type, data)) {
-                return { status: true };
-            }
-        }
-        return { status: false, errorMessage: `Type mismatch. Expected one of: ${types.join(", ")}.` };
-    }
-
-    function validateType(prop, value) {
-        if (prop.type === "string") {
-            if (typeof value !== "string") return { status: false, errorMessage: "must be a string" };
-            if (prop.minLength !== undefined && value.length < prop.minLength) return { status: false, errorMessage: `must have at least ${prop.minLength} characters` };
-            if (prop.maxLength !== undefined && value.length > prop.maxLength) return { status: false, errorMessage: `must have no more than ${prop.maxLength} characters` };
-            if (prop.pattern !== undefined && !new RegExp(prop.pattern).test(value)) return { status: false, errorMessage: "does not match the required format" };
-        } else if (prop.type === "number") {
-            if (typeof value !== "number" || isNaN(value)) return { status: false, errorMessage: "must be a number" };
-            if (prop.minimum !== undefined && value < prop.minimum) return { status: false, errorMessage: `must be at least ${prop.minimum}` };
-            if (prop.maximum !== undefined && value > prop.maximum) return { status: false, errorMessage: `must be no more than ${prop.maximum}` };
-        } else if (prop.type === "boolean") {
-            if (typeof value !== "boolean") return { status: false, errorMessage: "must be a boolean" };
-        } else if (prop.type === "object") {
-            if (typeof value !== "object" || Array.isArray(value) || value === null) return { status: false, errorMessage: "must be an object" };
-        } else if (prop.type === "array") {
-            if (!Array.isArray(value)) return { status: false, errorMessage: "must be an array" };
-        }
-        return { status: true };
-    }
-
-    if (!matchesType(schema.type, data)) {
-        return { status: false, errorMessage: `Type mismatch. Expected ${schema.type}.` };
-    }
-
-    if (schema.required) {
-        for (const property of schema.required) {
-            if (data === undefined || !(property in data)) {
-                return { status: false, errorMessage: `Missing required property: ${property}` };
-            }
-        }
-    }
-
-    if (typeof data === 'object' && data !== null) {
-        for (const property in schema.properties) {
-            if (data.hasOwnProperty(property)) {
-                const propSchema = schema.properties[property];
-                const propData = data[property];
-                const validationResult = validateProperty(propSchema, propData);
-                if (!validationResult.status) {
-                    return { status: false, errorMessage: `In property '${property}': ${validationResult.errorMessage}` };
-                }
-            }
-        }
-    }
-
-    return { status: true, errorMessage: "" };
-}
-
-
-module.exports={
-    fillTemplate,
-    validateObject
-}
-},{}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/config.json":[function(require,module,exports){
-module.exports={
-  "ENVIRONMENT_MODE": "development",
-  "PRODUCTION_BASE_URL": "http://demo.axiologic.net:8080",
-  "DEVELOPMENT_BASE_URL": "http://localhost:8080",
-  "SERVER_ROOT_FOLDER": "./apihub-root",
-  "SECURITY_MODULE_PATH": "./apihub-space-core/securityModule.json",
-  "STORAGE_VOLUME_PATH": "./data-volume",
-  "CLEAN_STORAGE_VOLUME_ON_RESTART": "true",
-  "CREATE_DEMO_USER": "true",
-  "REGENERATE_TOKEN_SECRETS_ON_RESTART": "true"
-}
-},{}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/email/api/index.js":[function(require,module,exports){
-(function (__dirname){(function (){
-const fsPromises = require('fs').promises;
-const path = require('path');
-
-const emailConfig = require('../emailConfig.json');
-
-class Email {
-    constructor() {
-        const nodemailer = require('nodemailer');
-
-        if (Email.instance) {
-            return Email.instance;
-        }
-        this.transporter = nodemailer.createTransport({
-            service: emailConfig.service,
-            auth: {
-                user: emailConfig.emailAuth,
-                pass: emailConfig.password,
-            },
-        });
-    }
-
-    static getInstance() {
-        if (!Email.instance) {
-            Email.instance = new Email();
-        }
-        return Email.instance;
-    }
-
-    async sendEmail(from = emailConfig.email, sendToAddr, subject, html) {
-        const mailOptions = {
-            from: from,
-            to: sendToAddr,
-            subject: subject,
-            html: html
-        };
-        await this.transporter.sendMail(mailOptions);
-    }
-
-    async sendActivationEmail(emailAddress, username, activationToken) {
-        const data=require('../../apihub-component-utils/data.js')
-        const activationEmailTemplatePath = path.join(__dirname, '..',  'templates','activationEmailTemplate.html');
-        const {ENVIRONMENT_MODE, PRODUCTION_BASE_URL, DEVELOPMENT_BASE_URL} = require('../../config.json')
-
-        const activationEmailTemplate = await fsPromises.readFile(activationEmailTemplatePath, 'utf8')
-        let baseURL;
-
-        if (ENVIRONMENT_MODE === 'development') {
-            baseURL = DEVELOPMENT_BASE_URL
-        } else {
-            baseURL = PRODUCTION_BASE_URL
-        }
-        const activationLink = `${baseURL}/users/verify?activationToken=${encodeURIComponent(activationToken)}`;
-        const emailHtml = data.fillTemplate(activationEmailTemplate, {
-            username: username,
-            companyLogoURL: emailConfig.companyLogoURL,
-            activationLink: activationLink,
-            companyName: emailConfig.companyName,
-            streetAddress: emailConfig.streetAddress,
-            city: emailConfig.city,
-            country: emailConfig.country,
-            zipCode: emailConfig.zipCode,
-            supportEmail: emailConfig.supportEmail,
-            phoneNumber: emailConfig.phoneNumber,
-        });
-        await this.sendEmail(emailConfig.email, emailAddress, 'Account Activation', emailHtml);
-    }
-}
-
-module.exports = Email;
-
-}).call(this)}).call(this,"/../apihub-components/email/api")
-
-},{"../../apihub-component-utils/data.js":"/home/axiologic/Desktop/assistos-workspace/apihub-components/apihub-component-utils/data.js","../../config.json":"/home/axiologic/Desktop/assistos-workspace/apihub-components/config.json","../emailConfig.json":"/home/axiologic/Desktop/assistos-workspace/apihub-components/email/emailConfig.json","fs":false,"nodemailer":false,"path":false}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/email/emailConfig.json":[function(require,module,exports){
-module.exports={
-  "service": "gmail",
-  "emailAuth": "assistos.demo@gmail.com",
-  "email": "AssistOS <assistos.demo@gmail.com>",
-  "password": "eeqd azcd bfvf xuhm",
-  "companyLogoURL": "https://i.ibb.co/GP2ccSh/logo.jpg",
-  "companyName": "AssistOS",
-  "phoneNumber": "+40 758 239 880",
-  "supportEmail": "office@axiologic.net",
-  "city": "Iasi",
-  "country": "Romania",
-  "streetAddress": "Costache Negri 62 B",
-  "zipCode": "700070"
-}
-},{}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/email/index.js":[function(require,module,exports){
-(function (__dirname){(function (){
-const fsPromises = require('fs').promises;
-const path = require('path');
-const service = require('./api');
-
-// Template registry
-const templateRegistry = {
-    'activationFailTemplate': 'activationFailTemplate.html',
-    'activationSuccessTemplate': 'activationSuccessTemplate.html',
-    'activationEmailTemplate': 'activationEmailTemplate.html'
-};
-
-const getTemplate = async (templateName) => {
-    const fileName = templateRegistry[templateName];
-    if (!fileName) {
-        throw new Error(`Template '${templateName}' does not exist.`);
-    }
-    const filePath = path.join(__dirname,'templates', fileName);
-    return await fsPromises.readFile(filePath, 'utf8');
-};
-
-
-module.exports = {
-    getTemplate,
-    instance: service.getInstance()
-};
-
-}).call(this)}).call(this,"/../apihub-components/email")
-
-},{"./api":"/home/axiologic/Desktop/assistos-workspace/apihub-components/email/api/index.js","fs":false,"path":false}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultApiKeyTemplate.json":[function(require,module,exports){
+assistOSRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultApiKeyTemplate.json":[function(require,module,exports){
 module.exports={
   "type": "$$keyType",
   "ownerId": "$$ownerId",
@@ -316,17 +6,17 @@ module.exports={
   "value": "$$keyValue"
 }
 
-},{}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultSpaceAnnouncement.json":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultSpaceAnnouncement.json":[function(require,module,exports){
 module.exports={
   "id": "$$announcementId",
   "title": "Welcome to AssistOS!",
   "text": "Space $$spaceName was successfully created. You can now add documents, users and settings to your space.",
   "date": "$$currentUTCDate"
 }
-},{}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultSpaceNameTemplate.json":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultSpaceNameTemplate.json":[function(require,module,exports){
 module.exports="$$username Space"
 
-},{}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultSpaceTemplate.json":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultSpaceTemplate.json":[function(require,module,exports){
 module.exports={
   "name": "$$spaceName",
   "id": "$$spaceId",
@@ -347,7 +37,7 @@ module.exports={
   "personalities": [],
   "currentPersonalityId": ""
 }
-},{}],"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/spaceValidationSchema.json":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/spaceValidationSchema.json":[function(require,module,exports){
 module.exports={
   "type": "object",
   "properties": {
@@ -466,7 +156,7 @@ module.exports={
   ]
 }
 
-},{}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/builds/tmp/assistOS_intermediar.js":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/assistos-sdk/builds/tmp/assistOS_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.assistOSLoadModules = function(){ 
 
@@ -496,11 +186,11 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"assistos-sdk":"assistos-sdk","assistos-sdk/modules/document":"assistos-sdk/modules/document","assistos-sdk/modules/space":"assistos-sdk/modules/space","assistos-sdk/modules/user":"assistos-sdk/modules/user"}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/constants.js":[function(require,module,exports){
+},{"assistos-sdk":"assistos-sdk","assistos-sdk/modules/document":"assistos-sdk/modules/document","assistos-sdk/modules/space":"assistos-sdk/modules/space","assistos-sdk/modules/user":"assistos-sdk/modules/user"}],"/home/mircea/Desktop/assistOS/assistos-sdk/constants.js":[function(require,module,exports){
 module.exports = {
     DEFAULT_ID_LENGTH: 16
 }
-},{}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/apis/chapter.js":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/chapter.js":[function(require,module,exports){
 async function sendRequest(url, method, data){
     let result;
     let init = {
@@ -542,8 +232,12 @@ async function deleteChapter(spaceId, documentId, chapterId){
 }
 
 async function swapChapters(spaceId, documentId, chapterId1, chapterId2){
-    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(chapterType, chapterId1)}/position`);
-    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", chapterId2);
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${chapterType}`);
+    let body = {
+        item1: chapterId1,
+        item2: chapterId2
+    }
+    return await sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
 async function updateChapterTitle(spaceId, documentId, chapterId, title) {
     let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(chapterType, chapterId)}/title`);
@@ -590,7 +284,7 @@ module.exports = {
     updateAlternativeChapter,
     deleteAlternativeChapter
 }
-},{}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/apis/document.js":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/document.js":[function(require,module,exports){
 async function sendRequest(url, method, data){
     let result;
     let init = {
@@ -667,7 +361,7 @@ module.exports = {
     updateAlternativeTitles,
     updateAlternativeAbstracts
 };
-},{}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/apis/paragraph.js":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/paragraph.js":[function(require,module,exports){
 async function sendRequest(url, method, data){
     let result;
     let init = {
@@ -709,9 +403,13 @@ async function deleteParagraph(spaceId, documentId, chapterId, paragraphId){
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT");
 }
 
-async function swapParagraphs(spaceId, documentId, paragraphId, paragraphId2){
-    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(paragraphType, paragraphId)}/position`);
-    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", paragraphId2);
+async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2){
+    let body = {
+        item1: paragraphId,
+        item2: paragraphId2
+    }
+    let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(chapterType, chapterId)}/paragraphs`);
+    return await sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
     let objectURI = encodeURIComponent(`${getObjectId(documentType, documentId)}/${getObjectId(paragraphType, paragraphId)}/text`);
@@ -749,7 +447,7 @@ module.exports = {
     updateAlternativeParagraph,
     deleteAlternativeParagraph
 }
-},{}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/data/templates/document.json":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/data/templates/document.json":[function(require,module,exports){
 module.exports={
   "id":"$$id",
   "title": "$$title",
@@ -760,10 +458,10 @@ module.exports={
   "alternativeAbstracts":[],
   "chapters":[]
 }
-},{}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/space/apis/index.js":[function(require,module,exports){
+},{}],"/home/mircea/Desktop/assistOS/assistos-sdk/modules/space/apis/index.js":[function(require,module,exports){
 //here needs to be http requests to the server
-},{}],"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/user/apis/index.js":[function(require,module,exports){
-arguments[4]["/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/space/apis/index.js"][0].apply(exports,arguments)
+},{}],"/home/mircea/Desktop/assistOS/assistos-sdk/modules/user/apis/index.js":[function(require,module,exports){
+arguments[4]["/home/mircea/Desktop/assistOS/assistos-sdk/modules/space/apis/index.js"][0].apply(exports,arguments)
 },{}],"assistos-sdk/modules/document":[function(require,module,exports){
 const apiModules={
     get document(){
@@ -835,7 +533,7 @@ function loadData(...dataTypes) {
 
 module.exports = { loadAPIs, loadData };
 
-},{"./apis/chapter.js":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/apis/chapter.js","./apis/document.js":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/apis/document.js","./apis/paragraph.js":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/apis/paragraph.js","./data/templates/document.json":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/data/templates/document.json"}],"assistos-sdk/modules/space":[function(require,module,exports){
+},{"./apis/chapter.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/chapter.js","./apis/document.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/document.js","./apis/paragraph.js":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/apis/paragraph.js","./data/templates/document.json":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/data/templates/document.json"}],"assistos-sdk/modules/space":[function(require,module,exports){
 const apiModules = {
     get space() {
         const module = require('./apis');
@@ -939,7 +637,7 @@ function loadData(...dataTypes) {
 module.exports = {loadAPIs, loadData};
 
 
-},{"../../../apihub-components/spaces-storage/templates/json/defaultApiKeyTemplate.json":"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultApiKeyTemplate.json","../../../apihub-components/spaces-storage/templates/json/defaultSpaceAnnouncement.json":"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultSpaceAnnouncement.json","../../../apihub-components/spaces-storage/templates/json/defaultSpaceNameTemplate.json":"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultSpaceNameTemplate.json","../../../apihub-components/spaces-storage/templates/json/defaultSpaceTemplate.json":"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/defaultSpaceTemplate.json","../../../apihub-components/spaces-storage/templates/json/spaceValidationSchema.json":"/home/axiologic/Desktop/assistos-workspace/apihub-components/spaces-storage/templates/json/spaceValidationSchema.json","./apis":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/space/apis/index.js"}],"assistos-sdk/modules/user":[function(require,module,exports){
+},{"../../../apihub-components/spaces-storage/templates/defaultApiKeyTemplate.json":"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultApiKeyTemplate.json","../../../apihub-components/spaces-storage/templates/defaultSpaceAnnouncement.json":"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultSpaceAnnouncement.json","../../../apihub-components/spaces-storage/templates/defaultSpaceNameTemplate.json":"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultSpaceNameTemplate.json","../../../apihub-components/spaces-storage/templates/defaultSpaceTemplate.json":"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/defaultSpaceTemplate.json","../../../apihub-components/spaces-storage/templates/spaceValidationSchema.json":"/home/mircea/Desktop/assistOS/apihub-components/spaces-storage/templates/spaceValidationSchema.json","./apis":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/space/apis/index.js"}],"assistos-sdk/modules/user":[function(require,module,exports){
 const apiModules = {
     get user() {
         const module = require('./apis');
@@ -970,7 +668,7 @@ function loadAPIs(...apiNames) {
 }
 module.exports = { loadAPIs };
 
-},{"./apis":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/user/apis/index.js"}],"assistos-sdk":[function(require,module,exports){
+},{"./apis":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/user/apis/index.js"}],"assistos-sdk":[function(require,module,exports){
 module.exports = {
     loadModule: function(moduleName) {
         switch (moduleName) {
@@ -980,8 +678,6 @@ module.exports = {
                 return require('./modules/space');
             case 'user':
                 return require('./modules/user');
-            case 'services':
-                return require('../apihub-components/email');
             default:
                 return null;
         }
@@ -989,7 +685,7 @@ module.exports = {
     constants: require('./constants.js'),
 };
 
-},{"../apihub-components/email":"/home/axiologic/Desktop/assistos-workspace/apihub-components/email/index.js","./constants.js":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/constants.js","./modules/document":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/document/index.js","./modules/space":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/space/index.js","./modules/user":"/home/axiologic/Desktop/assistos-workspace/assistos-sdk/modules/user/index.js"}]},{},["/home/axiologic/Desktop/assistos-workspace/assistos-sdk/builds/tmp/assistOS_intermediar.js"])
+},{"./constants.js":"/home/mircea/Desktop/assistOS/assistos-sdk/constants.js","./modules/document":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/document/index.js","./modules/space":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/space/index.js","./modules/user":"/home/mircea/Desktop/assistOS/assistos-sdk/modules/user/index.js"}]},{},["/home/mircea/Desktop/assistOS/assistos-sdk/builds/tmp/assistOS_intermediar.js"])
                     ;(function(global) {
                         global.bundlePaths = {"assistOS":"build/bundles/assistOS.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
