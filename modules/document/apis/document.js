@@ -20,6 +20,9 @@ const documentType = "documents";
 function getObjectId(objectType, objectId){
     return `${objectType}_${objectId}`;
 }
+async function getDocumentsMetadata(spaceId){
+    return await sendRequest(`/spaces/containerObject/meta/${spaceId}/${documentType}`, "GET");
+}
 async function getDocument(spaceId, documentId){
     return await sendRequest(`/spaces/containerObject/${spaceId}/${getObjectId(documentType, documentId)}`, "GET");
 }
@@ -63,6 +66,7 @@ async function updateAlternativeAbstracts(spaceId, documentId, alternativeAbstra
 }
 
 module.exports = {
+    getDocumentsMetadata,
     getDocument,
     addDocument,
     updateDocument,
