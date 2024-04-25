@@ -1,6 +1,6 @@
 {
-    "assistOS":{
-        "deps":"assistos-sdk, assistos-sdk/modules/document, assistos-sdk/modules/space, assistos-sdk/modules/user",
+    "assistos_sdk":{
+        "deps":"../../index.js:assistos",
         "autoLoad":true
     }
 }

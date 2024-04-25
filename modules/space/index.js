@@ -5,6 +5,7 @@ const apiModules = {
         return module;
     }
 };
+/*
 const dataModules = {
     templates: {
         get defaultApiKeyTemplate() {
@@ -55,6 +56,7 @@ const dataModules = {
 
     }
 }
+*/
 
 function loadAPIs(...apiNames) {
     if (apiNames.length === 0) {
@@ -98,5 +100,5 @@ function loadData(...dataTypes) {
     return selectedData;
 }
 
-module.exports = {loadAPIs, loadData};
+module.exports = {loadAPIs /*loadData*/};
 
