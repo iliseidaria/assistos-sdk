@@ -10,6 +10,10 @@ module.exports = {
             return require('./modules/space');
         case 'user':
             return require('./modules/user');
+        case 'personality':
+            return require('./modules/personality');
+        case 'flow':
+            return require('./modules/flow');
         default:
             return null;
     }
