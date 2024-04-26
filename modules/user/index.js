@@ -26,4 +26,4 @@ function loadAPIs(...apiNames) {
     }
     return selectedApis;
 }
-module.exports = { loadAPIs };
+module.exports = {loadAPIs};
