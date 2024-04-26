@@ -1,3 +1,7 @@
+const sendRequest = require("assistos").loadModule("util").sendRequest;
+async function addAnnouncement(spaceId, announcementData){
+    return await sendRequest(`/spaces/spaceObject/${spaceId}/announcement`, "POST", announcementData)
+}
 async function createSpace(spaceName, apiKey) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -133,5 +137,6 @@ module.exports={
     storeSpace,
     addKeyToSpace,
     loadObject,
-    storeObject
+    storeObject,
+    addAnnouncement
 }

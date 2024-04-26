@@ -14,6 +14,8 @@ module.exports = {
             return require('./modules/personality');
         case 'flow':
             return require('./modules/flow');
+        case 'util':
+            return require('./modules/util');
         default:
             return null;
     }
