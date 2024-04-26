@@ -16,6 +16,8 @@ module.exports = {
             return require('./modules/flow');
         case 'util':
             return require('./modules/util');
+        case 'llm':
+            return require('./modules/llm');
         default:
             return null;
     }

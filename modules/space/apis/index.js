@@ -1,6 +1,13 @@
 const sendRequest = require("assistos").loadModule("util").sendRequest;
+const announcementType = "announcements";
 async function addAnnouncement(spaceId, announcementData){
-    return await sendRequest(`/spaces/spaceObject/${spaceId}/announcement`, "POST", announcementData)
+    return await sendRequest(`/spaces/spaceObject/${spaceId}/${announcementType}`, "POST", announcementData)
+}
+async function updateAnnouncement(spaceId, announcementId, announcementData){
+    return await sendRequest(`/spaces/spaceObject/${spaceId}/${announcementType}/${announcementId}`, "PUT", announcementData)
+}
+async function deleteAnnouncement(spaceId, announcementId){
+    return await sendRequest(`/spaces/spaceObject/${spaceId}/${announcementType}/${announcementId}`, "DELETE")
 }
 async function createSpace(spaceName, apiKey) {
     const headers = {
