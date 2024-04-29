@@ -2,7 +2,8 @@ module.exports = {
     loadModule: loadModule,
     constants: require('./constants.js'),
 };
- function loadModule(moduleName) {
+
+function loadModule(moduleName) {
     switch (moduleName) {
         case 'document':
             return require('./modules/document');
@@ -18,6 +19,8 @@ module.exports = {
             return require('./modules/util');
         case 'llm':
             return require('./modules/llm');
+        case 'application':
+            return require('./modules/application');
         default:
             return null;
     }
