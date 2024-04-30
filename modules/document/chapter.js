@@ -58,6 +58,7 @@ async function deleteAlternativeChapter(spaceId, documentId, chapterId, alternat
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
 module.exports = {
+    getChapter,
     addChapter,
     updateChapter,
     deleteChapter,
