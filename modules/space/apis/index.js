@@ -9,6 +9,9 @@ async function updateAnnouncement(spaceId, announcementId, announcementData){
 async function deleteAnnouncement(spaceId, announcementId){
     return await sendRequest(`/spaces/spaceObject/${spaceId}/${announcementType}/${announcementId}`, "DELETE")
 }
+async function addSpaceChatMessage(spaceId, messageData){
+    return await sendRequest(`/spaces/${spaceId}/chat`, "POST", messageData)
+}
 async function createSpace(spaceName, apiKey) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -144,6 +147,7 @@ module.exports={
     storeSpace,
     addKeyToSpace,
     loadObject,
+    addSpaceChatMessage,
     storeObject,
     addAnnouncement
 }
