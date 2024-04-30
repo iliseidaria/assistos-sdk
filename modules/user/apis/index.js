@@ -161,5 +161,10 @@ async function deleteKey(spaceId, keyType, keyId) {
 
 
 module.exports = {
-    registerUser, activateUser, loginUser, loadUser, logoutUser,
+    registerUser,
+    activateUser,
+    loginUser,
+    loadUser,
+    logoutUser,
+    getUsersSecretsExist
 }
