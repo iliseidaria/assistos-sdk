@@ -5,14 +5,15 @@ async function installApplication(spaceId, applicationId) {
 }
 
 async function getApplicationConfigs(spaceId, appId) {
-    return JSON.parse(JSON.parse(await sendRequest(`/space/${spaceId}/applications/${appId}/configs`, "GET")));
+    return await sendRequest(`/space/${spaceId}/applications/${appId}/configs`, "GET");
 }
 
 async function getApplicationFile(spaceId, appId, relativeAppFilePath) {
     const pathParts = relativeAppFilePath.split(".")
     const type = pathParts[pathParts.length - 1] || "";
     if (type !== "js") {
-        return await sendRequest(`/app/${spaceId}/applications/${appId}/file/${relativeAppFilePath}`, "GET");
+        let response = await fetch(`/app/${spaceId}/applications/${appId}/file/${relativeAppFilePath}`, {method:"GET"});
+        return await response.text();
     }else{
         return await import(`/app/${spaceId}/applications/${appId}/file/${relativeAppFilePath}`);
     }
