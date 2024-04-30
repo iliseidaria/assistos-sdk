@@ -7,6 +7,14 @@ async function getPersonalitiesMetadata(spaceId){
 async function getPersonality(spaceId, fileName){
     return await sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET")
 }
+async function getAgent(spaceId, agentId) {
+    let url = '/spaces/${spaceId}/agents';
+    if (agentId) {
+        url += `/${agentId}`;
+    }
+    return await sendRequest(url, 'GET');
+}
+
 async function addPersonality(spaceId, personalityData){
     return await sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}`, "POST", personalityData)
 }
