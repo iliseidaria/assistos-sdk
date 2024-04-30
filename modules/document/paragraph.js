@@ -14,7 +14,7 @@ async function updateParagraph(spaceId, documentId, chapterId, paragraphId, para
 }
 async function deleteParagraph(spaceId, documentId, chapterId, paragraphId){
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${paragraphId}`);
-    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT");
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
 
 async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2){
@@ -51,6 +51,7 @@ async function deleteAlternativeParagraph(spaceId, documentId, chapterId, paragr
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
 module.exports = {
+    getParagraph,
     addParagraph,
     updateParagraph,
     deleteParagraph,
