@@ -1,15 +1,11 @@
 const sendRequest = require("assistos").loadModule("util").sendRequest;
 
-const documentType = "documents";
-const chapterType = "chapters";
-const paragraphType = "paragraphs";
-
 async function getParagraph(spaceId, documentId, paragraphId){
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 async function addParagraph(spaceId, documentId, chapterId, paragraphData){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${paragraphType}`);
+    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", paragraphData);
 }
 async function updateParagraph(spaceId, documentId, chapterId, paragraphId, paragraphData){

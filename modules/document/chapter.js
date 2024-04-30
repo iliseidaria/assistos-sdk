@@ -1,14 +1,11 @@
 const sendRequest = require("assistos").loadModule("util").sendRequest;
 
-const documentType = "documents";
-const chapterType = "chapters";
-
 async function getChapter(spaceId, documentId, chapterId){
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 async function addChapter(spaceId, documentId, chapterData){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterType}`);
+    let objectURI = encodeURIComponent(`${documentId}/chapters`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", chapterData);
 }
 async function updateChapter(spaceId, documentId, chapterData){
@@ -21,7 +18,7 @@ async function deleteChapter(spaceId, documentId, chapterId){
 }
 
 async function swapChapters(spaceId, documentId, chapterId1, chapterId2){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterType}`);
+    let objectURI = encodeURIComponent(`${documentId}/chapters`);
     let body = {
         item1: chapterId1,
         item2: chapterId2

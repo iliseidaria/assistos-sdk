@@ -14,7 +14,11 @@ async function sendRequest(url, method, data){
     } catch (err) {
         console.error(err);
     }
-    return await result.text();
+    let response = JSON.parse(await result.text());
+    if(!response.success){
+        console.error(response.message);
+    }
+    return response.data;
 }
 module.exports = {
     sendRequest
