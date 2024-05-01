@@ -6,7 +6,7 @@ const prepareSecret = (secret) => {
         .join('');
 }
 
-async function registerUser(name, email, password) {
+async function registerUser(name, email, password, photo) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
     };
@@ -16,7 +16,8 @@ async function registerUser(name, email, password) {
         body: JSON.stringify({
             name: name,
             email: email,
-            password: prepareSecret(password)
+            password: prepareSecret(password),
+            ...(photo ? { photo: photo } : {})
         })
     };
     const response = await fetch(`/users`, options);
