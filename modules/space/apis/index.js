@@ -140,6 +140,22 @@ async function storeObject(spaceId, objectType, objectName, jsonData) {
     return await result.text();
 }
 
+async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
+    let result;
+    try {
+        result = await fetch(`/spaces/${spaceId}/collaborators`,
+            {
+                method: "POST",
+                body: JSON.stringify({emails:collaboratorEmails}),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                }
+            });
+    } catch (err) {
+        console.error(err);
+    }
+    return await result.text();
+}
 module.exports={
     createSpace,
     loadSpace,
@@ -149,5 +165,6 @@ module.exports={
     loadObject,
     addSpaceChatMessage,
     storeObject,
-    addAnnouncement
+    addAnnouncement,
+    inviteSpaceCollaborators
 }
