@@ -106,18 +106,6 @@ async function storeUser(userId, jsonData) {
     return await result.text();
 }
 
-async function loadUserByEmail(email) {
-    const result = await fetch(`/users/email`,
-        {
-            method: "PUT",
-            body: email,
-            headers: {
-                "Content-type": "application/json; charset=UTF-8"
-            }
-        });
-    return await result.text();
-}
-
 async function addGITCredentials(spaceId, username, token) {
     let body = {
         secretName: "gitCredentials",
@@ -154,6 +142,15 @@ async function deleteKey(spaceId, keyType, keyId) {
     return await result.text();
 }
 
+async function addAPIKey(keyType, apiKey) {
+    let body = {
+        keyType: keyType,
+        key: apiKey
+    }
+
+    return await sendRequest(`/users/secrets`, "POST", body);
+
+}
 
 module.exports = {
     registerUser,
