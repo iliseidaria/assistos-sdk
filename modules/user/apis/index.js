@@ -1,3 +1,4 @@
+const {sendRequest} = require("../../util");
 const crypto = require('opendsu').loadAPI('crypto');
 
 const prepareSecret = (secret) => {
@@ -117,34 +118,27 @@ async function loadUserByEmail(email) {
     return await result.text();
 }
 
-async function storeGITCredentials(spaceId, userId, stringData) {
-    let result;
-    try {
-        result = await fetch(`/users/${spaceId}/${userId}/secret`,
-            {
-                method: "PUT",
-                body: stringData,
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-                }
-            });
-    } catch (err) {
-        console.error(err);
+async function addGITCredentials(spaceId, username, token) {
+    let body = {
+        secretName: "gitCredentials",
+        secret: {
+            username: username,
+            token: token
+        }
     }
-    return await result.text();
+    return await sendRequest(`/users/secrets/${spaceId}`, "POST", body);
 }
-
-async function getUsersSecretsExist(spaceId) {
-    let result;
-    try {
-        result = await fetch(`/users/${spaceId}/secrets`,
-            {
-                method: "GET"
-            });
-    } catch (err) {
-        console.error(err);
+async function deleteGITCredentials(spaceId) {
+    let body = {
+        secretName: "gitCredentials"
     }
-    return await result.text();
+    return await sendRequest(`/users/secrets/${spaceId}`, "PUT", body);
+}
+async function userGITCredentialsExist(spaceId) {
+    let body = {
+        secretName: "gitCredentials"
+    }
+    return await sendRequest(`/users/secrets/exists/${spaceId}`, "POST", body);
 }
 
 async function deleteKey(spaceId, keyType, keyId) {
@@ -167,5 +161,7 @@ module.exports = {
     loginUser,
     loadUser,
     logoutUser,
-    getUsersSecretsExist
+    userGITCredentialsExist,
+    addGITCredentials,
+    deleteGITCredentials,
 }
