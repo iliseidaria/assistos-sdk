@@ -129,17 +129,8 @@ async function userGITCredentialsExist(spaceId) {
     return await sendRequest(`/users/secrets/exists/${spaceId}`, "POST", body);
 }
 
-async function deleteKey(spaceId, keyType, keyId) {
-    let result;
-    try {
-        result = await fetch(`/users/${spaceId}/secrets/${keyType}/${keyId}`,
-            {
-                method: "DELETE"
-            });
-    } catch (err) {
-        console.error(err);
-    }
-    return await result.text();
+async function deleteAPIKey(keyId) {
+    return await sendRequest(`/spaces/secrets/keys/${keyId}`, "DELETE");
 }
 
 async function addAPIKey(keyType, apiKey) {
@@ -147,9 +138,7 @@ async function addAPIKey(keyType, apiKey) {
         keyType: keyType,
         key: apiKey
     }
-
-    return await sendRequest(`/users/secrets`, "POST", body);
-
+    return await sendRequest(`/spaces/secrets/keys`, "POST", body);
 }
 
 module.exports = {
@@ -161,4 +150,6 @@ module.exports = {
     userGITCredentialsExist,
     addGITCredentials,
     deleteGITCredentials,
+    addAPIKey,
+    deleteAPIKey,
 }
