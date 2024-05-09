@@ -14,12 +14,34 @@ async function sendRequest(url, method, data){
     } catch (err) {
         console.error(err);
     }
-    let response = JSON.parse(await result.text());
-    if(!response.success){
-        console.error(response.message);
+    let response = await result.text()
+    let responseJSON = JSON.parse(response);
+    if(!responseJSON.success){
+        console.error(responseJSON.message);
     }
-    return response.data;
+    return responseJSON.data;
 }
+const eventEmitter = (function createEventEmitter() {
+    const listeners = {};
+
+    function on(event, callback) {
+        if (!listeners[event]) {
+            listeners[event] = [];
+        }
+        listeners[event].push(callback);
+    }
+
+    function emit(event, data) {
+        const eventListeners = listeners[event] || [];
+        eventListeners.forEach(callback => callback(data));
+    }
+
+    return {
+        on,
+        emit
+    };
+})();
 module.exports = {
-    sendRequest
+    sendRequest,
+    eventEmitter
 }

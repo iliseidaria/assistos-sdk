@@ -25,6 +25,10 @@ async function swapChapters(spaceId, documentId, chapterId1, chapterId2){
     }
     return await sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
+async function getChapterTitle(spaceId, documentId, chapterId){
+    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/title`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
 async function updateChapterTitle(spaceId, documentId, chapterId, title) {
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/title`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", title);
@@ -63,6 +67,7 @@ module.exports = {
     updateChapter,
     deleteChapter,
     swapChapters,
+    getChapterTitle,
     updateChapterTitle,
     updateChapterMainIdeas,
     updateChapterAlternativeTitles,

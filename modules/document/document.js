@@ -16,13 +16,25 @@ async function updateDocument(spaceId, documentId, documentData){
 async function deleteDocument(spaceId, documentId){
     return await sendRequest(`/spaces/containerObject/${spaceId}/${documentId}`, "DELETE");
 }
+async function getDocumentTitle(spaceId, documentId){
+    let objectURI = encodeURIComponent(`${documentId}/title`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
 async function updateDocumentTitle(spaceId, documentId, title) {
     let objectURI = encodeURIComponent(`${documentId}/title`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", title);
 }
+async function getDocumentTopic(spaceId, documentId){
+    let objectURI = encodeURIComponent(`${documentId}/topic`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
 async function updateDocumentTopic(spaceId, documentId, topic) {
     let objectURI = encodeURIComponent(`${documentId}/topic`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", topic);
+}
+async function getDocumentAbstract(spaceId, documentId){
+    let objectURI = encodeURIComponent(`${documentId}/abstract`);
+    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 async function updateDocumentAbstract(spaceId, documentId, abstract) {
     let objectURI = encodeURIComponent(`${documentId}/abstract`);
@@ -47,6 +59,9 @@ async function updateAlternativeAbstracts(spaceId, documentId, alternativeAbstra
 }
 
 module.exports = {
+    getDocumentTopic,
+    getDocumentTitle,
+    getDocumentAbstract,
     getDocumentsMetadata,
     getDocument,
     addDocument,

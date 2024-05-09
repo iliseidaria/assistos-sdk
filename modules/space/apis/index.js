@@ -1,4 +1,4 @@
-const sendRequest = require("assistos").loadModule("util").sendRequest;
+const {sendRequest, eventEmitter} = require("assistos").loadModule("util");
 const announcementType = "announcements";
 async function addAnnouncement(spaceId, announcementData){
     return await sendRequest(`/spaces/spaceObject/${spaceId}/${announcementType}`, "POST", announcementData)
@@ -156,6 +156,23 @@ async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     }
     return await result.text();
 }
+async function unsubscribeFromObject(spaceId){
+    return await sendRequest(`/spaces/updates/${spaceId}`, "POST", {action:"unsubscribe"});
+}
+let delay = 3000;
+//const maxDelay = 30000;
+//first call also subscribes to the object, recursive calls are for checking updates
+async function checkUpdates(spaceId, objectId){
+   let data = await sendRequest(`/spaces/updates/${spaceId}`, "POST", {objectId:objectId});
+   if(data){
+       eventEmitter.emit(data.targetObjectType, data.targetObjectId);
+       await checkUpdates(spaceId);
+   } else {
+       setTimeout(async ()=> await checkUpdates(spaceId), delay);
+       //delay = delay + 100;
+       //delay = Math.min(delay, maxDelay);
+   }
+}
 module.exports={
     createSpace,
     loadSpace,
@@ -166,5 +183,7 @@ module.exports={
     addSpaceChatMessage,
     storeObject,
     addAnnouncement,
-    inviteSpaceCollaborators
+    inviteSpaceCollaborators,
+    unsubscribeFromObject,
+    checkUpdates
 }
