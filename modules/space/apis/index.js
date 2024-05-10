@@ -1,4 +1,4 @@
-const {sendRequest, eventEmitter} = require("assistos").loadModule("util");
+const {sendRequest, notificationService} = require("assistos").loadModule("util");
 const announcementType = "announcements";
 async function addAnnouncement(spaceId, announcementData){
     return await sendRequest(`/spaces/spaceObject/${spaceId}/${announcementType}`, "POST", announcementData)
@@ -156,23 +156,42 @@ async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     }
     return await result.text();
 }
-async function unsubscribeFromObject(spaceId){
-    return await sendRequest(`/spaces/updates/${spaceId}`, "POST", {action:"unsubscribe"});
+async function unsubscribeFromObject(spaceId, objectId){
+    return await sendRequest(`/updates/unsubscribe/${spaceId}/${objectId}`, "GET");
 }
-let delay = 3000;
-//const maxDelay = 30000;
-//first call also subscribes to the object, recursive calls are for checking updates
-async function checkUpdates(spaceId, objectId){
-   let data = await sendRequest(`/spaces/updates/${spaceId}`, "POST", {objectId:objectId});
-   if(data){
-       eventEmitter.emit(data.targetObjectType, data.targetObjectId);
-       await checkUpdates(spaceId);
-   } else {
-       setTimeout(async ()=> await checkUpdates(spaceId), delay);
-       //delay = delay + 100;
-       //delay = Math.min(delay, maxDelay);
-   }
+async function subscribeToObject(spaceId, objectId) {
+    return await sendRequest(`/updates/subscribe/${spaceId}/${objectId}`, "GET");
 }
+let delay = 1000;
+const refreshDelay = 3000;
+let objectsToRefresh = [];
+let refreshTimeout;
+async function checkUpdates(spaceId) {
+    try {
+        let data = await sendRequest(`/updates/${spaceId}`, "GET");
+        if (data) {
+            if (data.isSameUser) {
+                notificationService.emit(data.targetObjectId);
+            } else {
+                objectsToRefresh.push(data.targetObjectId);
+                if (!refreshTimeout) {
+                    refreshTimeout = setTimeout(() => {
+                        for (let objectId of objectsToRefresh) {
+                            notificationService.emit(objectId);
+                        }
+                        objectsToRefresh = [];
+                        refreshTimeout = null;
+                    }, refreshDelay);
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching updates:", error);
+    }
+
+    setTimeout(() => checkUpdates(spaceId), delay);
+}
+
 module.exports={
     createSpace,
     loadSpace,
@@ -184,6 +203,7 @@ module.exports={
     storeObject,
     addAnnouncement,
     inviteSpaceCollaborators,
+    subscribeToObject,
     unsubscribeFromObject,
     checkUpdates
 }

@@ -21,7 +21,7 @@ async function sendRequest(url, method, data){
     }
     return responseJSON.data;
 }
-const eventEmitter = (function createEventEmitter() {
+const notificationService = (function createNotificationService() {
     const listeners = {};
 
     function on(event, callback) {
@@ -43,5 +43,5 @@ const eventEmitter = (function createEventEmitter() {
 })();
 module.exports = {
     sendRequest,
-    eventEmitter
+    notificationService
 }
