@@ -166,8 +166,17 @@ let delay = 1000;
 const refreshDelay = 3000;
 let objectsToRefresh = [];
 let refreshTimeout;
+let checkUpdatesTimeoutId;
+let stopPolling = false;
+function startCheckingUpdates(spaceId) {
+    stopPolling = false;
+    checkUpdates(spaceId);
+}
 async function checkUpdates(spaceId) {
     try {
+        if(stopPolling) {
+            return;
+        }
         let data = await sendRequest(`/updates/${spaceId}`, "GET");
         if (data) {
             if (data.isSameUser) {
@@ -188,10 +197,14 @@ async function checkUpdates(spaceId) {
     } catch (error) {
         console.error("Error fetching updates:", error);
     }
-
-    setTimeout(() => checkUpdates(spaceId), delay);
+    if(!stopPolling) {
+        checkUpdatesTimeoutId = setTimeout(() => checkUpdates(spaceId), delay);
+    }
 }
-
+function stopCheckingUpdates() {
+    stopPolling = true;
+    clearTimeout(checkUpdatesTimeoutId);
+}
 module.exports={
     createSpace,
     loadSpace,
@@ -205,5 +218,6 @@ module.exports={
     inviteSpaceCollaborators,
     subscribeToObject,
     unsubscribeFromObject,
-    checkUpdates
+    startCheckingUpdates,
+    stopCheckingUpdates
 }
