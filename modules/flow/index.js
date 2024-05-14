@@ -15,10 +15,12 @@ async function updateFlow(spaceId, flowName, flowData){
 async function deleteFlow(spaceId, flowName){
     return await sendRequest(`/spaces/flows/${spaceId}/${flowName}`, "DELETE")
 }
+const IFlow = require("./models/IFlow.js");
 module.exports = {
     getFlow,
     loadFlows,
     addFlow,
     updateFlow,
-    deleteFlow
+    deleteFlow,
+    IFlow
 }

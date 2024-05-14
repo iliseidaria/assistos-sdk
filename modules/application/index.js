@@ -30,12 +30,17 @@ async function loadAppObjects(appName, objectType) {
 async function uninstallApplication(spaceId, appName) {
     return await sendRequest(`/space/${spaceId}/applications/${appName}`, "DELETE");
 }
-
+async function loadAppFlows(spaceId, appId){
+    return import(`/app/${spaceId}/applications/${appId}`);
+}
+const Application = require("./models/Application.js");
 module.exports = {
     installApplication,
     getApplicationConfigs,
     getApplicationFile,
     storeAppObject,
     loadAppObjects,
-    uninstallApplication
+    uninstallApplication,
+    loadAppFlows,
+    Application
 };

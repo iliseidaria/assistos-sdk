@@ -24,10 +24,14 @@ async function updatePersonality(spaceId, fileName, personalityData){
 async function deletePersonality(spaceId, fileName){
     return await sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "DELETE")
 }
+async function loadFilteredKnowledge(spaceId, words, personalityId){
+    return await sendRequest(`/personalities/${spaceId}/${personalityId}/search?param1=${words}`, "GET")
+}
 module.exports = {
     getPersonalitiesMetadata,
     getPersonality,
     addPersonality,
     updatePersonality,
-    deletePersonality
+    deletePersonality,
+    loadFilteredKnowledge
 }

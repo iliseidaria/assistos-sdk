@@ -99,6 +99,10 @@ function loadData(...dataTypes) {
     }
     return selectedData;
 }
-
-module.exports = {loadAPIs /*loadData*/};
+const Space = require('./models/Space.js');
+const Announcement = require('./models/Announcement.js');
+module.exports = {loadAPIs,
+    Space,
+    Announcement
+    /*loadData*/};
 
