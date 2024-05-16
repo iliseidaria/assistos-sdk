@@ -33,6 +33,9 @@ async function uninstallApplication(spaceId, appName) {
 async function loadAppFlows(spaceId, appId){
     return import(`/app/${spaceId}/applications/${appId}`);
 }
+async function loadApplicationsMetadata(spaceId){
+    return await sendRequest(`/app/${spaceId}`, "GET");
+}
 const Application = require("./models/Application.js");
 module.exports = {
     installApplication,
@@ -42,5 +45,6 @@ module.exports = {
     loadAppObjects,
     uninstallApplication,
     loadAppFlows,
+    loadApplicationsMetadata,
     Application
 };
