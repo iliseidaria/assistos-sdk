@@ -9,6 +9,11 @@ async function sendRequest(url, method, data){
             "Content-type": "application/json; charset=UTF-8"
         };
     }
+    // const assistos = require("assistos");
+    // if(assistos.envType === "node"){
+    //     url = `http://localhost:8080${url}`;
+    //     init.headers.Cookie = cookies;
+    // }
     try {
         result = await fetch(url,init);
     } catch (err) {

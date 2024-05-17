@@ -124,11 +124,8 @@ class Space {
     }
 
     async getFlow(flowName) {
-        const flowModule = require("assistos").loadModule("flow");
-        let flowClass = await flowModule.getFlow(this.id, flowName);
-        let flowIndex = this.flows.findIndex(flow => flow.name === flowName);
-        this.flows[flowIndex] = flowClass[flowName];
-        return flowClass[flowName];
+        let flow = this.flows.find(flow => flow.name === flowName);
+        return flow || console.error(`Flow not found, flowName: ${flowName}`);
     }
 
     async getPersonality(id) {

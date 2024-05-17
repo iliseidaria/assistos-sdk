@@ -1,8 +1,13 @@
-module.exports = {
-    loadModule: loadModule,
-    constants: require('./constants.js'),
-};
-
+function detectEnvironment() {
+    if (typeof fetch === 'function' && typeof document === 'object') {
+        return 'browser';
+    } else if (typeof require === 'function' && typeof module === 'object' && typeof module.exports === 'object') {
+        return 'node';
+    } else {
+        return 'unknown';
+    }
+}
+const envType = detectEnvironment();
 function loadModule(moduleName) {
     switch (moduleName) {
         case 'document':
@@ -25,3 +30,8 @@ function loadModule(moduleName) {
             return null;
     }
 }
+module.exports = {
+    loadModule: loadModule,
+    constants: require('./constants.js'),
+    envType
+};
