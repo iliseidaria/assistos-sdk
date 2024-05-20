@@ -1,6 +1,9 @@
 const IFlow = require("./models/IFlow.js");
-const sendRequest = require("assistos").loadModule("util").sendRequest;
+const request = require("../util").request;
 const constants = require("../../constants.js");
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 async function loadFlows(spaceId) {
     return await import(`/spaces/flows/${spaceId}`);
 }
@@ -21,7 +24,7 @@ async function deleteFlow(spaceId, flowName) {
     return await sendRequest(`/spaces/flows/${spaceId}/${flowName}`, "DELETE")
 }
 async function callServerFlow(spaceId, flowName, context, personalityId) {
-    return await sendRequest(`/spaces/callFlow/${spaceId}/${flowName}`, "POST", {
+    return await sendRequest(`/spaces/callFlow/${spaceId}/${flowName}`, "POST",{
         context:context,
         personalityId:personalityId
     });
@@ -68,6 +71,7 @@ async function callFlow(spaceId, flowName, context, personalityId) {
                     flowInstance.reject = reject;
                 });
                 flowInstance.personality = personality;
+                flowInstance.__securityContext = {};
                 flowInstance.start(context, personality);
                 return returnPromise;
             })(context, personality);

@@ -15,11 +15,11 @@ class Document {
     }
 
     async refreshDocumentTitle(spaceId, documentId){
-        const documentModule = require("assistos").loadModule("document");
+        const documentModule = require("assistos").loadModule("document", {});
         this.title = await documentModule.getDocumentTitle(spaceId, documentId);
     }
     async refreshDocumentAbstract(spaceId, documentId){
-        const documentModule = require("assistos").loadModule("document");
+        const documentModule = require("assistos").loadModule("document", {});
         this.abstract = await documentModule.getDocumentAbstract(spaceId, documentId);
     }
     toString() {
@@ -131,7 +131,7 @@ class Document {
         return this.chapters.find(chapter => chapter.id === chapterId);
     }
     async refreshChapter(documentId, chapterId) {
-        const documentModule = require("assistos").loadModule("document");
+        const documentModule = require("assistos").loadModule("document", {});
         const chapter = await documentModule.getChapter(assistOS.space.id, documentId, chapterId);
         let chapterIndex = this.chapters.findIndex(chapter => chapter.id === chapterId);
         if (chapterIndex !== -1) {

@@ -10,7 +10,7 @@ class IFlow{
         return this.reject(error);
     }
     loadModule(moduleName){
-        return require("assistos").loadModule(moduleName);
+        return require("assistos").loadModule(moduleName, this.__securityContext);
     }
     callFlow(flowName, context){
         return assistOS.callFlow(flowName, context, this.personality);

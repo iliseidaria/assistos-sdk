@@ -32,14 +32,14 @@ class Chapter {
         }
     }
     async refreshParagraph(spaceId, documentId, paragraphId){
-        const documentModule = require("assistos").loadModule("document");
+        const documentModule = require("assistos").loadModule("document", {});
         let paragraphData = await documentModule.getParagraph(assistOS.space.id, documentId, paragraphId);
         let paragraphIndex = this.paragraphs.findIndex(paragraph => paragraph.id === paragraphId);
         this.paragraphs[paragraphIndex] = new Paragraph(paragraphData);
         return this.paragraphs[paragraphIndex];
     }
     async refreshChapterTitle(spaceId, documentId, chapterId){
-        const documentModule = require("assistos").loadModule("document");
+        const documentModule = require("assistos").loadModule("document", {});
         this.title = await documentModule.getChapterTitle(spaceId, documentId, chapterId);
     }
 

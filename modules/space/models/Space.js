@@ -47,7 +47,7 @@ class Space {
         }
     }
     async getPersonalitiesMetadata(){
-        const personalityModule = require("assistos").loadModule("personality");
+        const personalityModule = require("assistos").loadModule("personality", {});
         this.personalitiesMetadata = await personalityModule.getPersonalitiesMetadata(this.id);
         return this.personalitiesMetadata;
     }
@@ -55,7 +55,7 @@ class Space {
         return this.apiKeys[keyType].find(key=>key.id===keyId)||null;
     }
     async getDocumentsMetadata(){
-        let documentModule = require("assistos").loadModule("document");
+        let documentModule = require("assistos").loadModule("document", {});
         return await documentModule.getDocumentsMetadata(this.id);
     }
     observeChange(elementId, callback, callbackAsyncParamFn) {
@@ -129,13 +129,13 @@ class Space {
     }
 
     async getPersonality(id) {
-        const personalityModule = require("assistos").loadModule("personality");
+        const personalityModule = require("assistos").loadModule("personality", {});
         let personalityData = await personalityModule.getPersonality(this.id, id);
         return new Personality(personalityData);
     }
 
     async loadFlows() {
-        const flowModule = require("assistos").loadModule("flow");
+        const flowModule = require("assistos").loadModule("flow", {});
         this.flows = [];
         let flows = await flowModule.loadFlows(this.id);
         for (let [name, flowClass] of Object.entries(flows)) {

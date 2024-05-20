@@ -1,4 +1,7 @@
-const sendRequest = require("assistos").loadModule("util").sendRequest;
+const request = require("../util").request;
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 const documentType = "documents";
 async function getDocumentsMetadata(spaceId){
     return await sendRequest(`/spaces/containerObject/meta/${spaceId}/${documentType}`, "GET");

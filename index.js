@@ -1,3 +1,5 @@
+const ServerSideSecurityContext = require('./modules/user/models/ServerSideSecurityContext');
+const ClientSideSecurityContext = require('./modules/user/models/ClientSideSecurityContext');
 function detectEnvironment() {
     if (typeof fetch === 'function' && typeof document === 'object') {
         return 'browser';
@@ -8,7 +10,7 @@ function detectEnvironment() {
     }
 }
 const envType = detectEnvironment();
-function loadModule(moduleName) {
+function _loadModule(moduleName) {
     switch (moduleName) {
         case 'document':
             return require('./modules/document');
@@ -30,8 +32,28 @@ function loadModule(moduleName) {
             return null;
     }
 }
+function sdkModule(moduleName, securityContext) {
+    let module = _loadModule(moduleName);
+    this.__securityContext = securityContext;
+    for(let key in module){
+        if(typeof module[key] === 'function' && typeof module[key].constructor !== "function"){
+            this[key] = module[key].bind(this);
+        } else{
+            this[key] = module[key];
+        }
+    }
+    return this;
+}
+function loadModule(moduleName, userContext){
+    if(!userContext){
+        throw new Error("User context is required to load a module");
+    }
+   return new sdkModule(moduleName, userContext);
+}
 module.exports = {
     loadModule: loadModule,
     constants: require('./constants.js'),
-    envType
+    envType,
+    ServerSideSecurityContext,
+    ClientSideSecurityContext
 };

@@ -1,8 +1,11 @@
-const sendRequest = require("assistos").loadModule("util").sendRequest;
+const LLM = require("./models/LLM.js");
+const {request} = require("../util");
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 async function sendLLMRequest(data){
     return await sendRequest(`/llms/generate`, "PUT", data)
 }
-const LLM = require("./models/LLM.js");
 module.exports = {
     sendLLMRequest,
     LLM

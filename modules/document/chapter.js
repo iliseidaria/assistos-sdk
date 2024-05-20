@@ -1,5 +1,7 @@
-const sendRequest = require("assistos").loadModule("util").sendRequest;
-
+const request = require("../util").request;
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 async function getChapter(spaceId, documentId, chapterId){
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}`);
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");

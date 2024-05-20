@@ -1,7 +1,8 @@
-async function sendRequest(url, method, data){
+async function request(url, method, securityContext, data){
     let result;
     let init = {
-        method: method
+        method: method,
+        headers: {}
     };
     if(method === "POST" || method === "PUT"){
         init.body = typeof data === "string" ? data : JSON.stringify(data);
@@ -9,11 +10,11 @@ async function sendRequest(url, method, data){
             "Content-type": "application/json; charset=UTF-8"
         };
     }
-    // const assistos = require("assistos");
-    // if(assistos.envType === "node"){
-    //     url = `http://localhost:8080${url}`;
-    //     init.headers.Cookie = cookies;
-    // }
+    const assistOS = require("assistos");
+    if(assistOS.envType === "node"){
+        url = `http://localhost:8080${url}`;
+        init.headers.Cookie = securityContext.cookies;
+    }
     try {
         result = await fetch(url,init);
     } catch (err) {
@@ -47,6 +48,6 @@ const notificationService = (function createNotificationService() {
     };
 })();
 module.exports = {
-    sendRequest,
+    request,
     notificationService
 }

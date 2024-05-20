@@ -1,6 +1,8 @@
-const {sendRequest} = require("../../util");
 const crypto = require('opendsu').loadAPI('crypto');
-
+const {request} = require("../../util");
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 const prepareSecret = (secret) => {
     return Array.from(crypto.sha256JOSE(secret))
         .map(b => b.toString(16).padStart(2, '0'))

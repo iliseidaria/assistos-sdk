@@ -1,5 +1,7 @@
-const sendRequest = require("assistos").loadModule("util").sendRequest;
-
+const request = require("../util").request;
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 async function installApplication(spaceId, applicationId) {
     return await sendRequest(`/space/${spaceId}/applications/${applicationId}`, "POST");
 }

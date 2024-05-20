@@ -1,7 +1,10 @@
-const {sendRequest, notificationService} = require("assistos").loadModule("util");
+const {request, notificationService} = require("../util");
 const Space = require('./models/Space.js');
 const Announcement = require('./models/Announcement.js');
 const announcementType = "announcements";
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 async function addAnnouncement(spaceId, announcementData){
     return await sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}`, "POST", announcementData)
 }
