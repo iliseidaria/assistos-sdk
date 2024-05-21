@@ -4,9 +4,10 @@ async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 async function sendLLMRequest(data){
-    return await sendRequest(`/llms/generate`, "PUT", data)
+    return await this.sendRequest(`/llms/generate`, "PUT", data)
 }
 module.exports = {
     sendLLMRequest,
-    LLM
+    LLM,
+    sendRequest
 }

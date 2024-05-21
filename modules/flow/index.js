@@ -13,18 +13,18 @@ async function getFlow(spaceId, flowName) {
 }
 
 async function addFlow(spaceId, flowName, flowData) {
-    return await sendRequest(`/flows/${spaceId}/${flowName}`, "POST", flowData)
+    return await this.sendRequest(`/flows/${spaceId}/${flowName}`, "POST", flowData)
 }
 
 async function updateFlow(spaceId, flowName, flowData) {
-    return await sendRequest(`/flows/${spaceId}/${flowName}`, "PUT", flowData)
+    return await this.sendRequest(`/flows/${spaceId}/${flowName}`, "PUT", flowData)
 }
 
 async function deleteFlow(spaceId, flowName) {
-    return await sendRequest(`/flows/${spaceId}/${flowName}`, "DELETE")
+    return await this.sendRequest(`/flows/${spaceId}/${flowName}`, "DELETE")
 }
 async function callServerFlow(spaceId, flowName, context, personalityId) {
-    return await sendRequest(`/flows/call/${spaceId}/${flowName}`, "POST",{
+    return await this.sendRequest(`/flows/call/${spaceId}/${flowName}`, "POST",{
         context:context,
         personalityId:personalityId
     });
@@ -103,5 +103,6 @@ module.exports = {
     deleteFlow,
     callFlow,
     callServerFlow,
+    sendRequest,
     IFlow
 }

@@ -37,7 +37,7 @@ function sdkModule(moduleName, securityContext) {
     let module = _loadModule(moduleName);
     this.__securityContext = securityContext;
     for(let key in module){
-        if(typeof module[key] === 'function' && typeof module[key].constructor !== "function"){
+        if(typeof module[key] === 'function' && !(module[key].prototype && Object.getOwnPropertyNames(module[key].prototype).length > 1 && module[key].prototype.constructor === module[key])){
             this[key] = module[key].bind(this);
         } else{
             this[key] = module[key];

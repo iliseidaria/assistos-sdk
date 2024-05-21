@@ -154,4 +154,5 @@ module.exports = {
     deleteGITCredentials,
     addAPIKey,
     deleteAPIKey,
+    sendRequest
 }

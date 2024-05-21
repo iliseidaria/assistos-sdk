@@ -6,26 +6,26 @@ async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 async function addAnnouncement(spaceId, announcementData){
-    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}`, "POST", announcementData)
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}`, "POST", announcementData)
 }
 async function updateAnnouncement(spaceId, announcementId, announcementData){
-    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}/${announcementId}`, "PUT", announcementData)
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}/${announcementId}`, "PUT", announcementData)
 }
 async function deleteAnnouncement(spaceId, announcementId){
-    return await sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}/${announcementId}`, "DELETE")
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}/${announcementId}`, "DELETE")
 }
 async function addSpaceChatMessage(spaceId, messageData){
-    return await sendRequest(`/spaces/${spaceId}/chat`, "POST", messageData)
+    return await this.sendRequest(`/spaces/${spaceId}/chat`, "POST", messageData)
 }
 async function createSpace(spaceName, apiKey) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
-        apiKey: apiKey
+        apiKey: apiKey,
+        Cookie: this.__securityContext.cookies
     };
     const bodyObject = {
         spaceName: spaceName
     }
-
     const options = {
         method: "POST",
         headers: headers,
@@ -162,10 +162,10 @@ async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     return await result.text();
 }
 async function unsubscribeFromObject(spaceId, objectId){
-    return await sendRequest(`/updates/unsubscribe/${spaceId}/${objectId}`, "GET");
+    return await this.sendRequest(`/updates/unsubscribe/${spaceId}/${objectId}`, "GET");
 }
 async function subscribeToObject(spaceId, objectId) {
-    return await sendRequest(`/updates/subscribe/${spaceId}/${objectId}`, "GET");
+    return await this.sendRequest(`/updates/subscribe/${spaceId}/${objectId}`, "GET");
 }
 let delay = 1000;
 const refreshDelay = 3000;
@@ -225,6 +225,7 @@ module.exports={
     unsubscribeFromObject,
     startCheckingUpdates,
     stopCheckingUpdates,
+    sendRequest,
     Space,
     Announcement
 }
