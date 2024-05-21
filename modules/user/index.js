@@ -1,29 +1,131 @@
-const apiModules = {
-    get user() {
-        const module = require('./apis');
-        Object.defineProperty(apiModules, 'userApis', { value: module, writable: false, configurable: true });
-        return module;
-    }
-};
-
-function loadAPIs(...apiNames) {
-    if (apiNames.length === 0) {
-        apiNames = Object.keys(apiModules);
-    }
-    if (apiNames.length === 1) {
-        const api = apiModules[apiNames[0]];
-        if (!api) {
-            throw new Error(`API '${apiNames[0]}' not found`);
-        }
-        return api;
-    }
-    const selectedApis = {};
-    for (const name of apiNames) {
-        if (!apiModules[name]) {
-            throw new Error(`API '${name}' not found`);
-        }
-        selectedApis[name] = apiModules[name];
-    }
-    return selectedApis;
+const crypto = require('opendsu').loadAPI('crypto');
+const {request} = require("../util");
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
 }
-module.exports = {loadAPIs};
+const prepareSecret = (secret) => {
+    return Array.from(crypto.sha256JOSE(secret))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+async function registerUser(name, email, password, photo) {
+    const headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+    };
+    const options = {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            password: prepareSecret(password),
+            ...(photo ? { photo: photo } : {})
+        })
+    };
+    const response = await fetch(`/users`, options);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+    }
+
+    return await response.json();
+}
+
+async function activateUser(activationToken) {
+    const headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+    };
+    const options = {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            activationToken: activationToken
+        })
+    };
+    const response = await fetch(`/users/verify`, options);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+    }
+
+    return await response.json();
+}
+
+async function loginUser(email, password) {
+    const headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+    };
+    const options = {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            email: email,
+            password: prepareSecret(password)
+        })
+    };
+
+    const response = await fetch(`/users/login`, options);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+    }
+
+    return await response.json();
+}
+
+async function loadUser() {
+    return await this.sendRequest(`/users`, "GET");
+}
+
+async function logoutUser() {
+    return await this.sendRequest(`/users/logout`, "POST");
+}
+
+async function addGITCredentials(spaceId, username, token) {
+    let body = {
+        secretName: "gitCredentials",
+        secret: {
+            username: username,
+            token: token
+        }
+    }
+    return await this.sendRequest(`/users/secrets/${spaceId}`, "POST", body);
+}
+async function deleteGITCredentials(spaceId) {
+    let body = {
+        secretName: "gitCredentials"
+    }
+    return await this.sendRequest(`/users/secrets/${spaceId}`, "PUT", body);
+}
+async function userGITCredentialsExist(spaceId) {
+    let body = {
+        secretName: "gitCredentials"
+    }
+    return await this.sendRequest(`/users/secrets/exists/${spaceId}`, "POST", body);
+}
+
+async function deleteAPIKey(keyId) {
+    return await this.sendRequest(`/spaces/secrets/keys/${keyId}`, "DELETE");
+}
+
+async function addAPIKey(keyType, apiKey) {
+    let body = {
+        keyType: keyType,
+        key: apiKey
+    }
+    return await this.sendRequest(`/spaces/secrets/keys`, "POST", body);
+}
+
+module.exports = {
+    registerUser,
+    activateUser,
+    loginUser,
+    loadUser,
+    logoutUser,
+    userGITCredentialsExist,
+    addGITCredentials,
+    deleteGITCredentials,
+    addAPIKey,
+    deleteAPIKey,
+    sendRequest
+}

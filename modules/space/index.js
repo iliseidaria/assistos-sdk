@@ -41,29 +41,14 @@ async function createSpace(spaceName, apiKey) {
 }
 
 async function loadSpace(spaceId) {
-    const headers = {
-        "Content-Type": "application/json; charset=UTF-8",
-    };
-    const options = {
-        method: "GET",
-        headers: headers,
-    };
-
     let requestURL = spaceId ? `/spaces/${spaceId}` : `/spaces`;
-
-    const response = await fetch(requestURL, options);
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
-    }
-
-    return (await response.json()).data;
-
+    return await this.sendRequest(requestURL, "GET");
 }
 
 async function storeSpace(spaceId, jsonData = null, apiKey = null, userId = null) {
     let headers = {
-        "Content-type": "application/json; charset=UTF-8"
+        "Content-type": "application/json; charset=UTF-8",
+        Cookie: this.__securityContext.cookies
     };
     if (apiKey) {
         headers["apikey"] = `${apiKey}`;
@@ -85,24 +70,14 @@ async function storeSpace(spaceId, jsonData = null, apiKey = null, userId = null
 }
 
 async function deleteSpace(spaceId) {
-    const headers = {
-        "Content-Type": "application/json; charset=UTF-8",
-    };
-    const options = {
-        method: "DELETE",
-        headers: headers,
-    };
-    const response= await fetch(`/spaces/${spaceId}`, options);
-    if(!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
-
-    }
+    return await this.sendRequest(`/spaces/${spaceId}`, "DELETE");
 }
 
 async function addKeyToSpace(spaceId, userId, keyType, apiKey) {
     let result;
     let headers = {
-        "Content-type": "application/json; charset=UTF-8"
+        "Content-type": "application/json; charset=UTF-8",
+        Cookie: this.__securityContext.cookies
     };
     if (apiKey) {
         headers["apikey"] = `${apiKey}`;
@@ -120,46 +95,8 @@ async function addKeyToSpace(spaceId, userId, keyType, apiKey) {
     return await result.text();
 }
 
-async function loadObject(spaceId, objectType, objectName) {
-    const result = await fetch(`/spaces/${spaceId}/objects/${objectType}/${objectName}`,
-        {
-            method: "GET"
-        });
-    return await result.text();
-}
-
-async function storeObject(spaceId, objectType, objectName, jsonData) {
-    let result;
-    try {
-        result = await fetch(`/spaces/${spaceId}/objects/${objectType}/${objectName}`,
-            {
-                method: "PUT",
-                body: jsonData,
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-                }
-            });
-    } catch (err) {
-        console.error(err);
-    }
-    return await result.text();
-}
-
 async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
-    let result;
-    try {
-        result = await fetch(`/spaces/${spaceId}/collaborators`,
-            {
-                method: "POST",
-                body: JSON.stringify({emails:collaboratorEmails}),
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8",
-                }
-            });
-    } catch (err) {
-        console.error(err);
-    }
-    return await result.text();
+    return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails:collaboratorEmails});
 }
 async function unsubscribeFromObject(spaceId, objectId){
     return await this.sendRequest(`/updates/unsubscribe/${spaceId}/${objectId}`, "GET");
@@ -175,14 +112,15 @@ let checkUpdatesTimeoutId;
 let stopPolling = false;
 function startCheckingUpdates(spaceId) {
     stopPolling = false;
-    checkUpdates(spaceId);
+    const bindCheckUpdates = checkUpdates.bind(this);
+    bindCheckUpdates(spaceId);
 }
 async function checkUpdates(spaceId) {
     try {
         if(stopPolling) {
             return;
         }
-        let data = await sendRequest(`/updates/${spaceId}`, "GET");
+        let data = await this.sendRequest(`/updates/${spaceId}`, "GET");
         if (data) {
             if (data.isSameUser) {
                 notificationService.emit(data.targetObjectId);
@@ -203,7 +141,10 @@ async function checkUpdates(spaceId) {
         console.error("Error fetching updates:", error);
     }
     if(!stopPolling) {
-        checkUpdatesTimeoutId = setTimeout(() => checkUpdates(spaceId), delay);
+        checkUpdatesTimeoutId = setTimeout(() => {
+            const bindCheckUpdates = checkUpdates.bind(this);
+            bindCheckUpdates(spaceId);
+        }, delay);
     }
 }
 function stopCheckingUpdates() {
@@ -216,9 +157,7 @@ module.exports={
     deleteSpace,
     storeSpace,
     addKeyToSpace,
-    loadObject,
     addSpaceChatMessage,
-    storeObject,
     addAnnouncement,
     inviteSpaceCollaborators,
     subscribeToObject,
