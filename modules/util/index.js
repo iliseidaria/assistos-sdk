@@ -1,3 +1,4 @@
+const constants = require("../../constants.js");
 async function request(url, method, securityContext, data){
     let result;
     let init = {
@@ -11,8 +12,8 @@ async function request(url, method, securityContext, data){
         };
     }
     const assistOS = require("assistos");
-    if(assistOS.envType === "node"){
-        url = `http://localhost:8080${url}`;
+    if(assistOS.envType === constants.ENV_TYPE.NODE){
+        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
         init.headers.Cookie = securityContext.cookies;
     }
     try {

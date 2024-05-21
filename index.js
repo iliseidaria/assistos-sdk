@@ -1,12 +1,13 @@
 const ServerSideSecurityContext = require('./modules/user/models/ServerSideSecurityContext');
 const ClientSideSecurityContext = require('./modules/user/models/ClientSideSecurityContext');
+const constants = require('./constants');
 function detectEnvironment() {
     if (typeof fetch === 'function' && typeof document === 'object') {
-        return 'browser';
+        return constants.ENV_TYPE.BROWSER;
     } else if (typeof require === 'function' && typeof module === 'object' && typeof module.exports === 'object') {
-        return 'node';
+        return constants.ENV_TYPE.NODE;
     } else {
-        return 'unknown';
+        return constants.ENV_TYPE.UNKNOWN;
     }
 }
 const envType = detectEnvironment();
@@ -52,7 +53,7 @@ function loadModule(moduleName, userContext){
 }
 module.exports = {
     loadModule: loadModule,
-    constants: require('./constants.js'),
+    constants: constants,
     envType,
     ServerSideSecurityContext,
     ClientSideSecurityContext

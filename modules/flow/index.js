@@ -5,35 +5,35 @@ async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 async function loadFlows(spaceId) {
-    return await import(`/spaces/flows/${spaceId}`);
+    return await import(`/flows/${spaceId}`);
 }
 
 async function getFlow(spaceId, flowName) {
-    return await import(`/spaces/flows/${spaceId}/${flowName}`);
+    return await import(`/flows/${spaceId}/${flowName}`);
 }
 
 async function addFlow(spaceId, flowName, flowData) {
-    return await sendRequest(`/spaces/flows/${spaceId}/${flowName}`, "POST", flowData)
+    return await sendRequest(`/flows/${spaceId}/${flowName}`, "POST", flowData)
 }
 
 async function updateFlow(spaceId, flowName, flowData) {
-    return await sendRequest(`/spaces/flows/${spaceId}/${flowName}`, "PUT", flowData)
+    return await sendRequest(`/flows/${spaceId}/${flowName}`, "PUT", flowData)
 }
 
 async function deleteFlow(spaceId, flowName) {
-    return await sendRequest(`/spaces/flows/${spaceId}/${flowName}`, "DELETE")
+    return await sendRequest(`/flows/${spaceId}/${flowName}`, "DELETE")
 }
 async function callServerFlow(spaceId, flowName, context, personalityId) {
-    return await sendRequest(`/spaces/callFlow/${spaceId}/${flowName}`, "POST",{
+    return await sendRequest(`/flows/call/${spaceId}/${flowName}`, "POST",{
         context:context,
         personalityId:personalityId
     });
 }
 async function callFlow(spaceId, flowName, context, personalityId) {
     const envType = require("assistos").envType;
-    if (envType === 'node') {
+    if (envType === constants.ENV_TYPE.NODE) {
         return await callServerFlow(spaceId, flowName, context, personalityId);
-    } else if (envType === 'browser') {
+    } else if (envType === constants.ENV_TYPE.BROWSER) {
         let flowClass;
         if (assistOS.currentApplicationName === assistOS.configuration.defaultApplicationName) {
             flowClass = await assistOS.space.getFlow(flowName);
