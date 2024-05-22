@@ -108,7 +108,7 @@ async function deleteAPIKey(keyId) {
     return await this.sendRequest(`/spaces/secrets/keys/${keyId}`, "DELETE");
 }
 
-async function addAPIKey(keyType, apiKey) {
+async function editAPIKey(keyType, apiKey) {
     let body = {
         keyType: keyType,
         key: apiKey
@@ -125,7 +125,7 @@ module.exports = {
     userGITCredentialsExist,
     addGITCredentials,
     deleteGITCredentials,
-    addAPIKey,
+    editAPIKey,
     deleteAPIKey,
     sendRequest
 }
