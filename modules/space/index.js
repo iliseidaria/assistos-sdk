@@ -94,7 +94,9 @@ async function addKeyToSpace(spaceId, userId, keyType, apiKey) {
     }
     return await result.text();
 }
-
+async function getAPIKeysMetadata(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
+}
 async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails:collaboratorEmails});
 }
@@ -165,6 +167,7 @@ module.exports={
     startCheckingUpdates,
     stopCheckingUpdates,
     sendRequest,
+    getAPIKeysMetadata,
     Space,
     Announcement
 }

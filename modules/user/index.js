@@ -104,8 +104,10 @@ async function userGITCredentialsExist(spaceId) {
     return await this.sendRequest(`/users/secrets/exists/${spaceId}`, "POST", body);
 }
 
-async function deleteAPIKey(keyId) {
-    return await this.sendRequest(`/spaces/secrets/keys/${keyId}`, "DELETE");
+async function deleteAPIKey(spaceId, type) {
+    return await this.sendRequest(`/spaces/secrets/keys/${type}`, "DELETE", {
+        spaceId: spaceId
+    });
 }
 
 async function editAPIKey(keyType, apiKey) {
