@@ -27,6 +27,10 @@ async function addGallery(spaceId, galleryData){
     galleryData.metadata = ["id", "name"];
     return await this.sendRequest(`/spaces/containerObject/${spaceId}/galleries`, "POST", galleryData);
 }
+async function updateGalleryName(spaceId, galleryId, galleryName){
+    let objectURI = encodeURIComponent(`${galleryId}/name`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", galleryName);
+}
 async function deleteGallery(spaceId, galleryId){
     return await this.sendRequest(`/spaces/containerObject/${spaceId}/${galleryId}`, "DELETE");
 }
@@ -185,6 +189,7 @@ module.exports={
     getGallery,
     addGallery,
     deleteGallery,
+    updateGalleryName,
     Space,
     Announcement
 }
