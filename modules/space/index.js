@@ -17,6 +17,19 @@ async function deleteAnnouncement(spaceId, announcementId){
 async function addSpaceChatMessage(spaceId, messageData){
     return await this.sendRequest(`/spaces/${spaceId}/chat`, "POST", messageData)
 }
+async function getGalleriesMetadata(spaceId){
+    return await this.sendRequest(`/spaces/containerObject/meta/${spaceId}/galleries`, "GET");
+}
+async function getGallery(spaceId, galleryId){
+    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${galleryId}`, "GET");
+}
+async function addGallery(spaceId, galleryData){
+    galleryData.metadata = ["id", "name"];
+    return await this.sendRequest(`/spaces/containerObject/${spaceId}/galleries`, "POST", galleryData);
+}
+async function deleteGallery(spaceId, galleryId){
+    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${galleryId}`, "DELETE");
+}
 async function createSpace(spaceName, apiKey) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -168,6 +181,10 @@ module.exports={
     stopCheckingUpdates,
     sendRequest,
     getAPIKeysMetadata,
+    getGalleriesMetadata,
+    getGallery,
+    addGallery,
+    deleteGallery,
     Space,
     Announcement
 }
