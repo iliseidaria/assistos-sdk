@@ -6,12 +6,8 @@ async function sendRequest(url, method, data) {
 async function sendLLMRequest(data){
     return await this.sendRequest(`/llms/generate`, "PUT", data)
 }
-async function generateImage(spaceId, modelName, prompt, variants){
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", {
-        modelName: modelName,
-        prompt: prompt,
-        variants: variants
-    })
+async function generateImage(spaceId, modelConfigs){
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", modelConfigs);
 }
 module.exports = {
     sendLLMRequest,
