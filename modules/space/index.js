@@ -34,6 +34,11 @@ async function updateGalleryName(spaceId, galleryId, galleryName){
 async function deleteGallery(spaceId, galleryId){
     return await this.sendRequest(`/spaces/containerObject/${spaceId}/${galleryId}`, "DELETE");
 }
+async function addImage(spaceId, galleryId, imageData){
+    let objectURI = encodeURIComponent(`${galleryId}/images`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imageData);
+}
+
 async function createSpace(spaceName, apiKey) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -190,6 +195,7 @@ module.exports={
     addGallery,
     deleteGallery,
     updateGalleryName,
+    addImage,
     Space,
     Announcement
 }
