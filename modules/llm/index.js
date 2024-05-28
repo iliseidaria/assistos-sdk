@@ -9,9 +9,25 @@ async function sendLLMRequest(data){
 async function generateImage(spaceId, modelConfigs){
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", modelConfigs);
 }
+async function textToSpeech(spaceId, modelConfigs){
+    let response =  await fetch(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+        },
+        body: JSON.stringify(modelConfigs)
+    });
+    let audio = await response.blob();
+    return audio;
+}
+async function listVoicesAndEmotions(spaceId){
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listVoicesAndEmotions`, "GET");
+}
 module.exports = {
     sendLLMRequest,
     LLM,
     sendRequest,
-    generateImage
+    generateImage,
+    textToSpeech,
+    listVoicesAndEmotions
 }
