@@ -10,7 +10,7 @@ async function getPersonality(spaceId, fileName){
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
 }
 async function getAgent(spaceId, agentId) {
-    let url = '/spaces/${spaceId}/agents';
+    let url = `/spaces/${spaceId}/agents`;
     if (agentId) {
         url += `/${agentId}`;
     }
@@ -29,6 +29,7 @@ async function deletePersonality(spaceId, fileName){
 async function loadFilteredKnowledge(spaceId, words, personalityId){
     return await this.sendRequest(`/personalities/${spaceId}/${personalityId}/search?param1=${words}`, "GET", this.__securityContext);
 }
+
 module.exports = {
     getPersonalitiesMetadata,
     getPersonality,
@@ -36,5 +37,9 @@ module.exports = {
     updatePersonality,
     deletePersonality,
     loadFilteredKnowledge,
-    sendRequest
+    sendRequest,
+    getAgent,
+    models:{
+        personality:require('./models/Personality.js')
+    }
 }

@@ -1,3 +1,5 @@
+const flowModule = require('assistos').loadModule('flow', {});
+
 class Personality {
     constructor(personalityData) {
         this.name = personalityData.name;
@@ -49,10 +51,12 @@ class Personality {
         this.openers = openers;
         await assistOS.storage.storeObject(assistOS.space.id, "personalities", this.getFileName(), JSON.stringify(this, null, 2));
     }
+
     getRandomOpener(){
         let random = Math.floor(Math.random() * this.openers.length);
         return this.openers[random];
     }
+
     async addMessage(role, content){
         if(!["assistant", "user", "system"].includes(role)){
             console.error(`LLM history: role must be either assistant, user or assistOS. Message: ${content}`);
@@ -87,6 +91,10 @@ class Personality {
     }
     getFileName(){
         return this.name.split(" ").join("_").toLowerCase() + "-" + this.id;
+    }
+    async callFlow(flowName,context){
+        debugger
+        await flowModule.callFlow(assistOS.space.id, flowName, context, this.id);
     }
 }
 module.exports = Personality;

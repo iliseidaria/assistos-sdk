@@ -64,7 +64,7 @@ async function loginUser(email, password) {
             password: prepareSecret(password)
         })
     };
-
+    debugger
     const response = await fetch(`/users/login`, options);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
