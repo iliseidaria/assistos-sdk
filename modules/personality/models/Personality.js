@@ -93,7 +93,6 @@ class Personality {
         return this.name.split(" ").join("_").toLowerCase() + "-" + this.id;
     }
     async callFlow(flowName,context){
-        debugger
         await flowModule.callFlow(assistOS.space.id, flowName, context, this.id);
     }
 }

@@ -118,7 +118,7 @@ class Space {
         flows = flows.concat(this.flows);
         //removes duplicates by name
         flows = flows.filter((element, index, self) => {
-            return index === self.findIndex(e => e.class.name === element.class.name);
+            return index === self.findIndex(e => e.name === element.name);
         });
         return flows;
     }

@@ -43,9 +43,9 @@ async function callFlow(spaceId, flowName, context, personalityId) {
         }
         let personality;
         if (personalityId) {
-            personality = assistOS.space.getPersonality(personalityId);
+            personality = await assistOS.space.getPersonality(personalityId);
         } else {
-            personality = assistOS.space.getPersonality(constants.PERSONALITIES.DEFAULT_PERSONALITY_ID);
+            personality = await assistOS.space.getPersonality(constants.PERSONALITIES.DEFAULT_PERSONALITY_ID);
         }
         if (flowClass.inputSchema) {
             // assistOS.services.validateSchema(context, flow.inputSchema, "input");
@@ -62,7 +62,6 @@ async function callFlow(spaceId, flowName, context, personalityId) {
         if (flowClass.inputSchema) {
             // assistOS.services.validateSchema(context, flow.inputSchema, "input");
         }
-
         let response;
         try {
             response = await ((context, personality) => {
