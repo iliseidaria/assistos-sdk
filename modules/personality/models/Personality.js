@@ -64,7 +64,7 @@ class Personality {
         let words = content.split(" ");
         this.wordCount += words.length;
         this.conversationHistory.push({role:role,content:content});
-        await assistOS.storage.storeObject(assistOS.space.id, "personalities", this.getFileName(), JSON.stringify(this, null, 2));
+        //await assistOS.storage.storeObject(assistOS.space.id, "personalities", this.getFileName(), JSON.stringify(this, null, 2));
     }
 
     async resetConversation(){
