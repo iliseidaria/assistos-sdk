@@ -5,6 +5,7 @@ class Paragraph {
         this.id = paragraphData.id;
         this.mainIdea = paragraphData.mainIdea || "";
         this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
+        this.audio = paragraphData.audio || "";
     }
     simplifyParagraph() {
         return {
