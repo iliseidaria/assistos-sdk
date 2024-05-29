@@ -48,6 +48,10 @@ async function deleteAlternativeParagraph(spaceId, documentId, chapterId, paragr
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${paragraphId}/${alternativeParagraphId}`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
+async function updateParagraphAudio(spaceId, documentId, paragraphId, audioURL) {
+    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audio`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", audioURL);
+}
 module.exports = {
     getParagraph,
     addParagraph,
@@ -58,5 +62,6 @@ module.exports = {
     updateParagraphMainIdea,
     addAlternativeParagraph,
     updateAlternativeParagraph,
-    deleteAlternativeParagraph
+    deleteAlternativeParagraph,
+    updateParagraphAudio
 }

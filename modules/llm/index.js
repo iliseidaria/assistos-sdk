@@ -17,8 +17,7 @@ async function textToSpeech(spaceId, modelConfigs){
         },
         body: JSON.stringify(modelConfigs)
     });
-    let audio = await response.blob();
-    return audio;
+    return await response.blob();
 }
 async function listVoicesAndEmotions(spaceId){
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listVoicesAndEmotions`, "GET");
