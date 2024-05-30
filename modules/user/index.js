@@ -109,12 +109,8 @@ async function deleteAPIKey(spaceId, type) {
     });
 }
 
-async function editAPIKey(keyType, apiKey) {
-    let body = {
-        keyType: keyType,
-        key: apiKey
-    }
-    return await this.sendRequest(`/spaces/secrets/keys`, "POST", body);
+async function editAPIKey(apiKeyObj) {
+    return await this.sendRequest(`/spaces/secrets/keys`, "POST", apiKeyObj);
 }
 
 module.exports = {
