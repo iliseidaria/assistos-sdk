@@ -40,6 +40,7 @@ module.exports = {
     sendRequest,
     getAgent,
     models:{
-        personality:require('./models/Personality.js')
+        personality:require('./models/Personality.js'),
+        agent:require('./models/Agent.js')
     }
 }

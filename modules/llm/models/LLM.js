@@ -82,9 +82,9 @@ class LLM {
         return result;
     }
     async generateResponse(body,spaceId){
-        let result = await fetch("llms/generate",
+        let result = await fetch(`apis/v1/spaces/${spaceId}/llms/text/generate`,
             {
-                method: "PUT",
+                method: "POST",
                 body: body,
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
