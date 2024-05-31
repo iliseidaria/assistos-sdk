@@ -104,7 +104,7 @@ class Agent {
                 }
 
                 if (buffer.trim()) {
-                    handleEvent({type: "message", data: buffer.trim()});
+                    handleEvent({type: "message", data: buffer.trim()},streamContainer);
                 }
 
             } catch
