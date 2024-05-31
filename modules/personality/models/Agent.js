@@ -203,7 +203,71 @@ class Agent {
 
     async callFlow(flowId, parameters) {
         console.log(`Executing flow: ${flowId} with parameters: ${JSON.stringify(parameters)}`);
-        await assistOS.callFlow(flowId, parameters,this.agentData.id)
+        let flowResult
+        try {
+            flowResult = await assistOS.callFlow(flowId, parameters, this.agentData.id)
+        }catch(error){
+            flowResult=error
+        }
+        const prompt= [
+            {role:"system",content:`A sequence of operations knows as "FLOW" has been executed. The flow executed is ${this.flows[flowId].name + this.flows[flowId].description}.The result of the flow execution is as follows:${flowResult}. Your role is to inform the user the result of the flow, and what went wrong if something happened and what to do`},
+        ]
+        const requestData = {
+            modelName: "GPT-4o",
+            prompt: prompt,
+        };
+        debugger
+        try {
+            const conversationContainer = document.querySelector('.conversation');
+            const streamContainerHTML = `<chat-unit role="assistant" message="" data-presenter="chat-unit" user="${this.agentData.id}"/>`;
+            conversationContainer.insertAdjacentHTML("beforeend", streamContainerHTML);
+            const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/llms/text/streaming/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+                return;
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let buffer = '';
+            const streamContainer = conversationContainer.lastElementChild.querySelector('#messageContainer');
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                let lines = buffer.split("\n");
+
+                buffer = lines.pop();
+
+                for (let line of lines) {
+                    if (line.startsWith("event:")) {
+                        const eventName = line.replace("event:", "").trim();
+                        lines.shift();
+                        const eventData = lines.shift().replace("data:", "").trim();
+                        this.handleEvent({ type: eventName, data: eventData }, streamContainer);
+                    } else if (line.startsWith("data:")) {
+                        const eventData = line.replace("data:", "").trim();
+                        this.handleEvent({ type: "message", data: eventData }, streamContainer);
+                    }
+                }
+            }
+
+            if (buffer.trim()) {
+                this.handleEvent({ type: "message", data: buffer.trim() }, streamContainer);
+            }
+
+        } catch (error) {
+            console.error('Failed to generate message for missing parameters:', error);
+            alert('Error occurred. Check the console for more details.');
+        }
     }
 
     async analyzeRequest(userRequest, context) {
@@ -221,7 +285,6 @@ class Agent {
         context.chatHistory.forEach(chatMessage=>{
             requestPrompt.push({ "role": chatMessage.role, "content": chatMessage.content });
         })
-        debugger
         while (!decisionObject.normalLLMResponse && !decisionObject.flowId && depthReached < 3) {
             const response = await this.callLLM(JSON.stringify(requestPrompt));
             let responseContent = response.messages[0];
