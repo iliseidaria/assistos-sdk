@@ -26,7 +26,7 @@ const analyzeRequestPrompt = {
                 "extractedParameters": {"parameter1": "value1", "parameter2": "value2"}
             }
         },
-        "normalLLMRequest": "prompt"
+        "normalLLMRequest": {"prompt","skipRewrite"}
     }
     flowNames is an object with the flow names as keys. Each flow name has an object with two fields:
     - missingFlowParameters: an array of the missing parameters for the flow
@@ -44,7 +44,7 @@ const analyzeRequestPrompt = {
         availableFlows: "$$availableFlows"
     },
     decision: {
-        flowNames: [],
+        flowNames: {},
         normalLLMRequest: ""
     }
 };
@@ -238,9 +238,9 @@ class Agent {
     async analyzeRequest(userRequest, context) {
         let decisionObject = {...analyzeRequestPrompt.decision};
         let depthReached = 0;
-        const validateDecisionObject = (decisionObject) => {
+       /* const validateDecisionObject = (decisionObject) => {
             return (Array.isArray(decisionObject.flowNames) && typeof decisionObject.normalLLMRequest === "string");
-        };
+        };*/
 
         const requestPrompt = [
             {"role": "system", "content": analyzeRequestPrompt.system},
@@ -254,7 +254,7 @@ class Agent {
         context.chatHistory.forEach(chatMessage => {
             chatHistory.push({"role": chatMessage.role, "content": chatMessage.content});
         });
-        while ((!Object.values(decisionObject.flowNames).length && decisionObject.normalLLMRequest.length === 0 && depthReached < 3) && validateDecisionObject(decisionObject)) {
+        while ((!Object.values(decisionObject.flowNames).length && decisionObject.normalLLMRequest.length === 0 && depthReached < 3)) {
             const response = await this.callLLM(JSON.stringify(requestPrompt), chatHistory);
             let responseContent = response.messages[0];
 
