@@ -25,6 +25,12 @@ async function listVoicesAndEmotions(spaceId){
 async function getLLMConfigs(spaceId){
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/configs`, "GET");
 }
+async function editImage(spaceId, modelName, options){
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", {
+        modelName: modelName,
+        ...options
+    });
+}
 module.exports = {
     sendLLMRequest,
     LLM,
@@ -32,5 +38,6 @@ module.exports = {
     generateImage,
     textToSpeech,
     listVoicesAndEmotions,
-    getLLMConfigs
+    getLLMConfigs,
+    editImage
 }
