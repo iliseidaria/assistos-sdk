@@ -107,7 +107,7 @@ async function request(url, method, securityContext, data){
     let response = await result.text()
     let responseJSON = JSON.parse(response);
     if(!responseJSON.success){
-        console.error(responseJSON.message);
+        throw new Error(responseJSON.message);
     }
     return responseJSON.data;
 }

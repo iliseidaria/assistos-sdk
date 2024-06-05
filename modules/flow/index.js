@@ -75,8 +75,8 @@ async function callFlow(spaceId, flowName, context, personalityId) {
                 return returnPromise;
             })(context, personality);
         } catch (e) {
-            console.error(e);
-            return await showApplicationError("Flow execution Error", `Error executing flow ${flowObj.flowInstance.constructor.name}`, e);
+            await showApplicationError("Flow execution Error", `Error executing flow ${flowInstance.constructor.name}`, e);
+            throw new Error(e);
         }
         if (flowClass.outputSchema) {
             if (typeof flowClass.outputSchema.isValid === "undefined") {
