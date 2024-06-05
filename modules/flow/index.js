@@ -47,48 +47,30 @@ async function callFlow(spaceId, flowName, context, personalityId) {
         } else {
             personality = await assistOS.space.getPersonality(constants.PERSONALITIES.DEFAULT_PERSONALITY_ID);
         }
-        if (flowClass.inputSchema) {
-            // assistOS.services.validateSchema(context, flow.inputSchema, "input");
-        }
+
         let flowInstance = new flowClass();
-        if (flowInstance.start === undefined) {
-            throw new Error(`Flow ${flowInstance.constructor.name} must have a function named 'start'`);
-        }
+
         const apis = Object.getOwnPropertyNames(IFlow.prototype)
             .filter(method => method !== 'constructor');
         apis.forEach(methodName => {
             flowInstance[methodName] = IFlow.prototype[methodName].bind(flowInstance);
         });
-        if (flowClass.inputSchema) {
-            // assistOS.services.validateSchema(context, flow.inputSchema, "input");
-        }
-        let response;
+        let response
         try {
-            response = await ((context, personality) => {
-                let returnPromise = new Promise((resolve, reject) => {
+            const executeFlow = async (context, personality) => {
+                const flowPromise = new Promise((resolve, reject) => {
                     flowInstance.resolve = resolve;
                     flowInstance.reject = reject;
                 });
+
                 flowInstance.personality = personality;
                 flowInstance.__securityContext = {};
                 flowInstance.start(context, personality);
-                return returnPromise;
-            })(context, personality);
-        } catch (e) {
-            await showApplicationError("Flow execution Error", `Error executing flow ${flowInstance.constructor.name}`, e);
-            throw new Error(e);
-        }
-        if (flowClass.outputSchema) {
-            if (typeof flowClass.outputSchema.isValid === "undefined") {
-                try {
-                    let parsedResponse = JSON.parse(response);
-                    //assistOS.services.validateSchema(parsedResponse, flowObj.flowClass.outputSchema, "output");
-                    return parsedResponse;
-                } catch (e) {
-                    console.error(e);
-                    return await showApplicationError(e, e, e.stack);
-                }
-            }
+                return await flowPromise;
+            };
+            response = await executeFlow(context, personality);
+        } catch (error) {
+         response=error;
         }
         return response;
     }
