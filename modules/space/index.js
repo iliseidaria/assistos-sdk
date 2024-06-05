@@ -39,10 +39,9 @@ async function addImage(spaceId, galleryId, imageData){
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imageData);
 }
 
-async function createSpace(spaceName, apiKey) {
+async function createSpace(spaceName) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
-        apiKey: apiKey,
         Cookie: this.__securityContext.cookies
     };
     const bodyObject = {
@@ -59,7 +58,7 @@ async function createSpace(spaceName, apiKey) {
         throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
     }
 
-    return (await response.json()).data;
+    return (await response.json());
 }
 
 async function loadSpace(spaceId) {
