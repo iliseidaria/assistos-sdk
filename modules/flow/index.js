@@ -55,24 +55,18 @@ async function callFlow(spaceId, flowName, context, personalityId) {
         apis.forEach(methodName => {
             flowInstance[methodName] = IFlow.prototype[methodName].bind(flowInstance);
         });
-        let response
-        try {
-            const executeFlow = async (context, personality) => {
-                const flowPromise = new Promise((resolve, reject) => {
-                    flowInstance.resolve = resolve;
-                    flowInstance.reject = reject;
-                });
+        const executeFlow = async (context, personality) => {
+            const flowPromise = new Promise((resolve, reject) => {
+                flowInstance.resolve = resolve;
+                flowInstance.reject = reject;
+            });
 
-                flowInstance.personality = personality;
-                flowInstance.__securityContext = {};
-                flowInstance.start(context, personality);
-                return await flowPromise;
-            };
-            response = await executeFlow(context, personality);
-        } catch (error) {
-         response=error;
-        }
-        return response;
+            flowInstance.personality = personality;
+            flowInstance.__securityContext = {};
+            flowInstance.start(context, personality);
+            return await flowPromise;
+        };
+        return await executeFlow(context, personality);
     }
 }
 
