@@ -5,15 +5,22 @@ const announcementType = "announcements";
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
-async function addAnnouncement(spaceId, announcementData){
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}`, "POST", announcementData)
+async function addSpaceAnnouncement(spaceId, announcementData){
+    return await this.sendRequest(`/spaces/${spaceId}/announcements`, "POST", announcementData)
 }
-async function updateAnnouncement(spaceId, announcementId, announcementData){
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}/${announcementId}`, "PUT", announcementData)
+async function getSpaceAnnouncement(spaceId, announcementId){
+    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "GET")
 }
-async function deleteAnnouncement(spaceId, announcementId){
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${announcementType}/${announcementId}`, "DELETE")
+async function getSpaceAnnouncements(spaceId){
+    return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
 }
+async function deleteSpaceAnnouncement(spaceId, announcementId){
+    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "DELETE")
+}
+async function updateSpaceAnnouncement(spaceId, announcementId, announcementData){
+    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
+}
+
 async function addSpaceChatMessage(spaceId, messageData){
     return await this.sendRequest(`/spaces/${spaceId}/chat`, "POST", messageData)
 }
@@ -181,7 +188,11 @@ module.exports={
     storeSpace,
     addKeyToSpace,
     addSpaceChatMessage,
-    addAnnouncement,
+    addSpaceAnnouncement,
+    getSpaceAnnouncement,
+    getSpaceAnnouncements,
+    updateSpaceAnnouncement,
+    deleteSpaceAnnouncement,
     inviteSpaceCollaborators,
     subscribeToObject,
     unsubscribeFromObject,
