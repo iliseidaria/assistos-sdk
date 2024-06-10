@@ -33,7 +33,7 @@ async function editImage(spaceId, modelName, options){
 }
 
 async function sendLLMChatRequest(data){
-    return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/chats/${assistOS.space.id}/llms/text/generate`, "POST", data)
+    return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/llms/text/generate`, "POST", data)
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 const LLM = require('../../llm');
-
+const chatId="123456789"
 const analyzeRequestPrompt = {
     system: `
     You are an assistant within a web application.
@@ -130,9 +130,7 @@ class Agent {
     async processUserRequest(userRequest, context, responseContainerLocation) {
         context.availableFlows = this.flows;
         const decision = await this.analyzeRequest(userRequest, context);
-        debugger
         const promises = [];
-
         if (decision.flows.length > 0) {
             const flowPromises = decision.flows.map(async (flow) => {
                 const missingParameters = Object.keys(this.flows[flow.flowName].flowInputParametersSchema).filter(parameter => !Object.keys(flow.extractedParameters).includes(parameter));
@@ -169,9 +167,10 @@ class Agent {
         const requestData = {
             modelName: "GPT-4o",
             prompt: userRequest,
+            agentId: this.agentData.id
         };
         try {
-            const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/llms/text/streaming/generate`, {
+            const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/chats/${chatId}/llms/text/streaming/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -203,10 +202,11 @@ class Agent {
         const requestData = {
             modelName: "GPT-4o",
             prompt: prompt,
+            agentId: this.agentData.id,
         };
 
         try {
-            const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/llms/text/streaming/generate`, {
+            const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/chats/${chatId}/llms/text/streaming/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -247,11 +247,12 @@ class Agent {
         const requestData = {
             modelName: "GPT-4o",
             prompt: prompt,
-            messagesQueue: systemPrompt
+            messagesQueue: systemPrompt,
+            agentId: this.agentData.id
         };
 
         try {
-            const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/llms/text/streaming/generate`, {
+            const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/chats/${chatId}/llms/text/streaming/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -2,46 +2,58 @@ const {request, notificationService} = require("../util");
 const Space = require('./models/Space.js');
 const Announcement = require('./models/Announcement.js');
 const announcementType = "announcements";
+
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
-async function addSpaceAnnouncement(spaceId, announcementData){
+
+async function addSpaceAnnouncement(spaceId, announcementData) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements`, "POST", announcementData)
 }
-async function getSpaceAnnouncement(spaceId, announcementId){
+
+async function getSpaceAnnouncement(spaceId, announcementId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "GET")
 }
-async function getSpaceAnnouncements(spaceId){
+
+async function getSpaceAnnouncements(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
 }
-async function deleteSpaceAnnouncement(spaceId, announcementId){
+
+async function deleteSpaceAnnouncement(spaceId, announcementId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "DELETE")
 }
-async function updateSpaceAnnouncement(spaceId, announcementId, announcementData){
+
+async function updateSpaceAnnouncement(spaceId, announcementId, announcementData) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
 }
 
-async function addSpaceChatMessage(spaceId, messageData){
-    return await this.sendRequest(`/spaces/${spaceId}/chat`, "POST", messageData)
+async function addSpaceChatMessage(spaceId, chatId, messageData) {
+    return await this.sendRequest(`/spaces/${spaceId}/chat/${chatId}`, "POST", messageData)
 }
-async function getGalleriesMetadata(spaceId){
+
+async function getGalleriesMetadata(spaceId) {
     return await this.sendRequest(`/spaces/containerObject/meta/${spaceId}/galleries`, "GET");
 }
-async function getGallery(spaceId, galleryId){
+
+async function getGallery(spaceId, galleryId) {
     return await this.sendRequest(`/spaces/containerObject/${spaceId}/${galleryId}`, "GET");
 }
-async function addGallery(spaceId, galleryData){
+
+async function addGallery(spaceId, galleryData) {
     galleryData.metadata = ["id", "name"];
     return await this.sendRequest(`/spaces/containerObject/${spaceId}/galleries`, "POST", galleryData);
 }
-async function updateGalleryName(spaceId, galleryId, galleryName){
+
+async function updateGalleryName(spaceId, galleryId, galleryName) {
     let objectURI = encodeURIComponent(`${galleryId}/name`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", galleryName);
 }
-async function deleteGallery(spaceId, galleryId){
+
+async function deleteGallery(spaceId, galleryId) {
     return await this.sendRequest(`/spaces/containerObject/${spaceId}/${galleryId}`, "DELETE");
 }
-async function addImage(spaceId, galleryId, imageData){
+
+async function addImage(spaceId, galleryId, imageData) {
     let objectURI = encodeURIComponent(`${galleryId}/images`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imageData);
 }
@@ -122,32 +134,39 @@ async function addKeyToSpace(spaceId, userId, keyType, apiKey) {
     }
     return await result.text();
 }
+
 async function getAPIKeysMetadata(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
 }
+
 async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
-    return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails:collaboratorEmails});
+    return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails: collaboratorEmails});
 }
-async function unsubscribeFromObject(spaceId, objectId){
+
+async function unsubscribeFromObject(spaceId, objectId) {
     return await this.sendRequest(`/updates/unsubscribe/${spaceId}/${objectId}`, "GET");
 }
+
 async function subscribeToObject(spaceId, objectId) {
     return await this.sendRequest(`/updates/subscribe/${spaceId}/${objectId}`, "GET");
 }
+
 let delay = 1000;
 const refreshDelay = 3000;
 let objectsToRefresh = [];
 let refreshTimeout;
 let checkUpdatesTimeoutId;
 let stopPolling = false;
+
 function startCheckingUpdates(spaceId) {
     stopPolling = false;
     const bindCheckUpdates = checkUpdates.bind(this);
     bindCheckUpdates(spaceId);
 }
+
 async function checkUpdates(spaceId) {
     try {
-        if(stopPolling) {
+        if (stopPolling) {
             return;
         }
         let data = await this.sendRequest(`/updates/${spaceId}`, "GET");
@@ -170,18 +189,20 @@ async function checkUpdates(spaceId) {
     } catch (error) {
         console.error("Error fetching updates:", error);
     }
-    if(!stopPolling) {
+    if (!stopPolling) {
         checkUpdatesTimeoutId = setTimeout(() => {
             const bindCheckUpdates = checkUpdates.bind(this);
             bindCheckUpdates(spaceId);
         }, delay);
     }
 }
+
 function stopCheckingUpdates() {
     stopPolling = true;
     clearTimeout(checkUpdatesTimeoutId);
 }
-module.exports={
+
+module.exports = {
     createSpace,
     loadSpace,
     deleteSpace,
