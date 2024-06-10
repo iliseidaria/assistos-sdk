@@ -328,9 +328,10 @@ class Agent {
             modelConfig: {
                 response_format: "json"
             },
-            messagesQueue: messagesQueue
+            messagesQueue: messagesQueue,
+            agentId: this.agentData.id
         };
-        return await LLM.sendLLMRequest(requestData);
+        return await LLM.sendLLMChatRequest(requestData);
     }
 
     async createChatUnitResponse(conversationContainer, inReplyToMessageId) {

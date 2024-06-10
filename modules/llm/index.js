@@ -31,6 +31,11 @@ async function editImage(spaceId, modelName, options){
         ...options
     });
 }
+
+async function sendLLMChatRequest(data){
+    return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/chats/${assistOS.space.id}/llms/text/generate`, "POST", data)
+}
+
 module.exports = {
     sendLLMRequest,
     LLM,
@@ -39,5 +44,6 @@ module.exports = {
     textToSpeech,
     listVoicesAndEmotions,
     getLLMConfigs,
-    editImage
+    editImage,
+    sendLLMChatRequest
 }
