@@ -1,11 +1,16 @@
 class Paragraph {
     constructor(paragraphData) {
-        this.text = paragraphData.text;
         this.position = paragraphData.position;
         this.id = paragraphData.id;
-        this.mainIdea = paragraphData.mainIdea || "";
-        this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
-        this.audio = paragraphData.audio || "";
+        if(paragraphData.image){
+            this.image = paragraphData.image;
+            this.dimensions = paragraphData.dimensions;
+        } else {
+            this.text = paragraphData.text;
+            this.mainIdea = paragraphData.mainIdea || "";
+            this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
+            this.audio = paragraphData.audio || "";
+        }
     }
     simplifyParagraph() {
         return {
