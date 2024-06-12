@@ -10,6 +10,6 @@ module.exports = {
         UNKNOWN: "unknown"
     },
     ENVIRONMENT_MODE: "DEVELOPMENT_BASE_URL",
-    PRODUCTION_BASE_URL: "http://demo.axiologic.net:8080",
+    PRODUCTION_BASE_URL: "http://demo.assistos.net:8080",
     DEVELOPMENT_BASE_URL: "http://localhost:8080",
 }

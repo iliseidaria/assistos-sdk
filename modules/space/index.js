@@ -57,6 +57,10 @@ async function addImage(spaceId, galleryId, imageData) {
     let objectURI = encodeURIComponent(`${galleryId}/images`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imageData);
 }
+async function getImage(spaceId, galleryId, imageId){
+    let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
 
 async function createSpace(spaceName) {
     const headers = {
@@ -227,6 +231,7 @@ module.exports = {
     deleteGallery,
     updateGalleryName,
     addImage,
+    getImage,
     Space,
     Announcement
 }

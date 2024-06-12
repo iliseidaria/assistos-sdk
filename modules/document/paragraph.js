@@ -61,7 +61,10 @@ async function updateParagraphAudio(spaceId, documentId, paragraphId, audioURL) 
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audio`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", audioURL);
 }
-
+async function updateImageParagraphDimensions(spaceId, documentId, paragraphId, dimensions) {
+    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/dimensions`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", dimensions);
+}
 module.exports = {
     getParagraph,
     addParagraph,
@@ -73,5 +76,6 @@ module.exports = {
     addAlternativeParagraph,
     updateAlternativeParagraph,
     deleteAlternativeParagraph,
-    updateParagraphAudio
+    updateParagraphAudio,
+    updateImageParagraphDimensions
 }
