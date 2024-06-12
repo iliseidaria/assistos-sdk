@@ -40,7 +40,7 @@ const analyzeRequestPrompt = {
             * It is critical and mandatory that you don't not generate the parameters yourself of the flows, unless asked by the user or deduced from the context or conversation.
             * A user request can contain multiple execution of many flows, or the same flow multiple times with different parameters.
             * Previous parameters should not be used again unless specified by the user, or deduced from the conversation
-            * Parameters can also be extracted from further user requests
+            * Parameters can also be extracted from further user requests, and there is a good chance that if you ask the user for the missing parameters, they will provide them in the next request
     normalLLMRequest is an Object extracted from the user's request that cannot be solved or related to any flow which will be sent to another LLM for processing, and are not to be handled by you.
          * A skipRewrite set to true indicates that the prompt can be entirely handled by the LLM and contains only 1 action so it doesnt . In that case you will leave the prompt field empty string and set the skipRedirect flag to true, to save time and resources.
          * skipRewrite will be set to true only if there are no flows to process and the user request can be entirely handled by a LLM, and the normalLLMRequest.prompt is an empty string

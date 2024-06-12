@@ -137,8 +137,10 @@ class Space {
     async loadFlows() {
         const flowModule = require("assistos").loadModule("flow", {});
         this.flows = [];
-        let flows = await flowModule.loadFlows(this.id);
-        for (let [name, flowClass] of Object.entries(flows)) {
+        const flowNames = JSON.parse(await flowModule.listFlows(this.id));
+        for (let flowName of flowNames) {
+            let flowMdl = await flowModule.getFlow(this.id, flowName);
+            let flowClass = new flowMdl.default();
             this.flows.push(flowClass);
         }
         return this.flows;

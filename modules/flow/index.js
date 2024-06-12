@@ -4,16 +4,16 @@ const constants = require("../../constants.js");
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
-async function loadFlows(spaceId) {
-    return await import(`/flows/${spaceId}`);
+async function listFlows(spaceId) {
+    return await this.sendRequest(`/flows/${spaceId}`,"GET");
 }
 
 async function getFlow(spaceId, flowName) {
     return await import(`/flows/${spaceId}/${flowName}`);
 }
 
-async function addFlow(spaceId, flowName, flowData) {
-    return await this.sendRequest(`/flows/${spaceId}/${flowName}`, "POST", flowData)
+async function addFlow(spaceId, flowData) {
+    return await this.sendRequest(`/flows/${spaceId}`, "POST", flowData)
 }
 
 async function updateFlow(spaceId, flowName, flowData) {
@@ -34,7 +34,7 @@ async function callFlow(spaceId, flowName, context, personalityId) {
     if (envType === constants.ENV_TYPE.NODE) {
         return await callServerFlow(spaceId, flowName, context, personalityId);
     } else if (envType === constants.ENV_TYPE.BROWSER) {
-        let flowClass;
+    let flowClass;
         if (assistOS.currentApplicationName === assistOS.configuration.defaultApplicationName) {
             flowClass = await assistOS.space.getFlow(flowName);
         } else {
@@ -72,7 +72,7 @@ async function callFlow(spaceId, flowName, context, personalityId) {
 
 module.exports = {
     getFlow,
-    loadFlows,
+    listFlows,
     addFlow,
     updateFlow,
     deleteFlow,
