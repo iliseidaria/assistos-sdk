@@ -6,6 +6,7 @@ class Personality {
         this.description = personalityData.description;
         this.id = personalityData.id
         this.image = personalityData.image;
+        this.voiceId = personalityData.voiceId;
         this.conversationHistory = personalityData.conversationHistory || [];
         this.context = personalityData.context || [];
         this.wordCount = personalityData.wordCount || 0;
