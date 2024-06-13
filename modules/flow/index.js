@@ -53,7 +53,7 @@ async function callFlow(spaceId, flowName, context, personalityId) {
         }
         const executeFlow = async (context, personality) => {
             flowInstance.__securityContext = {};
-            await flowInstance.execute(context, personality);
+            return await flowInstance.execute(context, personality);
         };
         return await executeFlow(context, personality);
     }
