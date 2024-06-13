@@ -140,7 +140,6 @@ class Space {
         const flowNames = JSON.parse(await flowModule.listFlows(this.id));
         for (let flowName of flowNames) {
             let flowMdl = await flowModule.getFlow(this.id, flowName);
-            debugger
             let flowClass = new flowMdl.default();
             this.flows.push(flowClass);
         }
