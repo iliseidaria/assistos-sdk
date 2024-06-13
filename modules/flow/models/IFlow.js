@@ -46,23 +46,23 @@
             }
         }
 
-        genericReject(promiseFnc, error) {
-            promiseFnc.reject({
+        genericReject(reject, error) {
+            reject({
                 success: false,
                 message: error.message,
                 statusCode: error.statusCode || 500
             });
         }
 
-        resolve(promiseFnc, data) {
-            promiseFnc.resolve({
+        resolve(resolve, data) {
+            resolve({
                 success: true,
                 data: data
             });
         }
 
-        reject(promiseFnc, error) {
-            promiseFnc.reject({
+        reject(reject, error) {
+            reject({
                 success: false,
                 message: error.message,
                 statusCode: error.statusCode || 500
@@ -72,8 +72,8 @@
         async execute(parameters) {
             return new Promise(async (resolve, reject) => {
                 const apis = {
-                    success: (data) => this.resolve({resolve}, data),
-                    fail: (error) => this.reject({reject}, error),
+                    success: (data) => this.resolve(resolve, data),
+                    fail: (error) => this.reject(reject, error),
                     loadModule: (moduleName) => this.loadModule(moduleName, this.__securityContext)
                 };
                 try {

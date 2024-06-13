@@ -72,12 +72,10 @@ class Agent {
         this.agentData = agentData;
         this.flows = {};
         assistOS.space.flows.forEach(flow => {
-            if (flow.name !== "deduceIntention") {
-                this.flows[flow.name] = {
-                    flowDescription: flow.description,
-                    flowInputParametersSchema: flow.inputSchema
+                this.flows[flow.constructor.name] = {
+                    flowDescription: flow.constructor.flowMetadata.intent+" - "+flow.constructor.flowMetadata.action,
+                    flowParametersSchema: flow.constructor.flowParametersSchema
                 }
-            }
         });
     }
 
@@ -133,7 +131,7 @@ class Agent {
         const promises = [];
         if (decision.flows.length > 0) {
             const flowPromises = decision.flows.map(async (flow) => {
-                const missingParameters = Object.keys(this.flows[flow.flowName].flowInputParametersSchema).filter(parameter => !Object.keys(flow.extractedParameters).includes(parameter));
+                const missingParameters = Object.keys(this.flows[flow.flowName].flowParametersSchema).filter(parameter => !Object.keys(flow.extractedParameters).includes(parameter));
                 const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
                 if (missingParameters.length > 0) {
                     return this.handleMissingParameters(context, missingParameters, userRequest, this.flows[flow.flowName], responseLocation);
