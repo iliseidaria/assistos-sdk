@@ -139,11 +139,13 @@ class Space {
         this.flows = [];
         const flowNames = JSON.parse(await flowModule.listFlows(this.id));
         for (let flowName of flowNames) {
-            let flowMdl = await flowModule.getFlow(this.id, flowName);
-            let flowClass = new flowMdl.default();
-            this.flows.push(flowClass);
+            let flowMdl = await flowModule .getFlow(this.id, flowName);
+            let flowClass = flowMdl.default;
+            let flowInstance = new flowClass();
+            this.flows.push(flowInstance);
         }
         return this.flows;
     }
+
 }
 module.exports = Space;
