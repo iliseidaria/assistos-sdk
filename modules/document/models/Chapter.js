@@ -38,10 +38,6 @@ class Chapter {
         this.paragraphs[paragraphIndex] = new Paragraph(paragraphData);
         return this.paragraphs[paragraphIndex];
     }
-    async refreshChapterTitle(spaceId, documentId, chapterId){
-        const documentModule = require("assistos").loadModule("document", {});
-        this.title = await documentModule.getChapterTitle(spaceId, documentId, chapterId);
-    }
 
     stringifyChapter() {
         function replacer(key, value) {

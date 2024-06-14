@@ -14,14 +14,6 @@ class Document {
         this.metadata = ["id", "title"];
     }
 
-    async refreshDocumentTitle(spaceId, documentId){
-        const documentModule = require("assistos").loadModule("document", {});
-        this.title = await documentModule.getDocumentTitle(spaceId, documentId);
-    }
-    async refreshDocumentAbstract(spaceId, documentId){
-        const documentModule = require("assistos").loadModule("document", {});
-        this.abstract = await documentModule.getDocumentAbstract(spaceId, documentId);
-    }
     toString() {
         return this.chapters.map(chapter => chapter.toString()).join("\n\n") || "";
     }
