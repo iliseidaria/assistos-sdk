@@ -334,7 +334,7 @@ class Agent {
     }
 
     async createChatUnitResponse(conversationContainer, inReplyToMessageId) {
-        const streamContainerHTML = `<chat-unit role="assistant" message="" data-presenter="chat-unit" user="${this.agentData.id}" inReplyTo="${inReplyToMessageId}"/>`;
+        const streamContainerHTML = `<chat-item role="assistant" message="" data-presenter="chat-item" user="${this.agentData.id}" inReplyTo="${inReplyToMessageId}"/>`;
         conversationContainer.insertAdjacentHTML("beforeend", streamContainerHTML);
         const waitForElement = (container, selector) => {
             return new Promise((resolve, reject) => {

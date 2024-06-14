@@ -29,6 +29,8 @@ function _loadModule(moduleName) {
             return require('./modules/llm');
         case 'application':
             return require('./modules/application');
+        case 'gallery':
+            return require('./modules/gallery');
         default:
             return null;
     }
