@@ -5,21 +5,14 @@ class Chapter {
         this.title = chapterData.title;
         this.id = chapterData.id || assistOS.services.generateId();
         this.visibility = "show";
-        this.paragraphs = [];
-        this.alternativeChapters=[]
+        this.paragraphs = (chapterData.paragraphs || []).map(paragraphData => new Paragraph(paragraphData));
+        this.alternativeChapters = [];
         this.alternativeTitles = chapterData.alternativeTitles || [];
         if(chapterData.alternativeChapters && chapterData.alternativeChapters.length>0) {
             this.alternativeChapters = chapterData.alternativeChapters.map((alternativeChapterData) =>
                 new Chapter(alternativeChapterData)
             );
 
-        }
-            if(chapterData.paragraphs && chapterData.paragraphs.length > 0) {
-            for(let i = 0; i < chapterData.paragraphs.length; i++) {
-                if(chapterData.paragraphs[i] !== undefined) {
-                    this.paragraphs.push(new Paragraph(chapterData.paragraphs[i]));
-                }
-            }
         }
         this.currentParagraphId = null;
         this.mainIdeas = chapterData.mainIdeas || [];
