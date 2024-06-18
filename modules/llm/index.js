@@ -17,6 +17,10 @@ async function textToSpeech(spaceId, modelConfigs){
         },
         body: JSON.stringify(modelConfigs)
     });
+    if(!response.ok){
+        let error = await response.json();
+        throw new Error(error.message);
+    }
     return await response.blob();
 }
 async function listVoicesAndEmotions(spaceId){
