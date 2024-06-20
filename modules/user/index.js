@@ -9,7 +9,7 @@ const prepareSecret = (secret) => {
         .join('');
 }
 
-async function registerUser(name, email, password, photo) {
+async function registerUser(name, email, password, photo, inviteToken) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
     };
@@ -20,6 +20,7 @@ async function registerUser(name, email, password, photo) {
             name: name,
             email: email,
             password: prepareSecret(password),
+            inviteToken: inviteToken,
             ...(photo ? { photo: photo } : {})
         })
     };
