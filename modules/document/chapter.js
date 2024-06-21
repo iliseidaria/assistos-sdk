@@ -59,6 +59,18 @@ async function deleteAlternativeChapter(spaceId, documentId, chapterId, alternat
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${alternativeChapterId}`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
+async function getChapterBackgroundSound(spaceId, documentId, chapterId){
+    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/backgroundSound`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
+async function updateChapterBackgroundSound(spaceId, documentId, chapterId, backgroundSound){
+    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/backgroundSound`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", backgroundSound);
+}
+async function deleteChapterBackgroundSound(spaceId, documentId, chapterId){
+    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/backgroundSound`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+}
 module.exports = {
     getChapter,
     addChapter,
@@ -72,5 +84,8 @@ module.exports = {
     getAlternativeChapter,
     addAlternativeChapter,
     updateAlternativeChapter,
-    deleteAlternativeChapter
+    deleteAlternativeChapter,
+    getChapterBackgroundSound,
+    updateChapterBackgroundSound,
+    deleteChapterBackgroundSound
 }
