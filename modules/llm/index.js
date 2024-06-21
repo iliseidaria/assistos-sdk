@@ -39,7 +39,22 @@ async function editImage(spaceId, modelName, options){
 async function sendLLMChatRequest(data){
     return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/llms/text/generate`, "POST", data)
 }
+async function getImageResult(){
+    const eventSource = new EventSource('/webhook/image/event');
 
+    eventSource.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const imagesDiv = document.getElementById('images');
+        const newImage = document.createElement('img');
+        newImage.src = data.imageUrl;
+        imagesDiv.appendChild(newImage);
+        eventSource.close();
+    };
+
+    eventSource.onerror = function(err) {
+        console.error('EventSource failed:', err);
+    };
+}
 module.exports = {
     sendLLMRequest,
     LLM,
