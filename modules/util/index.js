@@ -120,7 +120,10 @@ const notificationService = (function createNotificationService() {
         }
         listeners[event].push(callback);
     }
-
+    function off(event, callback) {
+        if (!listeners[event]) return;
+        listeners[event] = listeners[event].filter(listener => listener !== callback);
+    }
     function emit(event, data) {
         const eventListeners = listeners[event] || [];
         eventListeners.forEach(callback => callback(data));
@@ -128,7 +131,8 @@ const notificationService = (function createNotificationService() {
 
     return {
         on,
-        emit
+        emit,
+        off
     };
 })();
 module.exports = {
