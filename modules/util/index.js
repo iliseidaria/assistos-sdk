@@ -135,8 +135,48 @@ const notificationService = (function createNotificationService() {
         off
     };
 })();
+function createSSEConnection() {
+    if (typeof window !== 'undefined') {
+        let eventSource = new EventSource(`/events/updates`, {withCredentials: true});
+        eventSource.addEventListener('done', function (event) {
+            eventSource.close();
+            eventSource = null;
+        });
+        eventSource.addEventListener('content', function (event) {
+            let parsedData = JSON.parse(event.data);
+            notificationService.emit(parsedData.objectId, parsedData);
+        });
+        eventSource.onerror = function (err) {
+            console.error('EventSource failed:', err);
+            eventSource.close();
+        };
+        eventSource.addEventListener('close', function (event) {
+            console.log('EventSource connection closed.');
+        });
+        return eventSource;
+    } else {
+        console.warn("This function is only available in the browser");
+    }
+}
+async function closeSSEConnection() {
+    await this.request("/events/close", "GET");
+}
+async function unsubscribeFromObject(objectId) {
+    notificationService.off(objectId);
+    let encodedObjectId = encodeURIComponent(objectId);
+    await this.request(`/events/unsubscribe/${encodedObjectId}`, "GET");
+}
+async function subscribeToObject(objectId, handler) {
+    notificationService.on(objectId, handler);
+    let encodedObjectId = encodeURIComponent(objectId);
+    await this.request(`/events/subscribe/${encodedObjectId}`, "GET");
+}
 module.exports = {
     request,
     notificationService,
-    fillTemplate
+    fillTemplate,
+    createSSEConnection,
+    closeSSEConnection,
+    subscribeToObject,
+    unsubscribeFromObject
 }

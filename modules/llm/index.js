@@ -46,29 +46,6 @@ async function editImage(spaceId, modelName, options) {
 async function sendLLMChatRequest(data) {
     return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/llms/text/generate`, "POST", data)
 }
-
-function createSSEConnection(taskId, clientId) {
-    if (typeof window !== 'undefined') {
-        const eventSource = new EventSource(`/webhook/sse/${clientId}`, {withCredentials: true});
-        eventSource.addEventListener('done', function (event) {
-            let parsedData = JSON.parse(event.data);
-            notificationService.emit(taskId, parsedData);
-            eventSource.close();
-        });
-        eventSource.addEventListener('update', function (event) {
-            let parsedData = JSON.parse(event.data);
-            notificationService.emit(taskId, parsedData);
-        });
-        eventSource.onerror = function (err) {
-            console.error('EventSource failed:', err);
-            eventSource.close();
-        };
-        return eventSource;
-    } else {
-        console.warn("This function is only available in the browser");
-    }
-}
-
 module.exports = {
     sendLLMRequest,
     LLM,
@@ -78,6 +55,5 @@ module.exports = {
     listVoicesAndEmotions,
     getLLMConfigs,
     editImage,
-    sendLLMChatRequest,
-    createSSEConnection
+    sendLLMChatRequest
 }

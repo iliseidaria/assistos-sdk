@@ -8,7 +8,7 @@ async function addParagraph(spaceId, documentId, chapterId, paragraphData) {
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", paragraphData);
 }
 
-async function updateParagraph(spaceId, documentId, chapterId, paragraphId, paragraphData) {
+async function updateParagraph(spaceId, documentId, paragraphId, paragraphData) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", paragraphData);
 }

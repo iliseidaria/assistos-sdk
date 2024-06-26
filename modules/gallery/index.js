@@ -33,6 +33,23 @@ async function getImage(spaceId, galleryId, imageId){
     let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
+async function addImageToHistory(spaceId, galleryId, imageData){
+    let objectURI = encodeURIComponent(`${galleryId}/history`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imageData);
+}
+async function deleteImageFromHistory(spaceId, galleryId, imageId){
+    let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+}
+async function updateImageInHistory(spaceId, galleryId, imageId, imageData){
+    let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", imageData);
+}
+
+async function getGalleryHistory(spaceId, galleryId){
+    let objectURI = encodeURIComponent(`${galleryId}/history`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
 module.exports = {
     sendRequest,
     getGalleriesMetadata,
@@ -41,5 +58,9 @@ module.exports = {
     updateGalleryName,
     deleteGallery,
     addImage,
-    getImage
+    getImage,
+    getGalleryHistory,
+    addImageToHistory,
+    deleteImageFromHistory,
+    updateImageInHistory
 }
