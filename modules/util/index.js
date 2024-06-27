@@ -120,9 +120,8 @@ const notificationService = (function createNotificationService() {
         }
         listeners[event].push(callback);
     }
-    function off(event, callback) {
-        if (!listeners[event]) return;
-        listeners[event] = listeners[event].filter(listener => listener !== callback);
+    function off(event) {
+        delete listeners[event];
     }
     function emit(event, data) {
         const eventListeners = listeners[event] || [];
@@ -138,10 +137,6 @@ const notificationService = (function createNotificationService() {
 function createSSEConnection() {
     if (typeof window !== 'undefined') {
         let eventSource = new EventSource(`/events/updates`, {withCredentials: true});
-        eventSource.addEventListener('done', function (event) {
-            eventSource.close();
-            eventSource = null;
-        });
         eventSource.addEventListener('content', function (event) {
             let parsedData = JSON.parse(event.data);
             notificationService.emit(parsedData.objectId, parsedData);
@@ -150,9 +145,6 @@ function createSSEConnection() {
             console.error('EventSource failed:', err);
             eventSource.close();
         };
-        eventSource.addEventListener('close', function (event) {
-            console.log('EventSource connection closed.');
-        });
         return eventSource;
     } else {
         console.warn("This function is only available in the browser");
