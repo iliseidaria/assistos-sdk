@@ -44,13 +44,13 @@ async function updateGalleryConfig(spaceId, galleryId, configData){
     let objectURI = encodeURIComponent(`${galleryId}/config`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", configData);
 }
-async function addOpenAIHistoryImage(spaceId, galleryId, imageData){
+async function updateOpenAIHistoryImages(spaceId, galleryId, imagesData){
     let objectURI = encodeURIComponent(`${galleryId}/openAIHistory`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imageData);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", imagesData);
 }
-async function updateOpenAIHistoryImage(spaceId, galleryId, imageId, imageData){
+async function getMidjourneyHistoryImage(spaceId, galleryId, imageId){
     let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", imageData);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 async function addMidjourneyHistoryImage(spaceId, galleryId, imageData){
     let objectURI = encodeURIComponent(`${galleryId}/midjourneyHistory`);
@@ -58,6 +58,7 @@ async function addMidjourneyHistoryImage(spaceId, galleryId, imageData){
 }
 async function updateMidjourneyHistoryImage(spaceId, galleryId, imageId, imageData){
     let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
+    imageData.id = imageId;
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", imageData);
 }
 module.exports = {
@@ -72,8 +73,8 @@ module.exports = {
     getGalleryOpenAIHistory,
     getGalleryMidjourneyHistory,
     updateGalleryConfig,
-    addOpenAIHistoryImage,
-    updateOpenAIHistoryImage,
+    updateOpenAIHistoryImages,
     addMidjourneyHistoryImage,
-    updateMidjourneyHistoryImage
+    updateMidjourneyHistoryImage,
+    getMidjourneyHistoryImage
 }
