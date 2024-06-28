@@ -134,12 +134,28 @@ const notificationService = (function createNotificationService() {
         off
     };
 })();
+let objectsToRefresh = [];
+let refreshTimeout = null;
+let refreshDelay = 2000;
 function createSSEConnection() {
     if (typeof window !== 'undefined') {
         let eventSource = new EventSource(`/events/updates`, {withCredentials: true});
         eventSource.addEventListener('content', function (event) {
             let parsedData = JSON.parse(event.data);
-            notificationService.emit(parsedData.objectId, parsedData);
+            if (parsedData.isSameUser) {
+                notificationService.emit(parsedData.objectId, parsedData);
+            } else {
+                objectsToRefresh.push({objectId:parsedData.objectId, data:parsedData});
+                if (!refreshTimeout) {
+                    refreshTimeout = setTimeout(() => {
+                        for (let objects of objectsToRefresh) {
+                            notificationService.emit(objects.objectId, objects.data);
+                        }
+                        objectsToRefresh = [];
+                        refreshTimeout = null;
+                    }, refreshDelay);
+                }
+            }
         });
         eventSource.onerror = function (err) {
             console.error('EventSource failed:', err);

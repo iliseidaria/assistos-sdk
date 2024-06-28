@@ -61,6 +61,10 @@ async function updateMidjourneyHistoryImage(spaceId, galleryId, imageId, imageDa
     imageData.id = imageId;
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", imageData);
 }
+async function deleteMidjourneyHistoryImage(spaceId, galleryId, imageId){
+    let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+}
 module.exports = {
     sendRequest,
     getGalleriesMetadata,
@@ -76,5 +80,6 @@ module.exports = {
     updateOpenAIHistoryImages,
     addMidjourneyHistoryImage,
     updateMidjourneyHistoryImage,
-    getMidjourneyHistoryImage
+    getMidjourneyHistoryImage,
+    deleteMidjourneyHistoryImage
 }
