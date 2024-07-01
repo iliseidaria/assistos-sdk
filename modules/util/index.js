@@ -145,7 +145,7 @@ function createSSEConnection() {
             if (parsedData.isSameUser) {
                 notificationService.emit(parsedData.objectId, parsedData);
             } else {
-                objectsToRefresh.push({objectId:parsedData.objectId, data:parsedData});
+                objectsToRefresh.push({objectId:parsedData.objectId, data:parsedData.data});
                 if (!refreshTimeout) {
                     refreshTimeout = setTimeout(() => {
                         for (let objects of objectsToRefresh) {
