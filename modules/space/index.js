@@ -176,7 +176,9 @@ function stopCheckingUpdates() {
     stopPolling = true;
     clearTimeout(checkUpdatesTimeoutId);
 }
-
+async function deleteImage(spaceId, imageId) {
+    return await this.sendRequest(`/spaces/${spaceId}/images/${imageId}`, "DELETE");
+}
 module.exports = {
     createSpace,
     loadSpace,
@@ -196,6 +198,7 @@ module.exports = {
     stopCheckingUpdates,
     sendRequest,
     getAPIKeysMetadata,
+    deleteImage,
     Space,
     Announcement
 }

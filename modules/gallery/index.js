@@ -19,11 +19,6 @@ async function addGallery(spaceId, galleryData) {
 async function deleteGallery(spaceId, galleryId) {
     return await this.sendRequest(`/spaces/containerObject/${spaceId}/${galleryId}`, "DELETE");
 }
-
-async function addImage(spaceId, galleryId, imageData) {
-    let objectURI = encodeURIComponent(`${galleryId}/images`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imageData);
-}
 async function getImage(spaceId, galleryId, imageId){
     let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
@@ -48,6 +43,14 @@ async function updateOpenAIHistoryImages(spaceId, galleryId, imagesData){
     let objectURI = encodeURIComponent(`${galleryId}/openAIHistory`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", imagesData);
 }
+async function addOpenAIHistoryImages(spaceId, galleryId, imagesData){
+    let objectURI = encodeURIComponent(`${galleryId}/openAIHistory`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", imagesData);
+}
+async function updateOpenAIHistoryImage(spaceId, galleryId, imageId, imageData){
+    let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", imageData);
+}
 async function getMidjourneyHistoryImage(spaceId, galleryId, imageId){
     let objectURI = encodeURIComponent(`${galleryId}/${imageId}`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
@@ -71,7 +74,6 @@ module.exports = {
     getGallery,
     addGallery,
     deleteGallery,
-    addImage,
     getImage,
     getGalleryConfig,
     getGalleryOpenAIHistory,
@@ -81,5 +83,7 @@ module.exports = {
     addMidjourneyHistoryImage,
     updateMidjourneyHistoryImage,
     getMidjourneyHistoryImage,
-    deleteMidjourneyHistoryImage
+    deleteMidjourneyHistoryImage,
+    updateOpenAIHistoryImage,
+    addOpenAIHistoryImages
 }
