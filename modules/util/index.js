@@ -143,7 +143,7 @@ function createSSEConnection() {
         eventSource.addEventListener('content', function (event) {
             let parsedData = JSON.parse(event.data);
             if (parsedData.isSameUser) {
-                notificationService.emit(parsedData.objectId, parsedData);
+                notificationService.emit(parsedData.objectId, parsedData.data);
             } else {
                 objectsToRefresh.push({objectId:parsedData.objectId, data:parsedData.data});
                 if (!refreshTimeout) {
