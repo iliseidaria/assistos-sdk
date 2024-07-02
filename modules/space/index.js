@@ -117,67 +117,20 @@ async function getAPIKeysMetadata(spaceId) {
 async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails: collaboratorEmails});
 }
-
-async function unsubscribeFromObject(spaceId, objectId) {
-    return await this.sendRequest(`/updates/unsubscribe/${spaceId}/${objectId}`, "GET");
-}
-
-async function subscribeToObject(spaceId, objectId) {
-    return await this.sendRequest(`/updates/subscribe/${spaceId}/${objectId}`, "GET");
-}
-
-let delay = 1000;
-const refreshDelay = 3000;
-let objectsToRefresh = [];
-let refreshTimeout;
-let checkUpdatesTimeoutId;
-let stopPolling = false;
-
-function startCheckingUpdates(spaceId) {
-    stopPolling = false;
-    const bindCheckUpdates = checkUpdates.bind(this);
-    bindCheckUpdates(spaceId);
-}
-
-async function checkUpdates(spaceId) {
-    try {
-        if (stopPolling) {
-            return;
-        }
-        let data = await this.sendRequest(`/updates/${spaceId}`, "GET");
-        if (data) {
-            if (data.isSameUser) {
-                notificationService.emit(data.targetObjectId);
-            } else {
-                objectsToRefresh.push(data.targetObjectId);
-                if (!refreshTimeout) {
-                    refreshTimeout = setTimeout(() => {
-                        for (let objectId of objectsToRefresh) {
-                            notificationService.emit(objectId);
-                        }
-                        objectsToRefresh = [];
-                        refreshTimeout = null;
-                    }, refreshDelay);
-                }
-            }
-        }
-    } catch (error) {
-        console.error("Error fetching updates:", error);
-    }
-    if (!stopPolling) {
-        checkUpdatesTimeoutId = setTimeout(() => {
-            const bindCheckUpdates = checkUpdates.bind(this);
-            bindCheckUpdates(spaceId);
-        }, delay);
-    }
-}
-
-function stopCheckingUpdates() {
-    stopPolling = true;
-    clearTimeout(checkUpdatesTimeoutId);
+async function addImage(spaceId, image) {
+    return await this.sendRequest(`/spaces/image/${spaceId}`, "POST", image);
 }
 async function deleteImage(spaceId, imageId) {
-    return await this.sendRequest(`/spaces/${spaceId}/images/${imageId}`, "DELETE");
+    return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "DELETE");
+}
+async function addAudio(spaceId, audio) {
+    return await this.sendRequest(`/spaces/audio/${spaceId}`, "POST", audio);
+}
+async function getAudio(spaceId, audioId) {
+    return await this.sendRequest(`/spaces/audio/${spaceId}/${audioId}`, "GET");
+}
+async function deleteAudio(spaceId, audioId) {
+    return await this.sendRequest(`/spaces/audio/${spaceId}/${audioId}`, "DELETE");
 }
 module.exports = {
     createSpace,
@@ -192,15 +145,15 @@ module.exports = {
     updateSpaceAnnouncement,
     deleteSpaceAnnouncement,
     inviteSpaceCollaborators,
-    subscribeToObject,
-    unsubscribeFromObject,
-    startCheckingUpdates,
-    stopCheckingUpdates,
     sendRequest,
     getAPIKeysMetadata,
+    addImage,
     deleteImage,
     Space,
-    Announcement
+    Announcement,
+    addAudio,
+    getAudio,
+    deleteAudio
 }
 
 
