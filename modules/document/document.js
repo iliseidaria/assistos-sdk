@@ -60,7 +60,9 @@ async function updateAlternativeAbstracts(spaceId, documentId, alternativeAbstra
     let objectURI = encodeURIComponent(`${documentId}/updateAlternativeAbstracts`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", alternativeAbstracts);
 }
-
+async function documentToVideo(spaceId, documentId){
+    return await this.sendRequest(`/spaces/video/compile/${spaceId}/${documentId}`, "POST");
+}
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
@@ -76,5 +78,6 @@ module.exports = {
     updateDocumentMainIdeas,
     updateAlternativeTitles,
     updateAlternativeAbstracts,
-    sendRequest
+    sendRequest,
+    documentToVideo
 };
