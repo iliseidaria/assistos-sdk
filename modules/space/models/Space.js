@@ -58,11 +58,11 @@ class Space {
         let documentModule = require("assistos").loadModule("document", {});
         return await documentModule.getDocumentsMetadata(this.id);
     }
+
     observeChange(elementId, callback, callbackAsyncParamFn) {
         let obj = {elementId: elementId, callback: callback, param: callbackAsyncParamFn};
         callback.refferenceObject = obj;
         this.observers.push(new WeakRef(obj));
-
     }
 
     notifyObservers(prefix) {
