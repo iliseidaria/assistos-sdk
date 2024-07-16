@@ -67,7 +67,9 @@ async function loginUser(email, password) {
     };
     const response = await fetch(`/users/login`, options);
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+        const error = new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+        error.statusCode = response.status;
+        throw error;
     }
 
     return await response.json();
