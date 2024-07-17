@@ -1,4 +1,5 @@
 const constants = require("../../constants.js");
+
 function fillTemplate(templateObject, fillObject, depth = 0) {
     /* Todo: Implement a detection mechanism for circular dependencies instead of a hardcoded nested depth limit */
 
@@ -82,35 +83,37 @@ function fillTemplate(templateObject, fillObject, depth = 0) {
         return templateObject;
     }
 }
-async function request(url, method, securityContext, data){
+
+async function request(url, method, securityContext, data) {
     let result;
     let init = {
         method: method,
         headers: {}
     };
-    if(method === "POST" || method === "PUT" || method === "DELETE"){
+    if (method === "POST" || method === "PUT" || method === "DELETE") {
         init.body = typeof data === "string" ? data : JSON.stringify(data);
         init.headers = {
             "Content-type": "application/json; charset=UTF-8"
         };
     }
     const assistOS = require("assistos");
-    if(assistOS.envType === constants.ENV_TYPE.NODE){
+    if (assistOS.envType === constants.ENV_TYPE.NODE) {
         url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
         init.headers.Cookie = securityContext.cookies;
     }
     try {
-        result = await fetch(url,init);
+        result = await fetch(url, init);
     } catch (err) {
         console.error(err);
     }
     let response = await result.text()
     let responseJSON = JSON.parse(response);
-    if(!responseJSON.success){
+    if (!responseJSON.success) {
         throw new Error(responseJSON.message);
     }
     return responseJSON.data;
 }
+
 const notificationService = (function createNotificationService() {
     const listeners = {};
 
@@ -120,9 +123,11 @@ const notificationService = (function createNotificationService() {
         }
         listeners[event].push(callback);
     }
+
     function off(event) {
         delete listeners[event];
     }
+
     function emit(event, data) {
         const eventListeners = listeners[event] || [];
         eventListeners.forEach(callback => callback(data));
@@ -134,18 +139,21 @@ const notificationService = (function createNotificationService() {
         off
     };
 })();
+
 let objectsToRefresh = [];
 let refreshTimeout = null;
 let refreshDelay = 2000;
-function createSSEConnection() {
+
+function createSSEConnection(config) {
     if (typeof window !== 'undefined') {
-        let eventSource = new EventSource(`/events/updates`, {withCredentials: true});
+            let eventSource = new EventSource(config.url, {withCredentials: true});
+
         eventSource.addEventListener('content', function (event) {
             let parsedData = JSON.parse(event.data);
             if (parsedData.isSameUser) {
                 notificationService.emit(parsedData.objectId, parsedData.data);
             } else {
-                objectsToRefresh.push({objectId:parsedData.objectId, data:parsedData.data});
+                objectsToRefresh.push({objectId: parsedData.objectId, data: parsedData.data});
                 if (!refreshTimeout) {
                     refreshTimeout = setTimeout(() => {
                         for (let objects of objectsToRefresh) {
@@ -157,28 +165,40 @@ function createSSEConnection() {
                 }
             }
         });
-        eventSource.onerror = function (err) {
-            console.error('EventSource failed:', err);
+
+        eventSource.addEventListener('disconnect', async (event) => {
+            let disconnectReason = JSON.parse(event.data);
             eventSource.close();
+            await config.onDisconnect(disconnectReason);
+        })
+
+        eventSource.onerror = async (err) => {
+            eventSource.close();
+            await config.onError(err);
         };
+
         return eventSource;
     } else {
         console.warn("This function is only available in the browser");
     }
 }
+
 async function closeSSEConnection() {
     await this.request("/events/close", "GET");
 }
+
 async function unsubscribeFromObject(objectId) {
     notificationService.off(objectId);
     let encodedObjectId = encodeURIComponent(objectId);
     await this.request(`/events/unsubscribe/${encodedObjectId}`, "GET");
 }
+
 async function subscribeToObject(objectId, handler) {
     notificationService.on(objectId, handler);
     let encodedObjectId = encodeURIComponent(objectId);
     await this.request(`/events/subscribe/${encodedObjectId}`, "GET");
 }
+
 module.exports = {
     request,
     notificationService,
