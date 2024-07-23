@@ -90,11 +90,14 @@ async function request(url, method, securityContext, data) {
         method: method,
         headers: {}
     };
+
     if (method === "POST" || method === "PUT" || method === "DELETE") {
-        init.body = typeof data === "string" ? data : JSON.stringify(data);
-        init.headers = {
-            "Content-type": "application/json; charset=UTF-8"
-        };
+        if (data instanceof FormData) {
+            init.body = data;
+        } else {
+            init.body = typeof data === "string" ? data : JSON.stringify(data);
+            init.headers["Content-type"] = "application/json; charset=UTF-8";
+        }
     }
     const assistOS = require("assistos");
     if (assistOS.envType === constants.ENV_TYPE.NODE) {

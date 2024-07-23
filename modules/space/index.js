@@ -1,7 +1,6 @@
 const {request, notificationService} = require("../util");
 const Space = require('./models/Space.js');
 const Announcement = require('./models/Announcement.js');
-const announcementType = "announcements";
 
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
