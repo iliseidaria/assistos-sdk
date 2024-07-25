@@ -9,7 +9,7 @@ const prepareSecret = (secret) => {
         .join('');
 }
 
-async function registerUser(name, email, password, photo, inviteToken) {
+async function registerUser(email, password, photo, inviteToken) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
     };
@@ -17,7 +17,6 @@ async function registerUser(name, email, password, photo, inviteToken) {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
-            name: name,
             email: email,
             password: prepareSecret(password),
             inviteToken: inviteToken,
