@@ -26,7 +26,9 @@ async function registerUser(email, password, photo, inviteToken) {
     const response = await fetch(`/users`, options);
 
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+        const error = new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+        error.statusCode = response.status;
+        throw error
     }
 
     return await response.json();
