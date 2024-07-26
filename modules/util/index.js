@@ -144,29 +144,20 @@ const notificationService = (function createNotificationService() {
 })();
 
 let objectsToRefresh = [];
-let refreshTimeout = null;
 let refreshDelay = 2000;
-
 function createSSEConnection(config) {
     if (typeof window !== 'undefined') {
-            let eventSource = new EventSource(config.url, {withCredentials: true});
-
-        eventSource.addEventListener('content', function (event) {
-            let parsedData = JSON.parse(event.data);
-            if (parsedData.isSameUser) {
-                notificationService.emit(parsedData.objectId, parsedData.data);
-            } else {
-                objectsToRefresh.push({objectId: parsedData.objectId, data: parsedData.data});
-                if (!refreshTimeout) {
-                    refreshTimeout = setTimeout(() => {
-                        for (let objects of objectsToRefresh) {
-                            notificationService.emit(objects.objectId, objects.data);
-                        }
-                        objectsToRefresh = [];
-                        refreshTimeout = null;
-                    }, refreshDelay);
-                }
+        let eventSource = new EventSource(config.url, {withCredentials: true});
+        let intervalId = setInterval(() => {
+            for (let objects of objectsToRefresh) {
+                notificationService.emit(objects.objectId, objects.data);
             }
+            objectsToRefresh = [];
+        }, refreshDelay);
+        eventSource.addEventListener('content', function (event) {
+            console.log("Notification received");
+            let parsedMessage = JSON.parse(event.data);
+            objectsToRefresh.push({objectId: parsedMessage.objectId, data: parsedMessage.data});
         });
 
         eventSource.addEventListener('disconnect', async (event) => {
@@ -179,14 +170,16 @@ function createSSEConnection(config) {
             eventSource.close();
             await config.onError(err);
         };
-
+        console.log("SSE Connection created");
+        eventSource.intervalId = intervalId;
         return eventSource;
     } else {
         console.warn("This function is only available in the browser");
     }
 }
 
-async function closeSSEConnection() {
+async function closeSSEConnection(eventSource) {
+    clearInterval(eventSource.intervalId);
     await this.request("/events/close", "GET");
 }
 

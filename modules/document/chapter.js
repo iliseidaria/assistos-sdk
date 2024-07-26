@@ -31,7 +31,10 @@ async function updateChapterTitle(spaceId, documentId, chapterId, title) {
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/title`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", title);
 }
-
+async function updateChapterVisibility(spaceId, documentId, chapterId, visibility){
+    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/visibility`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", visibility);
+}
 async function updateChapterMainIdeas(spaceId, documentId, chapterId, mainIdeas){
     //mainIdeas is an array of strings
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/mainIdeas`);
@@ -79,6 +82,7 @@ module.exports = {
     swapChapters,
     getChapterTitle,
     updateChapterTitle,
+    updateChapterVisibility,
     updateChapterMainIdeas,
     updateChapterAlternativeTitles,
     getAlternativeChapter,
