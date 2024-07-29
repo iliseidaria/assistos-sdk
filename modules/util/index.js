@@ -162,6 +162,7 @@ function createSSEConnection(config) {
 
         eventSource.addEventListener('disconnect', async (event) => {
             let disconnectReason = JSON.parse(event.data);
+            clearInterval(intervalId);
             eventSource.close();
             await config.onDisconnect(disconnectReason);
         })
