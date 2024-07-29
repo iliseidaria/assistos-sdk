@@ -12,6 +12,7 @@ class Document {
         this.observers = [];
         this.mainIdeas = documentData.mainIdeas || [];
         this.metadata = ["id", "title"];
+        this.video = documentData.video || "";
     }
 
     toString() {

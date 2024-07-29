@@ -27,6 +27,10 @@ async function updateDocumentTitle(spaceId, documentId, title) {
     let objectURI = encodeURIComponent(`${documentId}/title`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", title);
 }
+async function updateVideo(spaceId, documentId, videoPath){
+    let objectURI = encodeURIComponent(`${documentId}/video`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", videoPath);
+}
 async function getDocumentTopic(spaceId, documentId){
     let objectURI = encodeURIComponent(`${documentId}/topic`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
@@ -79,5 +83,6 @@ module.exports = {
     updateAlternativeTitles,
     updateAlternativeAbstracts,
     sendRequest,
-    documentToVideo
+    documentToVideo,
+    updateVideo
 };

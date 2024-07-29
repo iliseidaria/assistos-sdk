@@ -165,9 +165,9 @@ function createSSEConnection(config) {
             eventSource.close();
             await config.onDisconnect(disconnectReason);
         })
-
         eventSource.onerror = async (err) => {
             eventSource.close();
+            clearInterval(intervalId);
             await config.onError(err);
         };
         console.log("SSE Connection created");
