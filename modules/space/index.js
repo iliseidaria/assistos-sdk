@@ -33,25 +33,10 @@ async function addSpaceChatMessage(spaceId, chatId, messageData) {
 
 
 async function createSpace(spaceName) {
-    const headers = {
-        "Content-Type": "application/json; charset=UTF-8",
-        Cookie: this.__securityContext.cookies
-    };
     const bodyObject = {
         spaceName: spaceName
     }
-    const options = {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(bodyObject)
-    };
-    const response = await fetch(`/spaces`, options);
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
-    }
-
-    return (await response.json());
+    return await this.sendRequest(`/spaces`, "POST", bodyObject);
 }
 
 async function loadSpace(spaceId) {
