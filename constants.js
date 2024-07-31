@@ -15,7 +15,7 @@ module.exports = {
     TTS_COMMANDS: [
         {
             NAME: "!speech",
-            EXECUTE_FN: "textToSpeech",
+            ACTION: "textToSpeech",
             PARAMETERS: [{
                 NAME: "personality",
                 TYPE: "string",
@@ -55,7 +55,7 @@ module.exports = {
         },
         {
             NAME: "!silence",
-            EXECUTE_FN: "addPauseInAudio",
+            ACTION: "addPauseInAudio",
             PARAMETERS: [{
                 NAME:"duration",
                 TYPE:"number",
