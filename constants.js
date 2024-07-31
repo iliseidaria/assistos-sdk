@@ -17,9 +17,8 @@ module.exports = {
             NAME: "!speech",
             EXECUTE_FN: "textToSpeech",
             PARAMETERS: [{
-                NAME: "personalityName",
+                NAME: "personality",
                 TYPE: "string",
-                REQUIRED: true
             }, {
                 NAME: "emotion",
                 TYPE: "string",
@@ -35,26 +34,22 @@ module.exports = {
                     'male_fearful',
                     'male_disgust',
                     'male_surprised'],
-                REQUIRED: true
             },
             {
                 NAME: "styleGuidance",
                 TYPE: "number",
                 MIN_VALUE: 0,
                 MAX_VALUE: 100,
-                REQUIRED: false
             }, {
                 NAME: "temperature",
                 TYPE: "number",
                 MIN_VALUE: 0,
                 MAX_VALUE: 100,
-                REQUIRED: false
             }, {
                 NAME: "voiceGuidance",
                 TYPE: "number",
                 MIN_VALUE: 0,
                 MAX_VALUE: 100,
-                REQUIRED: false
             }
             ]
         },
@@ -66,7 +61,6 @@ module.exports = {
                 TYPE:"number",
                 MIN_VALUE:0,
                 MAX_VALUE:100,
-                REQUIRED: true
             }]
             //duration is in seconds
         }
