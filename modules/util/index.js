@@ -92,11 +92,19 @@ async function request(url, method, securityContext, data) {
     };
 
     if (method === "POST" || method === "PUT" || method === "DELETE") {
-        if (data instanceof FormData) {
+        init.headers["Content-Type"] = "application/json; charset=UTF-8";
+        if(data instanceof FormData){
             init.body = data;
+        } else if (typeof data === "string") {
+            init.body = data;
+            init.headers["Content-Type"] = "text/plain; charset=UTF-8";
+        } else if (data instanceof ArrayBuffer) {
+            init.body = data;
+            init.headers["Content-Type"] = "application/octet-stream";
+            // Appropriate MIME type for binary data
         } else {
-            init.body = typeof data === "string" ? data : JSON.stringify(data);
-            init.headers["Content-type"] = "application/json; charset=UTF-8";
+            init.body = JSON.stringify(data);
+            init.headers["Content-Type"] = "application/json; charset=UTF-8";
         }
     }
     const assistOS = require("assistos");

@@ -34,6 +34,9 @@ async function textToSpeech(spaceId, modelConfigs) {
         let error = await response.json();
         throw new Error(error.message);
     }
+    if (assistOS.envType === constants.ENV_TYPE.NODE) {
+        return await response.arrayBuffer();
+    }
     return await response.blob();
 }
 
