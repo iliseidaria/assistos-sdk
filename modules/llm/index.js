@@ -1,5 +1,6 @@
 const LLM = require("./models/LLM.js");
 const {request, notificationService} = require("../util");
+const constants = require("../../constants");
 
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
@@ -14,13 +15,21 @@ async function generateImage(spaceId, modelConfigs) {
 }
 
 async function textToSpeech(spaceId, modelConfigs) {
-    let response = await fetch(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, {
+    const assistOS = require("assistos");
+    let url = "/apis/v1/spaces/" + spaceId + "/llms/audio/generate";
+    let headers={
+        "content-type": "application/json",
+    }
+    if (assistOS.envType === constants.ENV_TYPE.NODE) {
+        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
+        headers.Cookie = this.__securityContext.cookies;
+    }
+    let response = await fetch(url, {
         method: "POST",
-        headers: {
-            "content-type": "application/json",
-        },
+        headers: headers,
         body: JSON.stringify(modelConfigs)
     });
+
     if (!response.ok) {
         let error = await response.json();
         throw new Error(error.message);
