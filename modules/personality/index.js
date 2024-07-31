@@ -9,6 +9,11 @@ async function getPersonalitiesMetadata(spaceId){
 async function getPersonality(spaceId, fileName){
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
 }
+async function getPersonalityByName(spaceId, name){
+    let metadataList = await this.getPersonalitiesMetadata(spaceId);
+    let personalityId = metadataList.find(pers => pers.name === name).id;
+    return await this.getPersonality(spaceId, personalityId);
+}
 async function getAgent(spaceId, agentId) {
     let url = `/spaces/${spaceId}/agents`;
     if (agentId) {
@@ -39,6 +44,7 @@ module.exports = {
     loadFilteredKnowledge,
     sendRequest,
     getAgent,
+    getPersonalityByName,
     models:{
         personality:require('./models/Personality.js'),
         agent:require('./models/Agent.js')

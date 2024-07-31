@@ -36,7 +36,7 @@ async function callServerFlow(spaceId, flowName, context, personalityId) {
 async function callFlow(spaceId, flowName, context, personalityId) {
     const envType = require("assistos").envType;
     if (envType === constants.ENV_TYPE.NODE) {
-        return await callServerFlow(spaceId, flowName, context, personalityId);
+        return await this.callServerFlow(spaceId, flowName, context, personalityId);
     } else if (envType === constants.ENV_TYPE.BROWSER) {
         let flowInstance;
         if (assistOS.currentApplicationName === assistOS.configuration.defaultApplicationName) {
