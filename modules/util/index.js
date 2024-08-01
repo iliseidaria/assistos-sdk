@@ -216,14 +216,6 @@ function unescapeHTML(value) {
     }
     return value;
 }
-function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(',')[1]); // Get the Base64 string without the data URL prefix
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-}
 function arrayBufferToBase64(buffer) {
     const bytes = new Uint8Array(buffer);
 
@@ -269,6 +261,5 @@ module.exports = {
     subscribeToObject,
     unsubscribeFromObject,
     findCommand,
-    blobToBase64,
     arrayBufferToBase64
 }

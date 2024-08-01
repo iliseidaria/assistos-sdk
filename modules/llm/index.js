@@ -29,11 +29,11 @@ async function textToSpeech(spaceId, modelConfigs) {
         headers: headers,
         body: JSON.stringify(modelConfigs)
     });
-
     if (!response.ok) {
         let error = await response.json();
         throw new Error(error.message);
     }
+
     if (assistOS.envType === constants.ENV_TYPE.NODE) {
         return await response.arrayBuffer();
     }

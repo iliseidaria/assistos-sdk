@@ -10,6 +10,7 @@ class Paragraph {
             this.mainIdea = paragraphData.mainIdea || "";
             this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
             this.audio = paragraphData.audio || "";
+            this.audioConfig= paragraphData.audioConfig || {};
         }
     }
     simplifyParagraph() {
