@@ -91,7 +91,7 @@ async function request(url, method, securityContext, data) {
         headers: {}
     };
 
-    if (method === "POST" || method === "PUT" || method === "DELETE") {
+    if (method === "POST" || method === "PUT") {
         init.headers["Content-Type"] = "application/json; charset=UTF-8";
         if(data instanceof FormData){
             init.body = data;
@@ -162,6 +162,7 @@ function createSSEConnection(config) {
             }
             objectsToRefresh = [];
         }, refreshDelay);
+        eventSource.intervalId = intervalId;
         eventSource.addEventListener('content', function (event) {
             console.log("Notification received");
             let parsedMessage = JSON.parse(event.data);
