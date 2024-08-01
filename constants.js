@@ -55,7 +55,7 @@ module.exports = {
         },
         {
             NAME: "!silence",
-            ACTION: "addPauseInAudio",
+            ACTION: "createSilentAudio",
             PARAMETERS: [{
                 NAME:"duration",
                 TYPE:"number",
