@@ -13,7 +13,6 @@ class Chapter {
             this.alternativeChapters = chapterData.alternativeChapters.map((alternativeChapterData) =>
                 new Chapter(alternativeChapterData)
             );
-
         }
         this.currentParagraphId = null;
         this.mainIdeas = chapterData.mainIdeas || [];
