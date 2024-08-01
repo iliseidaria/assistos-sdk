@@ -203,7 +203,62 @@ async function subscribeToObject(objectId, handler) {
     let encodedObjectId = encodeURIComponent(objectId);
     await this.request(`/events/subscribe/${encodedObjectId}`, "GET");
 }
+function unescapeHTML(value) {
+    if (value != null && typeof value === "string") {
+        return value.replace(/&amp;/g, '&')
+            .replace(/&#39;/g, `'`)
+            .replace(/&quot;/g, '"')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&#13;/g, '\n')
+            .replace(/&nbsp;/g, ' ');
+    }
+    return value;
+}
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]); // Get the Base64 string without the data URL prefix
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
 
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+
+    return btoa(binary);
+}
+function findCommand(input) {
+    input = unescapeHTML(input);
+    for (let command of constants.TTS_COMMANDS) {
+        if (input.startsWith(command.NAME)) {
+            let [foundCommand, remainingText] = input.split(":");
+            let [commandName, ...params] = foundCommand.trim().split(/\s+/);
+            const paramsObject = {};
+            for (let param of params) {
+                if (param.includes('=')) {
+                    let [name, value] = param.split('=');
+                    let parameter = command.PARAMETERS.find(p => p.NAME === name);
+                    if (!parameter) {
+                        continue;
+                    }
+                    paramsObject[name] = value;
+                }
+            }
+            return {
+                action: command.ACTION,
+                paramsObject: paramsObject,
+                remainingText: remainingText
+            };
+        }
+    }
+    return null;
+}
 module.exports = {
     request,
     notificationService,
@@ -211,5 +266,8 @@ module.exports = {
     createSSEConnection,
     closeSSEConnection,
     subscribeToObject,
-    unsubscribeFromObject
+    unsubscribeFromObject,
+    findCommand,
+    blobToBase64,
+    arrayBufferToBase64
 }
