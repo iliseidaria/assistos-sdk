@@ -89,10 +89,9 @@ async function request(url, method, securityContext, data) {
         method: method,
         headers: {}
     };
-
     if (method === "POST" || method === "PUT") {
-        init.headers["Content-Type"] = "application/json; charset=UTF-8";
         if (data instanceof FormData) {
+            /* let the browser decide the content type */
             init.body = data;
         } else if (typeof data === "string") {
             init.body = data;
@@ -100,8 +99,8 @@ async function request(url, method, securityContext, data) {
         } else if (data instanceof ArrayBuffer) {
             init.body = data;
             init.headers["Content-Type"] = "application/octet-stream";
-            // Appropriate MIME type for binary data
-        } else {
+        }
+        else{
             init.body = JSON.stringify(data);
             init.headers["Content-Type"] = "application/json; charset=UTF-8";
         }
