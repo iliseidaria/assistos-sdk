@@ -81,7 +81,7 @@ async function loadUser() {
 }
 
 async function logoutUser() {
-    return await this.sendRequest(`/users/logout`, "POST");
+    return await this.sendRequest(`/users/logout`, "GET");
 }
 
 async function addGITCredentials(spaceId, username, token) {
