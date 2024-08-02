@@ -85,7 +85,6 @@ function fillTemplate(templateObject, fillObject, depth = 0) {
 }
 
 async function request(url, method, securityContext, data) {
-    let result;
     let init = {
         method: method,
         headers: {}
@@ -93,7 +92,7 @@ async function request(url, method, securityContext, data) {
 
     if (method === "POST" || method === "PUT") {
         init.headers["Content-Type"] = "application/json; charset=UTF-8";
-        if(data instanceof FormData){
+        if (data instanceof FormData) {
             init.body = data;
         } else if (typeof data === "string") {
             init.body = data;
@@ -112,13 +111,17 @@ async function request(url, method, securityContext, data) {
         url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
         init.headers.Cookie = securityContext.cookies;
     }
+    let response;
     try {
-        result = await fetch(url, init);
+        response = await fetch(url, init);
     } catch (err) {
         console.error(err);
     }
-    let response = await result.text()
-    let responseJSON = JSON.parse(response);
+    const contentType = response.headers.get('Content-Type');
+    if (contentType.includes('audio/')) {
+        return await response.arrayBuffer();
+    }
+    const responseJSON = await response.json();
     if (!responseJSON.success) {
         throw new Error(responseJSON.message);
     }
@@ -153,6 +156,7 @@ const notificationService = (function createNotificationService() {
 
 let objectsToRefresh = [];
 let refreshDelay = 2000;
+
 function createSSEConnection(config) {
     if (typeof window !== 'undefined') {
         let eventSource = new EventSource(config.url, {withCredentials: true});
@@ -204,6 +208,7 @@ async function subscribeToObject(objectId, handler) {
     let encodedObjectId = encodeURIComponent(objectId);
     await this.request(`/events/subscribe/${encodedObjectId}`, "GET");
 }
+
 function unescapeHTML(value) {
     if (value != null && typeof value === "string") {
         return value.replace(/&amp;/g, '&')
@@ -216,6 +221,7 @@ function unescapeHTML(value) {
     }
     return value;
 }
+
 function arrayBufferToBase64(buffer) {
     const bytes = new Uint8Array(buffer);
 
@@ -226,6 +232,7 @@ function arrayBufferToBase64(buffer) {
 
     return btoa(binary);
 }
+
 function findCommand(input) {
     input = unescapeHTML(input);
     for (let command of constants.TTS_COMMANDS) {
@@ -252,6 +259,7 @@ function findCommand(input) {
     }
     return null;
 }
+
 module.exports = {
     request,
     notificationService,
