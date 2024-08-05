@@ -155,10 +155,10 @@ const notificationService = (function createNotificationService() {
 
 let objectsToRefresh = [];
 let refreshDelay = 2000;
-
+let eventSource;
 function createSSEConnection(config) {
     if (typeof window !== 'undefined') {
-        let eventSource = new EventSource(config.url, {withCredentials: true});
+        eventSource = new EventSource(config.url, {withCredentials: true});
         let intervalId = setInterval(() => {
             for (let objects of objectsToRefresh) {
                 notificationService.emit(objects.objectId, objects.data);
@@ -256,7 +256,9 @@ function findCommand(input) {
             };
         }
     }
-    return null;
+    return {
+        remainingText: input
+    };
 }
 
 module.exports = {
