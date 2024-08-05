@@ -15,29 +15,7 @@ async function generateImage(spaceId, modelConfigs) {
 }
 
 async function textToSpeech(spaceId, modelConfigs) {
-    const assistOS = require("assistos");
-    let url = "/apis/v1/spaces/" + spaceId + "/llms/audio/generate";
-    let headers={
-        "content-type": "application/json",
-    }
-    if (assistOS.envType === constants.ENV_TYPE.NODE) {
-        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
-        headers.Cookie = this.__securityContext.cookies;
-    }
-    let response = await fetch(url, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(modelConfigs)
-    });
-    if (!response.ok) {
-        let error = await response.json();
-        throw new Error(error.message);
-    }
-
-    if (assistOS.envType === constants.ENV_TYPE.NODE) {
-        return await response.arrayBuffer();
-    }
-    return await response.blob();
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", modelConfigs);
 }
 
 async function listVoicesAndEmotions(spaceId) {
