@@ -234,9 +234,20 @@ function arrayBufferToBase64(buffer) {
 
 function findCommand(input) {
     input = unescapeHTML(input);
+    input = input.trim();
+    const regex = /^!.*?:/;
+    const match = input.match(regex);
+    if (!match) {
+        return {
+            remainingText: input
+        };
+    }
+    let foundCommand = match[0];
     for (let command of constants.TTS_COMMANDS) {
-        if (input.startsWith(command.NAME)) {
-            let [foundCommand, remainingText] = input.split(":");
+        if (foundCommand.startsWith(command.NAME)) {
+            let remainingText = input.substring(foundCommand.length);
+            const regex = /\s*:\s*$/;
+            foundCommand = foundCommand.replace(regex, '');
             let [commandName, ...params] = foundCommand.trim().split(/\s+/);
             const paramsObject = {};
             for (let param of params) {

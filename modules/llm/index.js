@@ -18,10 +18,12 @@ async function textToSpeech(spaceId, modelConfigs) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", modelConfigs);
 }
 
-async function listVoicesAndEmotions(spaceId) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listVoicesAndEmotions`, "GET");
+async function listVoices(spaceId) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listVoices`, "GET");
 }
-
+async function listEmotions(spaceId){
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listEmotions`, "GET");
+}
 async function getLLMConfigs(spaceId) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/configs`, "GET");
 }
@@ -42,7 +44,8 @@ module.exports = {
     sendRequest,
     generateImage,
     textToSpeech,
-    listVoicesAndEmotions,
+    listVoices,
+    listEmotions,
     getLLMConfigs,
     editImage,
     sendLLMChatRequest
