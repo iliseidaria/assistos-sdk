@@ -54,7 +54,27 @@ async function generateVerificationCode(email,password){
 
     return await response.json();
 }
-
+async function resetPassword(email, password, code) {
+    const headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+    };
+    const options = {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            email: email,
+            password: prepareSecret(password),
+            code: code
+        })
+    };
+    const response = await fetch(`/users/password-reset/verify`, options);
+    if (!response.ok) {
+        const error = new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
+        error.statusCode = response.status;
+        throw error;
+    }
+    return await response.json();
+}
 async function activateUser(activationToken) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -148,5 +168,6 @@ module.exports = {
     editAPIKey,
     deleteAPIKey,
     sendRequest,
-    generateVerificationCode
+    generateVerificationCode,
+    resetPassword
 }
