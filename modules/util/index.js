@@ -122,7 +122,11 @@ async function request(url, method, securityContext, data) {
     }
     const responseJSON = await response.json();
     if (!responseJSON.success) {
-        throw new Error(responseJSON.message);
+        let errorData= {
+            status: response.status,
+            message: responseJSON.message
+        }
+        throw new Error(JSON.stringify(errorData));
     }
     return responseJSON.data;
 }
