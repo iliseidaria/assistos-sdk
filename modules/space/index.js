@@ -119,6 +119,9 @@ async function deleteAudio(spaceId, audioId) {
 async function importDocument(spaceId,documentFormData){
     return await this.sendRequest(`/spaces/${spaceId}/import/documents`, "POST", documentFormData);
 }
+async function importPersonality(spaceId,personalityFormData){
+    return await this.sendRequest(`/spaces/${spaceId}/import/personalities`, "POST", personalityFormData);
+}
 async function cancelTask(spaceId, taskId) {
     return await this.sendRequest(`/spaces/tasks/${spaceId}/${taskId}`, "DELETE");
 }
@@ -149,6 +152,7 @@ module.exports = {
     getAudio,
     deleteAudio,
     importDocument,
+    importPersonality,
     cancelTask,
     deleteVideo,
 }
