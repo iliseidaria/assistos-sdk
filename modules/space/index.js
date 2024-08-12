@@ -125,6 +125,7 @@ async function cancelTask(spaceId, taskId) {
 async function deleteVideo(spaceId, videoId) {
     return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "DELETE");
 }
+
 module.exports = {
     createSpace,
     loadSpace,
@@ -149,7 +150,7 @@ module.exports = {
     deleteAudio,
     importDocument,
     cancelTask,
-    deleteVideo
+    deleteVideo,
 }
 
 
