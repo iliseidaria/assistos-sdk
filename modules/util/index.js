@@ -90,7 +90,7 @@ async function request(url, method, securityContext, data) {
         headers: {}
     };
     if (method === "POST" || method === "PUT") {
-        if (data instanceof FormData) {
+        if (data instanceof FormData || typeof data==="function") {
             /* let the browser decide the content type */
             init.body = data;
         } else if (typeof data === "string") {

@@ -30,8 +30,6 @@ async function addSpaceChatMessage(spaceId, chatId, messageData) {
     return await this.sendRequest(`/spaces/${spaceId}/chat/${chatId}`, "POST", messageData)
 }
 
-
-
 async function createSpace(spaceName) {
     const bodyObject = {
         spaceName: spaceName
