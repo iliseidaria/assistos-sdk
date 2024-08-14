@@ -90,7 +90,7 @@ async function request(url, method, securityContext, data) {
         headers: {}
     };
     if (method === "POST" || method === "PUT") {
-        if (data instanceof FormData || typeof data==="function") {
+        if (data instanceof FormData || typeof data === "function") {
             /* let the browser decide the content type */
             init.body = data;
         } else if (typeof data === "string") {
@@ -99,8 +99,7 @@ async function request(url, method, securityContext, data) {
         } else if (data instanceof ArrayBuffer) {
             init.body = data;
             init.headers["Content-Type"] = "application/octet-stream";
-        }
-        else{
+        } else {
             init.body = JSON.stringify(data);
             init.headers["Content-Type"] = "application/json; charset=UTF-8";
         }
@@ -122,7 +121,7 @@ async function request(url, method, securityContext, data) {
     }
     const responseJSON = await response.json();
     if (!responseJSON.success) {
-        let errorData= {
+        let errorData = {
             status: response.status,
             message: responseJSON.message
         }
@@ -160,6 +159,7 @@ const notificationService = (function createNotificationService() {
 let objectsToRefresh = [];
 let refreshDelay = 2000;
 let eventSource;
+
 function createSSEConnection(config) {
     if (typeof window !== 'undefined') {
         eventSource = new EventSource(config.url, {withCredentials: true});
@@ -276,6 +276,54 @@ function findCommand(input) {
     };
 }
 
+function normalizeString(str) {
+    if (!str) {
+        return '';
+    }
+    return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
+}
+
+function isSameCommand(commandObj1, commandObj2) {
+    let differences = [];
+
+    if (normalizeString(commandObj1.action) !== normalizeString(commandObj2.action)) {
+        differences.push(`Actions differ: ${commandObj1.action} vs ${commandObj2.action}`);
+    }
+
+    if (normalizeString(commandObj1.remainingText) !== normalizeString(commandObj2.remainingText)) {
+        differences.push(`Remaining text differs: "${commandObj1.remainingText}" vs "${commandObj2.remainingText}"`);
+    }
+
+    const params1 = commandObj1.paramsObject||{};
+    const params2 = commandObj2.paramsObject||{};
+    const keys1 = Object.keys(params1);
+    const keys2 = Object.keys(params2);
+
+    if (keys1.length !== keys2.length) {
+        differences.push(`Number of parameters differs: ${keys1.length} vs ${keys2.length}`);
+    }
+
+    for (let key of keys1) {
+        if (normalizeString(params1[key]) !== normalizeString(params2[key])) {
+            differences.push(`Parameter "${key}" values differ: ${params1[key]} vs ${params2[key]}`);
+        }
+    }
+
+    for (let key of keys2) {
+        if (!keys1.includes(key)) {
+            differences.push(`Parameter "${key}" is missing in the first command object`);
+        }
+    }
+
+    if (differences.length > 0) {
+        console.log("Differences found:", differences);
+        return { isEqual: false, differences: differences };
+    } else {
+        return { isEqual: true, differences: [] };
+    }
+}
+
+
 module.exports = {
     request,
     notificationService,
@@ -285,5 +333,6 @@ module.exports = {
     subscribeToObject,
     unsubscribeFromObject,
     findCommand,
-    arrayBufferToBase64
+    arrayBufferToBase64,
+    isSameCommand
 }
