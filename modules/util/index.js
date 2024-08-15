@@ -236,6 +236,16 @@ function arrayBufferToBase64(buffer) {
     return btoa(binary);
 }
 
+function buildCommandString(commandType, parameters) {
+    const commandName = commandType;
+    const parametersString = Object.entries(parameters)
+        .map(([key, value]) => {
+            return `${key}=${value}`;
+        })
+        .join(' ');
+    return `!${commandName} ${parametersString}:`
+}
+
 function findCommand(input) {
     input = unescapeHTML(input);
     input = input.trim();
@@ -294,8 +304,8 @@ function isSameCommand(commandObj1, commandObj2) {
         differences.push(`Remaining text differs: "${commandObj1.remainingText}" vs "${commandObj2.remainingText}"`);
     }
 
-    const params1 = commandObj1.paramsObject||{};
-    const params2 = commandObj2.paramsObject||{};
+    const params1 = commandObj1.paramsObject || {};
+    const params2 = commandObj2.paramsObject || {};
     const keys1 = Object.keys(params1);
     const keys2 = Object.keys(params2);
 
@@ -316,10 +326,9 @@ function isSameCommand(commandObj1, commandObj2) {
     }
 
     if (differences.length > 0) {
-        console.log("Differences found:", differences);
-        return { isEqual: false, differences: differences };
+        return {isEqual: false, differences: differences};
     } else {
-        return { isEqual: true, differences: [] };
+        return {isEqual: true, differences: []};
     }
 }
 
@@ -334,5 +343,6 @@ module.exports = {
     unsubscribeFromObject,
     findCommand,
     arrayBufferToBase64,
-    isSameCommand
+    isSameCommand,
+    buildCommandString
 }

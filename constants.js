@@ -35,32 +35,32 @@ module.exports = {
                     'male_disgust',
                     'male_surprised'],
             },
-            {
-                NAME: "styleGuidance",
-                TYPE: "number",
-                MIN_VALUE: 0,
-                MAX_VALUE: 100,
-            }, {
-                NAME: "temperature",
-                TYPE: "number",
-                MIN_VALUE: 0,
-                MAX_VALUE: 100,
-            }, {
-                NAME: "voiceGuidance",
-                TYPE: "number",
-                MIN_VALUE: 0,
-                MAX_VALUE: 100,
-            }
+                {
+                    NAME: "styleGuidance",
+                    TYPE: "number",
+                    MIN_VALUE: 0,
+                    MAX_VALUE: 100,
+                }, {
+                    NAME: "temperature",
+                    TYPE: "number",
+                    MIN_VALUE: 0,
+                    MAX_VALUE: 100,
+                }, {
+                    NAME: "voiceGuidance",
+                    TYPE: "number",
+                    MIN_VALUE: 0,
+                    MAX_VALUE: 100,
+                }
             ]
         },
         {
             NAME: "!silence",
             ACTION: "createSilentAudio",
             PARAMETERS: [{
-                NAME:"duration",
-                TYPE:"number",
-                MIN_VALUE:0,
-                MAX_VALUE:100,
+                NAME: "duration",
+                TYPE: "number",
+                MIN_VALUE: 0,
+                MAX_VALUE: 100,
             }]
             //duration is in seconds
         }

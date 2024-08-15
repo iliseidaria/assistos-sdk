@@ -57,14 +57,6 @@ async function deleteAlternativeParagraph(spaceId, documentId, chapterId, paragr
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
 
-async function updateParagraphAudioConfigs(spaceId, documentId, paragraphId, audioURL) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audioConfig`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", audioURL);
-}
-async function getParagraphAudioConfigs(spaceId, documentId, paragraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audioConfig`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
-}
 async function updateParagraphAudio(spaceId, documentId, paragraphId, audioURL) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audio`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", audioURL);
@@ -77,6 +69,10 @@ async function generateParagraphAudio(spaceId, documentId, paragraphId) {
 async function getParagraphAudio(spaceId, documentId, paragraphId) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audio`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
+
+async function generateParagraphTTS(spaceId,documentId,paragraphId,command){
+    return await this.sendRequest(`/spaces/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", command);
 }
 
 async function updateImageParagraphDimensions(spaceId, documentId, paragraphId, dimensions) {
@@ -99,6 +95,5 @@ module.exports = {
     updateImageParagraphDimensions,
     getParagraphAudio,
     generateParagraphAudio,
-    updateParagraphAudioConfigs,
-    getParagraphAudioConfigs
+    generateParagraphTTS
 }
