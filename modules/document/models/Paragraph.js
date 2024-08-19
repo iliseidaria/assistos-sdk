@@ -5,6 +5,7 @@ class Paragraph {
         if(paragraphData.image){
             this.image = paragraphData.image;
             this.dimensions = paragraphData.dimensions;
+            this.lipSync = paragraphData.lipSync;
         } else {
             this.text = paragraphData.text;
             this.mainIdea = paragraphData.mainIdea || "";
