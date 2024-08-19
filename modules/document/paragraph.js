@@ -79,7 +79,14 @@ async function updateImageParagraphDimensions(spaceId, documentId, paragraphId, 
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/dimensions`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", dimensions);
 }
-
+async function updateImageParagraphLipSync(spaceId, documentId, paragraphId, videoData) {
+    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/lipSync`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", videoData);
+}
+async function getImageParagraphLipSync(spaceId, documentId, paragraphId) {
+    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/lipSync`);
+    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
 module.exports = {
     getParagraph,
     addParagraph,
@@ -95,5 +102,7 @@ module.exports = {
     updateImageParagraphDimensions,
     getParagraphAudio,
     generateParagraphAudio,
-    generateParagraphTTS
+    generateParagraphTTS,
+    updateImageParagraphLipSync,
+    getImageParagraphLipSync
 }
