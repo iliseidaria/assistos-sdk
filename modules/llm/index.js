@@ -38,9 +38,11 @@ async function editImage(spaceId, modelName, options) {
 async function sendLLMChatRequest(data) {
     return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/llms/text/generate`, "POST", data)
 }
-async function lipsync(spaceId, modelName, configs) {
+async function lipSync(spaceId,imageSrc,audioSrc, modelName, configs) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", {
         modelName: modelName,
+        imageSrc: imageSrc,
+        audioSrc: audioSrc,
         ...configs
     });
 }
@@ -56,5 +58,5 @@ module.exports = {
     getLLMConfigs,
     editImage,
     sendLLMChatRequest,
-    lipsync
+    lipSync
 }
