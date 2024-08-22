@@ -67,6 +67,9 @@ async function updateAlternativeAbstracts(spaceId, documentId, alternativeAbstra
 async function documentToVideo(spaceId, documentId){
     return await this.sendRequest(`/spaces/video/compile/${spaceId}/${documentId}`, "POST", {});
 }
+async function estimateDocumentVideoLength(spaceId, documentId){
+    return await this.sendRequest(`/spaces/video/estimate/${spaceId}/${documentId}`, "GET");
+}
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
@@ -84,5 +87,6 @@ module.exports = {
     updateAlternativeAbstracts,
     sendRequest,
     documentToVideo,
-    updateVideo
+    updateVideo,
+    estimateDocumentVideoLength
 };
