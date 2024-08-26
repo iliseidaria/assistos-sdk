@@ -1,5 +1,6 @@
 async function getParagraph(spaceId, documentId, paragraphId) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}`);
+    debugger
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 

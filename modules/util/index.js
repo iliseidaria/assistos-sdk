@@ -243,48 +243,106 @@ function buildCommandString(commandType, parameters) {
             return `${key}=${value}`;
         })
         .join(' ');
-    return `!${commandName} ${parametersString}:`
+    return `${commandName} ${parametersString};`
 }
 
-function findCommand(input) {
+function findCommands(input) {
     input = unescapeHTML(input);
     input = input.trim();
-    const regex = /^!.*?:/;
-    const match = input.match(regex);
-    if (!match) {
-        return {
-            remainingText: input
-        };
-    }
-    let foundCommand = match[0];
-    for (let command of constants.TTS_COMMANDS) {
-        if (foundCommand.startsWith(command.NAME)) {
-            let remainingText = input.substring(foundCommand.length);
-            const regex = /\s*:\s*$/;
-            foundCommand = foundCommand.replace(regex, '');
-            let [commandName, ...params] = foundCommand.trim().split(/\s+/);
-            const paramsObject = {};
-            for (let param of params) {
+
+    const commandsArray = input.split(';').map(cmd => cmd.trim()).filter(cmd => cmd !== '');
+    const result = {};
+
+    let lastCommandIndex = -1;
+
+    for (let commandStr of commandsArray) {
+        const regex = /^(\w+)(\s+.*)?$/;
+        const match = commandStr.match(regex);
+
+        if (!match) {
+            return { invalid: true, error: `Invalid command format: "${commandStr}"` };
+        }
+
+        let foundCommand = match[1];
+        let paramsString = match[2] ? match[2].trim() : '';
+
+        const commandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === foundCommand);
+        if (!commandConfig) {
+            return { invalid: true, error: `Unknown command "${foundCommand}" in input: "${commandStr}"` };
+        }
+
+        // Check order of commands
+        const commandIndex = constants.COMMANDS_CONFIG.ORDER.indexOf(foundCommand);
+        if (commandIndex < lastCommandIndex) {
+            return { invalid: true, error: `Command "${foundCommand}" is out of order in input: "${commandStr}"` };
+        }
+        lastCommandIndex = commandIndex;
+
+
+        for (let previousCommand in result) {
+            if (!commandConfig.ALLOWED_ALONG.includes(previousCommand) && !constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommand).ALLOWED_ALONG.includes(foundCommand)) {
+                return { invalid: true, error: `Command "${foundCommand}" is not allowed alongside "${previousCommand}"` };
+            }
+        }
+
+        if (result[foundCommand]) {
+            return { invalid: true, error: `Duplicate command "${foundCommand}" detected in input: "${commandStr}"` };
+        }
+
+        const paramsObject = {};
+        if (paramsString) {
+            let paramsArray = paramsString.split(/\s+/);
+            for (let param of paramsArray) {
                 if (param.includes('=')) {
                     let [name, value] = param.split('=');
-                    let parameter = command.PARAMETERS.find(p => p.NAME === name);
+                    let parameter = commandConfig.PARAMETERS?.find(p => p.NAME === name);
                     if (!parameter) {
-                        continue;
+                        return { invalid: true, error: `Unknown parameter "${name}" in command: "${commandStr}"` };
+                    }
+                    if (parameter.TYPE === 'number') {
+                        value = parseFloat(value);
+                        if (isNaN(value) || value < parameter.MIN_VALUE || value > parameter.MAX_VALUE) {
+                            return { invalid: true, error: `Invalid value for parameter "${name}" in command: "${commandStr}"` };
+                        }
+                    } else if (parameter.TYPE === 'string' && parameter.VALUES && !parameter.VALUES.includes(value)) {
+                        return { invalid: true, error: `Invalid value "${value}" for parameter "${name}" in command: "${commandStr}"` };
                     }
                     paramsObject[name] = value;
+                } else {
+                    return { invalid: true, error: `Invalid parameter format "${param}" in command: "${commandStr}"` };
                 }
             }
-            return {
-                action: command.ACTION,
-                paramsObject: paramsObject,
-                remainingText: remainingText
-            };
         }
+
+        result[foundCommand] = {
+            name: foundCommand,
+            action: commandConfig.ACTION,
+            paramsObject: paramsObject,
+        };
     }
-    return {
-        remainingText: input
-    };
+    return result;
 }
+
+
+
+function updateCommandsString(commandType, parameters, currentCommandsString) {
+    const commands = findCommands(currentCommandsString);
+    if(commands.invalid){
+        throw new Error(commands.error);
+    }
+    commands[commandType] = {
+        name: commandType,
+        action: constants.COMMANDS_CONFIG.COMMANDS.find(command => command.NAME === `${commandType}`).ACTION,
+        paramsObject: parameters
+    };
+
+    const updatedCommandsString = Object.entries(commands)
+        .map(([key, command]) => buildCommandString(command.name, command.paramsObject))
+        .join("\n");
+
+    return updatedCommandsString;
+}
+
 
 function normalizeString(str) {
     if (!str) {
@@ -341,8 +399,9 @@ module.exports = {
     closeSSEConnection,
     subscribeToObject,
     unsubscribeFromObject,
-    findCommand,
+    findCommands,
     arrayBufferToBase64,
     isSameCommand,
-    buildCommandString
+    buildCommandString,
+    updateCommandsString
 }
