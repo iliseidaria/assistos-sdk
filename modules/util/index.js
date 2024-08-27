@@ -243,47 +243,154 @@ function buildCommandString(commandType, parameters) {
             return `${key}=${value}`;
         })
         .join(' ');
-    return `!${commandName} ${parametersString}:`
+    return `${commandName} ${parametersString};`
 }
 
-function findCommand(input) {
+function findCommands(input) {
     input = unescapeHTML(input);
     input = input.trim();
-    const regex = /^!.*?:/;
-    const match = input.match(regex);
-    if (!match) {
-        return {
-            remainingText: input
-        };
-    }
-    let foundCommand = match[0];
-    for (let command of constants.TTS_COMMANDS) {
-        if (foundCommand.startsWith(command.NAME)) {
-            let remainingText = input.substring(foundCommand.length);
-            const regex = /\s*:\s*$/;
-            foundCommand = foundCommand.replace(regex, '');
-            let [commandName, ...params] = foundCommand.trim().split(/\s+/);
-            const paramsObject = {};
-            for (let param of params) {
+
+    const commandsArray = input.split(';').map(cmd => cmd.trim()).filter(cmd => cmd !== '');
+    const result = {};
+
+    let lastCommandIndex = -1;
+
+    for (let commandStr of commandsArray) {
+        const regex = /^(\w+)(\s+.*)?$/;
+        const match = commandStr.match(regex);
+
+        if (!match) {
+            return {invalid: true, error: `Invalid command format: "${commandStr}"`};
+        }
+
+        let foundCommand = match[1];
+        let paramsString = match[2] ? match[2].trim() : '';
+
+        const commandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === foundCommand);
+        if (!commandConfig) {
+            return {invalid: true, error: `Unknown command "${foundCommand}"`};
+        }
+        if (result[foundCommand]) {
+            return {invalid: true, error: `Duplicate command "${foundCommand}" detected`};
+        }
+        for (let previousCommand in result) {
+            if (!commandConfig.ALLOWED_ALONG.includes(previousCommand) && !constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommand).ALLOWED_ALONG.includes(foundCommand)) {
+                return {
+                    invalid: true,
+                    error: `Command "${foundCommand}" is not allowed alongside "${previousCommand}"`
+                };
+            }
+        }
+        const commandIndex = constants.COMMANDS_CONFIG.ORDER.indexOf(foundCommand);
+        if (commandIndex < lastCommandIndex) {
+            let previousCommandName = constants.COMMANDS_CONFIG.ORDER[lastCommandIndex];
+            return {invalid: true, error: `Command "${previousCommandName}" is not allowed before "${foundCommand}"`};
+        }
+        lastCommandIndex = commandIndex;
+
+        const paramsObject = {};
+        if (paramsString) {
+            let paramsArray = paramsString.split(/\s+/);
+            for (let param of paramsArray) {
                 if (param.includes('=')) {
                     let [name, value] = param.split('=');
-                    let parameter = command.PARAMETERS.find(p => p.NAME === name);
+                    let parameter = commandConfig.PARAMETERS?.find(p => p.NAME === name);
                     if (!parameter) {
-                        continue;
+                        return {invalid: true, error: `Unknown parameter "${name}" in command: "${commandStr}"`};
+                    }
+                    if (parameter.TYPE === 'number') {
+                        value = parseFloat(value);
+                        if (isNaN(value) || value < parameter.MIN_VALUE || value > parameter.MAX_VALUE) {
+                            return {
+                                invalid: true,
+                                error: `Invalid value for parameter "${name}" in command: "${commandStr}"`
+                            };
+                        }
+                    } else if (parameter.TYPE === 'string' && parameter.VALUES && !parameter.VALUES.includes(value)) {
+                        return {invalid: true, error: `Invalid value "${value}" for parameter "${name}"`};
                     }
                     paramsObject[name] = value;
+                } else {
+                    return {invalid: true, error: `Invalid parameter format "${param}" in command: "${commandStr}"`};
                 }
             }
-            return {
-                action: command.ACTION,
-                paramsObject: paramsObject,
-                remainingText: remainingText
-            };
+        }
+
+        result[foundCommand] = {
+            name: foundCommand,
+            action: commandConfig.ACTION,
+            paramsObject: paramsObject,
+        };
+    }
+    return result;
+}
+
+
+function updateCommandsString(commandType, parameters, currentCommandsString) {
+    const commands = findCommands(currentCommandsString);
+    if (commands.invalid) {
+        throw new Error(commands.error);
+    }
+    commands[commandType] = {
+        name: commandType,
+        action: constants.COMMANDS_CONFIG.COMMANDS.find(command => command.NAME === `${commandType}`).ACTION,
+        paramsObject: parameters
+    };
+
+    const updatedCommandsString = Object.entries(commands)
+        .map(([key, command]) => buildCommandString(command.name, command.paramsObject))
+        .join("\n");
+
+    return updatedCommandsString;
+}
+
+function getCommandsDifferences(commandsObject1, commandsObject2) {
+    const differencesObject = {};
+    const keys1 = Object.keys(commandsObject1);
+    const keys2 = Object.keys(commandsObject2);
+
+    for (const key of keys1) {
+        if (!keys2.includes(key)) {
+            differencesObject[key] = "deleted"; // command no longer exists in the updated commands config
+        } else {
+            differencesObject[key] = areCommandsDifferent(commandsObject1[key], commandsObject2[key]) ? "changed" : "same";
         }
     }
-    return {
-        remainingText: input
-    };
+
+    for (const key of keys2) {
+        if (!keys1.includes(key)) {
+            differencesObject[key] ="new"; // command is new in the updated commands config
+        }
+    }
+    return differencesObject;
+}
+
+
+function areCommandsDifferent(commandObj1, commandObj2) {
+    if (normalizeString(commandObj1.action) !== normalizeString(commandObj2.action)) {
+        return true;
+    }
+    const params1 = commandObj1.paramsObject || {};
+    const params2 = commandObj2.paramsObject || {};
+    const keys1 = Object.keys(params1);
+    const keys2 = Object.keys(params2);
+
+    if (keys1.length !== keys2.length) {
+        return true;
+    }
+
+    for (let key of keys1) {
+        if (params1[key] !== params2[key]) {
+            return true;
+        }
+    }
+
+    for (let key of keys2) {
+        if (!keys1.includes(key)) {
+            return true;
+        }
+    }
+    return false
 }
 
 function normalizeString(str) {
@@ -291,45 +398,6 @@ function normalizeString(str) {
         return '';
     }
     return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
-}
-
-function isSameCommand(commandObj1, commandObj2) {
-    let differences = [];
-
-    if (normalizeString(commandObj1.action) !== normalizeString(commandObj2.action)) {
-        differences.push(`Actions differ: ${commandObj1.action} vs ${commandObj2.action}`);
-    }
-
-    if (normalizeString(commandObj1.remainingText) !== normalizeString(commandObj2.remainingText)) {
-        differences.push(`Remaining text differs: "${commandObj1.remainingText}" vs "${commandObj2.remainingText}"`);
-    }
-
-    const params1 = commandObj1.paramsObject || {};
-    const params2 = commandObj2.paramsObject || {};
-    const keys1 = Object.keys(params1);
-    const keys2 = Object.keys(params2);
-
-    if (keys1.length !== keys2.length) {
-        differences.push(`Number of parameters differs: ${keys1.length} vs ${keys2.length}`);
-    }
-
-    for (let key of keys1) {
-        if (normalizeString(params1[key]) !== normalizeString(params2[key])) {
-            differences.push(`Parameter "${key}" values differ: ${params1[key]} vs ${params2[key]}`);
-        }
-    }
-
-    for (let key of keys2) {
-        if (!keys1.includes(key)) {
-            differences.push(`Parameter "${key}" is missing in the first command object`);
-        }
-    }
-
-    if (differences.length > 0) {
-        return {isEqual: false, differences: differences};
-    } else {
-        return {isEqual: true, differences: []};
-    }
 }
 
 
@@ -341,8 +409,10 @@ module.exports = {
     closeSSEConnection,
     subscribeToObject,
     unsubscribeFromObject,
-    findCommand,
+    findCommands,
     arrayBufferToBase64,
-    isSameCommand,
-    buildCommandString
+    areCommandsDifferent,
+    getCommandsDifferences,
+    buildCommandString,
+    updateCommandsString
 }
