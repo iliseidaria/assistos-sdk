@@ -16,8 +16,8 @@ module.exports = {
         ORDER: [
             "speech",
             "silence",
-            "lipsync",
             "video",
+            "lipsync"
         ],
         COMMANDS: [
             {

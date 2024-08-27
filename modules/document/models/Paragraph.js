@@ -2,27 +2,24 @@ class Paragraph {
     constructor(paragraphData) {
         this.position = paragraphData.position;
         this.id = paragraphData.id;
-        if(paragraphData.image){
-            this.image = paragraphData.image;
-            this.dimensions = paragraphData.dimensions;
-            this.lipSync = paragraphData.lipSync;
-        } else {
+        if (!paragraphData.config.image) {
             this.text = paragraphData.text;
             this.mainIdea = paragraphData.mainIdea || "";
             this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
-            this.audio = paragraphData.audio || "";
-            this.audioConfig= paragraphData.audioConfig || null;
         }
+        this.config = paragraphData.config
     }
     simplifyParagraph() {
         return {
-            text:this.text,
-            mainIdea:this.mainIdea
+            text: this.text,
+            mainIdea: this.mainIdea
         }
     }
+
     getNotificationId(chapterId) {
         return `doc:${chapterId}:${this.id}`;
     }
+
     toString() {
         return this.text;
     }
@@ -31,40 +28,41 @@ class Paragraph {
         this.text = paragraphText;
     }
 
-    getMainIdea(){
+    getMainIdea() {
         return this.mainIdea;
     }
 
-    setMainIdea(idea){
+    setMainIdea(idea) {
         this.mainIdea = idea;
     }
 
-    addAlternativeParagraph(altParagraphData){
+    addAlternativeParagraph(altParagraphData) {
         this.alternativeParagraphs.push(altParagraphData);
     }
 
-    getAlternativeParagraph(id){
+    getAlternativeParagraph(id) {
         return this.alternativeParagraphs.find(paragraph => paragraph.id === id);
     }
 
-    updateAlternativeParagraph(id, text){
+    updateAlternativeParagraph(id, text) {
         let paragraph = this.getAlternativeParagraph(id);
-        if(paragraph){
+        if (paragraph) {
             paragraph.text = text;
-        }else {
+        } else {
             console.error(`Failed to find alternative paragraph with id: ${id}`);
         }
     }
 
-    deleteAlternativeParagraph(id){
+    deleteAlternativeParagraph(id) {
         const index = this.alternativeParagraphs.findIndex(paragraph => paragraph.id === id);
         if (index !== -1) {
             this.alternativeParagraphs.splice(index, 1);
-        }else {
+        } else {
             console.warn(`Failed to find alternative paragraph with id: ${id}`);
         }
     }
-    selectAlternativeParagraph(alternativeParagraphId){
+
+    selectAlternativeParagraph(alternativeParagraphId) {
         let clone = Object.assign({}, this);
 
         let alternativeParagraph = this.getAlternativeParagraph(alternativeParagraphId);
@@ -74,11 +72,12 @@ class Paragraph {
 
         let alternativeParagraphIndex = this.alternativeParagraphs.findIndex(paragraph => paragraph.id === alternativeParagraph.id);
         this.alternativeParagraphs.splice(alternativeParagraphIndex, 1);
-        this.alternativeParagraphs.splice(alternativeParagraphIndex,0,{
+        this.alternativeParagraphs.splice(alternativeParagraphIndex, 0, {
             id: clone.id,
             text: clone.text,
             mainIdea: clone.mainIdea
         });
     }
 }
+
 module.exports = Paragraph;
