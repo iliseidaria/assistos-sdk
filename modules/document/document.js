@@ -70,6 +70,9 @@ async function documentToVideo(spaceId, documentId){
 async function estimateDocumentVideoLength(spaceId, documentId){
     return await this.sendRequest(`/spaces/video/estimate/${spaceId}/${documentId}`, "GET");
 }
+async function getDocumentTasks(spaceId, documentId){
+    return await this.sendRequest(`/spaces/tasks/${spaceId}/${documentId}`, "GET");
+}
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
@@ -88,5 +91,6 @@ module.exports = {
     sendRequest,
     documentToVideo,
     updateVideo,
-    estimateDocumentVideoLength
+    estimateDocumentVideoLength,
+    getDocumentTasks
 };
