@@ -400,6 +400,15 @@ function normalizeString(str) {
     return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
 }
 
+async function cancelTask(spaceId, taskId) {
+    return await this.sendRequest(`/tasks/${spaceId}/${taskId}`, "DELETE");
+}
+async function getTasks(spaceId) {
+    return await this.sendRequest(`/tasks/${spaceId}`, "GET");
+}
+async function runTask(taskId) {
+    return await this.sendRequest(`/tasks/${taskId}`, "POST", {});
+}
 
 module.exports = {
     request,
@@ -414,5 +423,8 @@ module.exports = {
     areCommandsDifferent,
     getCommandsDifferences,
     buildCommandString,
-    updateCommandsString
+    updateCommandsString,
+    cancelTask,
+    getTasks,
+    runTask
 }

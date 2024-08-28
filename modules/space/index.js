@@ -120,9 +120,6 @@ async function importDocument(spaceId,documentFormData){
 async function importPersonality(spaceId,personalityFormData){
     return await this.sendRequest(`/spaces/${spaceId}/import/personalities`, "POST", personalityFormData);
 }
-async function cancelTask(spaceId, taskId) {
-    return await this.sendRequest(`/spaces/tasks/${spaceId}/${taskId}`, "DELETE");
-}
 async function deleteVideo(spaceId, videoId) {
     return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "DELETE");
 }
@@ -151,7 +148,6 @@ module.exports = {
     deleteAudio,
     importDocument,
     importPersonality,
-    cancelTask,
     deleteVideo,
 }
 

@@ -65,13 +65,13 @@ async function updateAlternativeAbstracts(spaceId, documentId, alternativeAbstra
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", alternativeAbstracts);
 }
 async function documentToVideo(spaceId, documentId){
-    return await this.sendRequest(`/spaces/video/compile/${spaceId}/${documentId}`, "POST", {});
+    return await this.sendRequest(`/tasks/video/${spaceId}/${documentId}`, "POST", {});
 }
 async function estimateDocumentVideoLength(spaceId, documentId){
     return await this.sendRequest(`/spaces/video/estimate/${spaceId}/${documentId}`, "GET");
 }
 async function getDocumentTasks(spaceId, documentId){
-    return await this.sendRequest(`/spaces/tasks/${spaceId}/${documentId}`, "GET");
+    return await this.sendRequest(`/tasks/${spaceId}/${documentId}`, "GET");
 }
 module.exports = {
     getDocumentTopic,
