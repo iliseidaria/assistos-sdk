@@ -3,6 +3,7 @@ async function getChapter(spaceId, documentId, chapterId){
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 async function addChapter(spaceId, documentId, chapterData){
+    debugger
     let objectURI = encodeURIComponent(`${documentId}/chapters`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", chapterData);
 }
