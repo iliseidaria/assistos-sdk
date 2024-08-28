@@ -2,12 +2,14 @@ const request = require("../util").request;
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
+const Document = require("./models/Document");
 const documentType = "documents";
 async function getDocumentsMetadata(spaceId){
     return await this.sendRequest(`/spaces/containerObject/meta/${spaceId}/${documentType}`, "GET");
 }
 async function getDocument(spaceId, documentId){
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${documentId}`, "GET");
+    let documentData = await this.sendRequest(`/spaces/containerObject/${spaceId}/${documentId}`, "GET");
+    return new Document(documentData);
 }
 async function addDocument(spaceId, documentData){
     documentData.metadata = ["id", "title"];
