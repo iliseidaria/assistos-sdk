@@ -58,14 +58,11 @@ async function deleteAlternativeParagraph(spaceId, documentId, chapterId, paragr
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
 
-
-
 // TODO remove
 async function updateParagraphAudio(spaceId, documentId, paragraphId, audioURL) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audio`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", audioURL);
 }
-
 
 async function updateParagraphConfig(spaceId, documentId, paragraphId, config) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/config`);
