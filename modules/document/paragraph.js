@@ -79,16 +79,6 @@ async function getParagraphAudio(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 
-async function generateParagraphAudio(spaceId, documentId, paragraphId, command, text) {
-    return await this.sendRequest(`/spaces/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {
-        command: command,
-        text: text
-    });
-}
-async function deleteParagraphAudio(spaceId,documentId,paragraphId){
-    return await this.sendRequest(`/spaces/audio/${spaceId}/${documentId}/${paragraphId}`, "DELETE");
-}
-
 async function updateImageParagraphDimensions(spaceId, documentId, paragraphId, dimensions) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/dimensions`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", dimensions);
@@ -102,6 +92,13 @@ async function updateImageParagraphLipSync(spaceId, documentId, paragraphId, vid
 async function getImageParagraphLipSync(spaceId, documentId, paragraphId) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/lipSync`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
+
+async function generateParagraphAudio(spaceId, documentId, paragraphId, command, text) {
+    return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {
+        command: command,
+        text: text
+    });
 }
 
 module.exports = {
@@ -119,7 +116,6 @@ module.exports = {
     updateImageParagraphDimensions,
     getParagraphAudio,
     generateParagraphAudio,
-    deleteParagraphAudio,
     updateImageParagraphLipSync,
     getImageParagraphLipSync,
     getParagraphConfig,
