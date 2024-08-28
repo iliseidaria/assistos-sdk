@@ -400,6 +400,9 @@ function normalizeString(str) {
     return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
 }
 
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 async function cancelTask(spaceId, taskId) {
     return await this.sendRequest(`/tasks/${spaceId}/${taskId}`, "DELETE");
 }
@@ -426,5 +429,6 @@ module.exports = {
     updateCommandsString,
     cancelTask,
     getTasks,
-    runTask
+    runTask,
+    sendRequest
 }
