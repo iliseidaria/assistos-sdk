@@ -1,6 +1,5 @@
 const LLM = require("./models/LLM.js");
-const {request, notificationService} = require("../util");
-const constants = require("../../constants");
+const {request} = require("../util");
 
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);

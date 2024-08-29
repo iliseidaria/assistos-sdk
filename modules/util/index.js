@@ -403,8 +403,11 @@ function normalizeString(str) {
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
-async function cancelTask(spaceId, taskId) {
-    return await this.sendRequest(`/tasks/${spaceId}/${taskId}`, "DELETE");
+async function cancelTask(taskId) {
+    return await this.sendRequest(`/tasks/cancel/${taskId}`, "DELETE");
+}
+async function cancelTaskAndRemove(taskId) {
+    return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
 }
 async function getTasks(spaceId) {
     return await this.sendRequest(`/tasks/${spaceId}`, "GET");
@@ -430,5 +433,6 @@ module.exports = {
     cancelTask,
     getTasks,
     runTask,
+    cancelTaskAndRemove,
     sendRequest
 }
