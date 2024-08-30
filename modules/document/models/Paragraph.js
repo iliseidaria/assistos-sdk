@@ -7,7 +7,7 @@ class Paragraph {
             this.mainIdea = paragraphData.mainIdea || "";
             this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
         }
-        this.config = paragraphData.config
+        this.config = paragraphData.config || { commands: {}};
     }
     simplifyParagraph() {
         return {

@@ -410,7 +410,10 @@ async function cancelTaskAndRemove(taskId) {
     return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
 }
 async function getTasks(spaceId) {
-    return await this.sendRequest(`/tasks/${spaceId}`, "GET");
+    return await this.sendRequest(`/tasks/space/${spaceId}`, "GET");
+}
+async function getTask(taskId) {
+    return await this.sendRequest(`/tasks/${taskId}`, "GET");
 }
 async function runTask(taskId) {
     return await this.sendRequest(`/tasks/${taskId}`, "POST", {});
@@ -434,5 +437,6 @@ module.exports = {
     getTasks,
     runTask,
     cancelTaskAndRemove,
-    sendRequest
+    sendRequest,
+    getTask
 }
