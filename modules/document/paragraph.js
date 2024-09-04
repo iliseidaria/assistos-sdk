@@ -27,11 +27,15 @@ async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, parag
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs`);
     return await this.sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
-
+async function insertParagraph(spaceId, documentId, chapterId, predecessorParagraphId, paragraphData) {
+    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs/${predecessorParagraphId}`);
+    return await this.sendRequest(`/spaces/embeddedObject/insert/${spaceId}/${objectURI}`, "POST", paragraphData);
+}
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/text`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", text);
 }
+
 
 async function updateParagraphMainIdea(spaceId, documentId, paragraphId, mainIdea) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/mainIdea`);
@@ -119,5 +123,6 @@ module.exports = {
     updateImageParagraphLipSync,
     getImageParagraphLipSync,
     getParagraphConfig,
-    updateParagraphConfig
+    updateParagraphConfig,
+    insertParagraph
 }
