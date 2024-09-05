@@ -13,6 +13,9 @@ async function addSpaceAnnouncement(spaceId, announcementData) {
 async function getSpaceAnnouncement(spaceId, announcementId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "GET")
 }
+async function getSpaceChat(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/chat`, "GET")
+}
 
 async function getSpaceAnnouncements(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
@@ -26,8 +29,8 @@ async function updateSpaceAnnouncement(spaceId, announcementId, announcementData
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
 }
 
-async function addSpaceChatMessage(spaceId, chatId, messageData) {
-    return await this.sendRequest(`/spaces/${spaceId}/chat/${chatId}`, "POST", messageData)
+async function addSpaceChatMessage(spaceId, messageData) {
+    return await this.sendRequest(`/spaces/${spaceId}/chat`, "POST", messageData)
 }
 
 async function createSpace(spaceName) {
@@ -149,6 +152,7 @@ module.exports = {
     importDocument,
     importPersonality,
     deleteVideo,
+    getSpaceChat
 }
 
 
