@@ -6,6 +6,9 @@ async function sendRequest(url, method, data) {
 async function getPersonalitiesMetadata(spaceId){
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}`, "GET");
 }
+async function getPersonalities(spaceId){
+  return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/data`, "GET");
+}
 async function getPersonality(spaceId, fileName){
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
 }
@@ -44,6 +47,7 @@ module.exports = {
     loadFilteredKnowledge,
     sendRequest,
     getAgent,
+    getPersonalities,
     getPersonalityByName,
     models:{
         personality:require('./models/Personality.js'),

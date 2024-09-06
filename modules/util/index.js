@@ -399,7 +399,19 @@ function normalizeString(str) {
     }
     return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
 }
-
+function sanitize(value) {
+    if (value != null && typeof value === "string") {
+        return value.replace(/&/g, '&amp;')
+            .replace(/'/g, '&#39;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\r\n/g, '&#13;')
+            .replace(/[\r\n]/g, '&#13;')
+            .replace(/\s/g, '&nbsp;');
+    }
+    return value;
+}
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
@@ -407,6 +419,9 @@ async function cancelTask(taskId) {
     return await this.sendRequest(`/tasks/cancel/${taskId}`, "DELETE");
 }
 async function cancelTaskAndRemove(taskId) {
+    return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
+}
+async function removeTask(taskId) {
     return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
 }
 async function getTasks(spaceId) {
@@ -438,5 +453,7 @@ module.exports = {
     runTask,
     cancelTaskAndRemove,
     sendRequest,
-    getTask
+    getTask,
+    removeTask,
+    sanitize
 }
