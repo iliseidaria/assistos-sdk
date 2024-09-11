@@ -2,11 +2,9 @@ class Paragraph {
     constructor(paragraphData) {
         this.position = paragraphData.position;
         this.id = paragraphData.id;
-        if (!paragraphData.config.image) {
-            this.text = paragraphData.text;
-            this.mainIdea = paragraphData.mainIdea || "";
-            this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
-        }
+        this.text = paragraphData.text;
+        this.mainIdea = paragraphData.mainIdea || "";
+        this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
         this.config = paragraphData.config || { commands: {}};
     }
     simplifyParagraph() {
