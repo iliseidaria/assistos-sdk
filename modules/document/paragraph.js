@@ -1,6 +1,5 @@
 async function getParagraph(spaceId, documentId, paragraphId) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}`);
-    debugger
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 
@@ -104,6 +103,13 @@ async function generateParagraphAudio(spaceId, documentId, paragraphId, command,
         text: text
     });
 }
+async function generateParagraphLipSync(spaceId, documentId, paragraphId, modelName, configs) {
+    return await this.sendRequest(`/tasks/lipsync/${spaceId}/${documentId}/${paragraphId}`, "POST", {
+        modelName: modelName,
+        ...(configs || {})
+    });
+}
+
 
 module.exports = {
     getParagraph,
@@ -124,5 +130,6 @@ module.exports = {
     getImageParagraphLipSync,
     getParagraphConfig,
     updateParagraphConfig,
-    insertParagraph
+    insertParagraph,
+    generateParagraphLipSync
 }

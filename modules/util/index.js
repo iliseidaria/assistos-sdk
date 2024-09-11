@@ -270,6 +270,13 @@ function findCommands(input) {
         if (!commandConfig) {
             return {invalid: true, error: `Unknown command "${foundCommand}"`};
         }
+        if(commandConfig.REQUIRED) {
+            for (let requiredCommand of commandConfig.REQUIRED) {
+                if (!result[requiredCommand]) {
+                    return {invalid: true, error: `Command "${foundCommand}" requires "${requiredCommand}" to be present`};
+                }
+            }
+        }
         if (result[foundCommand]) {
             return {invalid: true, error: `Duplicate command "${foundCommand}" detected`};
         }

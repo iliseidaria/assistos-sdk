@@ -24,6 +24,7 @@ module.exports = {
                 NAME: "speech",
                 ACTION: "textToSpeech",
                 ALLOWED_ALONG: ["lipsync", "video"],
+                REQUIRED: [],
                 PARAMETERS: [{
                     NAME: "personality",
                     TYPE: "string",
@@ -78,11 +79,13 @@ module.exports = {
             {
                 NAME: "video",
                 ALLOWED_ALONG: ["lipsync", "speech","silence"],
+                REQUIRED: ["speech"],
                 ACTION: "createVideo"
             },
             {
                 NAME: "lipsync",
                 ALLOWED_ALONG: ["video", "speech"],
+                REQUIRED: ["speech"],
                 ACTION:
                     "createLipSync"
             },
