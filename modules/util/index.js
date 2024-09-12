@@ -236,6 +236,13 @@ function arrayBufferToBase64(buffer) {
     return btoa(binary);
 }
 
+function buildCommandsString(commandsObject) {
+    const sortedCommandsArray = getSortedCommandsArray(commandsObject);
+    return sortedCommandsArray.map(command => {
+        return buildCommandString(command.name, command.paramsObject || {});
+    }).join("\n");
+}
+
 function buildCommandString(commandType, parameters) {
     const commandName = commandType;
     const parametersString = Object.entries(parameters)
@@ -246,6 +253,12 @@ function buildCommandString(commandType, parameters) {
     return `${commandName} ${parametersString};`
 }
 
+function getSortedCommandsArray(commandsObject) {
+    return Object.values(commandsObject).sort((a, b) => {
+        return constants.COMMANDS_CONFIG.ORDER.indexOf(a.name) - constants.COMMANDS_CONFIG.ORDER.indexOf(b.name);
+    });
+}
+
 function findCommands(input) {
     input = unescapeHTML(input);
     input = input.trim();
@@ -253,64 +266,63 @@ function findCommands(input) {
     const commandsArray = input.split(';').map(cmd => cmd.trim()).filter(cmd => cmd !== '');
     const result = {};
 
-    let lastCommandIndex = -1;
+    const regex = /^(\w+)(\s+.*)?$/;
+    let foundCommands = {}
 
-    for (let commandStr of commandsArray) {
-        const regex = /^(\w+)(\s+.*)?$/;
+    for (const commandStr of commandsArray) {
         const match = commandStr.match(regex);
-
         if (!match) {
             return {invalid: true, error: `Invalid command format: "${commandStr}"`};
         }
-
-        let foundCommand = match[1];
-        let paramsString = match[2] ? match[2].trim() : '';
-
-        const commandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === foundCommand);
-        if (!commandConfig) {
-            return {invalid: true, error: `Unknown command "${foundCommand}"`};
+        const commandName = match[1];
+        if (foundCommands[commandName]) {
+            return {invalid: true, error: `Duplicate command "${commandName}" detected`};
         }
-        if(commandConfig.REQUIRED) {
+        foundCommands[commandName] = match[2] ? match[2].trim() : '';
+    }
+
+
+    for (const commandName in foundCommands) {
+        const commandParamsString = foundCommands[commandName];
+        const commandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === commandName);
+        if (!commandConfig) {
+            return {invalid: true, error: `Unknown command "${commandName}"`};
+        }
+        if (commandConfig.REQUIRED) {
             for (let requiredCommand of commandConfig.REQUIRED) {
-                if (!result[requiredCommand]) {
-                    return {invalid: true, error: `Command "${foundCommand}" requires "${requiredCommand}" to be present`};
+                if (!foundCommands[requiredCommand]) {
+                    return {
+                        invalid: true,
+                        error: `Command "${commandName}" requires "${requiredCommand}" to be present`
+                    };
                 }
             }
         }
-        if (result[foundCommand]) {
-            return {invalid: true, error: `Duplicate command "${foundCommand}" detected`};
-        }
+
         for (let previousCommand in result) {
-            if (!commandConfig.ALLOWED_ALONG.includes(previousCommand) && !constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommand).ALLOWED_ALONG.includes(foundCommand)) {
+            if (!commandConfig.ALLOWED_ALONG.includes(previousCommand) && !constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommand).ALLOWED_ALONG.includes(commandName)) {
                 return {
                     invalid: true,
-                    error: `Command "${foundCommand}" is not allowed alongside "${previousCommand}"`
+                    error: `Command "${commandName}" is not allowed alongside "${previousCommand}"`
                 };
             }
         }
-        const commandIndex = constants.COMMANDS_CONFIG.ORDER.indexOf(foundCommand);
-        if (commandIndex < lastCommandIndex) {
-            let previousCommandName = constants.COMMANDS_CONFIG.ORDER[lastCommandIndex];
-            return {invalid: true, error: `Command "${previousCommandName}" is not allowed before "${foundCommand}"`};
-        }
-        lastCommandIndex = commandIndex;
-
         const paramsObject = {};
-        if (paramsString) {
-            let paramsArray = paramsString.split(/\s+/);
+        if (commandParamsString) {
+            let paramsArray = commandParamsString.split(/\s+/);
             for (let param of paramsArray) {
                 if (param.includes('=')) {
                     let [name, value] = param.split('=');
                     let parameter = commandConfig.PARAMETERS?.find(p => p.NAME === name);
                     if (!parameter) {
-                        return {invalid: true, error: `Unknown parameter "${name}" in command: "${commandStr}"`};
+                        return {invalid: true, error: `Unknown parameter "${name}" in command: "${commandName}"`};
                     }
                     if (parameter.TYPE === 'number') {
                         value = parseFloat(value);
                         if (isNaN(value) || value < parameter.MIN_VALUE || value > parameter.MAX_VALUE) {
                             return {
                                 invalid: true,
-                                error: `Invalid value for parameter "${name}" in command: "${commandStr}"`
+                                error: `Invalid value for parameter "${name}" in command: "${commandName}"`
                             };
                         }
                     } else if (parameter.TYPE === 'string' && parameter.VALUES && !parameter.VALUES.includes(value)) {
@@ -318,16 +330,16 @@ function findCommands(input) {
                     }
                     paramsObject[name] = value;
                 } else {
-                    return {invalid: true, error: `Invalid parameter format "${param}" in command: "${commandStr}"`};
+                    return {invalid: true, error: `Invalid parameter format "${param}" in command: "${commandName}"`};
                 }
             }
         }
-
-        result[foundCommand] = {
-            name: foundCommand,
+        result[commandName] = {
+            name: commandName,
             action: commandConfig.ACTION,
             paramsObject: paramsObject,
         };
+
     }
     return result;
 }
@@ -366,7 +378,7 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
 
     for (const key of keys2) {
         if (!keys1.includes(key)) {
-            differencesObject[key] ="new"; // command is new in the updated commands config
+            differencesObject[key] = "new"; // command is new in the updated commands config
         }
     }
     return differencesObject;
@@ -406,6 +418,7 @@ function normalizeString(str) {
     }
     return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
 }
+
 function sanitize(value) {
     if (value != null && typeof value === "string") {
         return value.replace(/&/g, '&amp;')
@@ -419,24 +432,31 @@ function sanitize(value) {
     }
     return value;
 }
+
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
+
 async function cancelTask(taskId) {
     return await this.sendRequest(`/tasks/cancel/${taskId}`, "DELETE");
 }
+
 async function cancelTaskAndRemove(taskId) {
     return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
 }
+
 async function removeTask(taskId) {
     return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
 }
+
 async function getTasks(spaceId) {
     return await this.sendRequest(`/tasks/space/${spaceId}`, "GET");
 }
+
 async function getTask(taskId) {
     return await this.sendRequest(`/tasks/${taskId}`, "GET");
 }
+
 async function runTask(taskId) {
     return await this.sendRequest(`/tasks/${taskId}`, "POST", {});
 }
@@ -454,6 +474,7 @@ module.exports = {
     areCommandsDifferent,
     getCommandsDifferences,
     buildCommandString,
+    buildCommandsString,
     updateCommandsString,
     cancelTask,
     getTasks,
@@ -462,5 +483,6 @@ module.exports = {
     sendRequest,
     getTask,
     removeTask,
-    sanitize
+    sanitize,
+    getSortedCommandsArray
 }

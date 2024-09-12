@@ -5,7 +5,7 @@ class Paragraph {
         this.text = paragraphData.text;
         this.mainIdea = paragraphData.mainIdea || "";
         this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
-        this.config = paragraphData.config || { commands: {}};
+        this.config = paragraphData.config
     }
     simplifyParagraph() {
         return {
