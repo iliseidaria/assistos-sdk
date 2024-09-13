@@ -25,6 +25,34 @@ module.exports = {
                 ACTION: "textToSpeech",
                 ALLOWED_ALONG: ["lipsync", "video"],
                 REQUIRED: [],
+                VALIDATE: async (spaceId, documentId, paragraphId, securityContext) => {
+                    const documentModule= require('assistos').loadModule('document', securityContext);
+                    const personalityModule = require('assistos').loadModule('personality', securityContext);
+
+                    const paragraph= await documentModule.getParagraph(spaceId, documentId, paragraphId);
+                    const paragraphConfig= await documentModule.getParagraphConfig(spaceId, documentId, paragraphId);
+                    if(!paragraph){
+                        throw ("Paragraph not found");
+                    }
+                    if(!paragraphConfig.commands["speech"]){
+                        throw ("Paragraph Must have a speech command");
+                    }
+
+                        const speechPersonality = commandObj.paramsObject.personality;
+                        const personalityData = await personalityModule.getPersonalityByName(spaceId, speechPersonality);
+                        if (!personalityData) {
+                            throw `Personality ${speechPersonality} not found`;
+                        }
+                        if (!personalityData.voiceId) {
+                            throw `Personality ${speechPersonality} has no voice configured`;
+                        }
+                    }
+                },
+                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
+                    const documentModule = require('assistos').loadModule('document', securityContext);
+                    return await documentModule.generateParagraphAudio(spaceId, documentId, paragraphId);
+
+                },
                 PARAMETERS: [{
                     NAME: "personality",
                     TYPE: "string",
@@ -78,14 +106,52 @@ module.exports = {
             },
             {
                 NAME: "video",
-                ALLOWED_ALONG: ["lipsync", "speech","silence"],
+                ALLOWED_ALONG: ["lipsync", "speech", "silence"],
                 REQUIRED: ["speech"],
+                VALIDATE: async (spaceId, documentId, paragraphId, commandStatus, commandObj, securityContext) => {
+                },
                 ACTION: "createVideo"
             },
             {
                 NAME: "lipsync",
                 ALLOWED_ALONG: ["video", "speech"],
                 REQUIRED: ["speech"],
+                VALIDATE: async (spaceId, documentId, paragraphId, securityContext) => {
+                    const utilModule = require('assistos').loadModule('util', securityContext);
+                    const documentModule = require('assistos').loadModule('document', securityContext);
+
+                    const paragraph= await documentModule.getParagraph(spaceId, documentId, paragraphId);
+
+                    if(!paragraph){
+                        throw ("Paragraph not found");
+                    }
+                    const paragraphConfigs = await documentModule.getParagraphConfig(spaceId, documentId, paragraphId);
+
+                    if (paragraphConfigs.commands["speech"]) {
+                        const speechCommand = paragraphConfigs.commands["speech"];
+                        if (speechCommand.taskId) {
+                            let task = await utilModule.getTask(speechCommand.taskId);
+                            switch (task.status) {
+                                case "running":
+                                    throw ("Cannot lipSync paragraph while speech command is running");
+                                case "created":
+                                    throw ("Cannot lipSync paragraph before speech task is executed");
+                                case "canceled":
+                                    throw ("Cannot lipSync paragraph because speech task was canceled");
+                                case "failed":
+                                    throw ("Cannot lipSync paragraph because speech task failed");
+                                case "completed":
+                                    return;
+                            }
+                        }
+                    } else {
+                        throw ("Paragraph Must have a speech command before adding a lip sync command");
+                    }
+                },
+                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
+                    const documentModule = require('assistos').loadModule('document', securityContext);
+                    return await documentModule.generateParagraphLipSync(spaceId, documentId, paragraphId);
+                },
                 ACTION:
                     "createLipSync"
             },
