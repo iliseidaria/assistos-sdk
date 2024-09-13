@@ -26,27 +26,26 @@ module.exports = {
                 ALLOWED_ALONG: ["lipsync", "video"],
                 REQUIRED: [],
                 VALIDATE: async (spaceId, documentId, paragraphId, securityContext) => {
-                    const documentModule= require('assistos').loadModule('document', securityContext);
+                    const documentModule = require('assistos').loadModule('document', securityContext);
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
 
-                    const paragraph= await documentModule.getParagraph(spaceId, documentId, paragraphId);
-                    const paragraphConfig= await documentModule.getParagraphConfig(spaceId, documentId, paragraphId);
-                    if(!paragraph){
+                    const paragraph = await documentModule.getParagraph(spaceId, documentId, paragraphId);
+
+                    if (!paragraph) {
                         throw ("Paragraph not found");
                     }
-                    if(!paragraphConfig.commands["speech"]){
+                    if (!paragraph.config.commands["speech"]) {
                         throw ("Paragraph Must have a speech command");
                     }
-
-                        const speechPersonality = commandObj.paramsObject.personality;
-                        const personalityData = await personalityModule.getPersonalityByName(spaceId, speechPersonality);
-                        if (!personalityData) {
-                            throw `Personality ${speechPersonality} not found`;
-                        }
-                        if (!personalityData.voiceId) {
-                            throw `Personality ${speechPersonality} has no voice configured`;
-                        }
+                    const speechPersonality = paragraph.config.commands["speech"].paramsObject.personality;
+                    const personalityData = await personalityModule.getPersonalityByName(spaceId, speechPersonality);
+                    if (!personalityData) {
+                        throw `Personality ${speechPersonality} not found`;
                     }
+                    if (!personalityData.voiceId) {
+                        throw `Personality ${speechPersonality} has no voice configured`;
+                    }
+
                 },
                 EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
@@ -120,15 +119,14 @@ module.exports = {
                     const utilModule = require('assistos').loadModule('util', securityContext);
                     const documentModule = require('assistos').loadModule('document', securityContext);
 
-                    const paragraph= await documentModule.getParagraph(spaceId, documentId, paragraphId);
+                    const paragraph = await documentModule.getParagraph(spaceId, documentId, paragraphId);
 
-                    if(!paragraph){
+                    if (!paragraph) {
                         throw ("Paragraph not found");
                     }
-                    const paragraphConfigs = await documentModule.getParagraphConfig(spaceId, documentId, paragraphId);
 
-                    if (paragraphConfigs.commands["speech"]) {
-                        const speechCommand = paragraphConfigs.commands["speech"];
+                    if (paragraph.config.commands["speech"]) {
+                        const speechCommand = paragraph.config.commands["speech"];
                         if (speechCommand.taskId) {
                             let task = await utilModule.getTask(speechCommand.taskId);
                             switch (task.status) {

@@ -484,5 +484,6 @@ module.exports = {
     getTask,
     removeTask,
     sanitize,
-    getSortedCommandsArray
+    getSortedCommandsArray,
+    constants
 }

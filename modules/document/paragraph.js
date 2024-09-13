@@ -26,10 +26,12 @@ async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, parag
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs`);
     return await this.sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
+
 async function insertParagraph(spaceId, documentId, chapterId, predecessorParagraphId, paragraphData) {
     let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs/${predecessorParagraphId}`);
     return await this.sendRequest(`/spaces/embeddedObject/insert/${spaceId}/${objectURI}`, "POST", paragraphData);
 }
+
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
     let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/text`);
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", text);
@@ -97,12 +99,10 @@ async function getImageParagraphLipSync(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
 
-async function generateParagraphAudio(spaceId, documentId, paragraphId, command, text) {
-    return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {
-        command: command,
-        text: text
-    });
+async function generateParagraphAudio(spaceId, documentId, paragraphId) {
+    return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
 }
+
 async function generateParagraphLipSync(spaceId, documentId, paragraphId, modelName, configs) {
     return await this.sendRequest(`/tasks/lipsync/${spaceId}/${documentId}/${paragraphId}`, "POST", {
         modelName: modelName,
