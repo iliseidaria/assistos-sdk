@@ -34,10 +34,10 @@ module.exports = {
                     if (!paragraph) {
                         throw ("Paragraph not found");
                     }
-                    if (!paragraph.config.commands["speech"]) {
+                    if (!paragraph.commands["speech"]) {
                         throw ("Paragraph Must have a speech command");
                     }
-                    const speechPersonality = paragraph.config.commands["speech"].paramsObject.personality;
+                    const speechPersonality = paragraph.commands["speech"].paramsObject.personality;
                     const personalityData = await personalityModule.getPersonalityByName(spaceId, speechPersonality);
                     if (!personalityData) {
                         throw `Personality ${speechPersonality} not found`;
@@ -125,8 +125,8 @@ module.exports = {
                         throw ("Paragraph not found");
                     }
 
-                    if (paragraph.config.commands["speech"]) {
-                        const speechCommand = paragraph.config.commands["speech"];
+                    if (paragraph.commands["speech"]) {
+                        const speechCommand = paragraph.commands["speech"];
                         if (speechCommand.taskId) {
                             let task = await utilModule.getTask(speechCommand.taskId);
                             switch (task.status) {
