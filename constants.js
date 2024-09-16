@@ -220,6 +220,9 @@ module.exports = {
                 }
             }
         ]
-    }
+    },
+    IMAGE_SRC_PREFIX: "spaces/image/",
+    AUDIO_SRC_PREFIX: "spaces/audio/",
+    VIDEO_SRC_PREFIX: "spaces/video/"
 }
 
