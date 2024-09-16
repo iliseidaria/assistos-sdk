@@ -254,9 +254,17 @@ function buildCommandString(commandType, parameters) {
 }
 
 function getSortedCommandsArray(commandsObject) {
+    Object.keys(commandsObject).forEach(key => {
+        commandsObject[key].name = key;
+    });
     return Object.values(commandsObject).sort((a, b) => {
         return constants.COMMANDS_CONFIG.ORDER.indexOf(a.name) - constants.COMMANDS_CONFIG.ORDER.indexOf(b.name);
-    });
+    }).reduce((acc, command) => {
+        if (constants.COMMANDS_CONFIG.ORDER.includes(command.name)) {
+            acc.push(command);
+        }
+        return acc
+    }, []);
 }
 
 function findCommands(input) {
