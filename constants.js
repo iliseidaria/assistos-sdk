@@ -16,7 +16,6 @@ module.exports = {
         ORDER: [
             "speech",
             "silence",
-            "video",
             "lipsync"
         ],
         COMMANDS: [
@@ -33,6 +32,9 @@ module.exports = {
 
                     if (!paragraph) {
                         throw ("Paragraph not found");
+                    }
+                    if(paragraph.text.trim()===""){
+                        throw ("Paragraph text is empty");
                     }
                     if (!paragraph.commands["speech"]) {
                         throw ("Paragraph Must have a speech command");
