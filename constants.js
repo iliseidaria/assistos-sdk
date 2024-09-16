@@ -21,8 +21,8 @@ module.exports = {
         ],
         COMMANDS: [
             {
-                NAME: "speech",
-                ACTION: "textToSpeech",
+                NAME: "speech", //mutat mai sus
+                ACTION: "textToSpeech",//scos
                 ALLOWED_ALONG: ["lipsync", "video"],
                 REQUIRED: [],
                 VALIDATE: async (spaceId, documentId, paragraphId, securityContext) => {
@@ -156,3 +156,4 @@ module.exports = {
         ]
     }
 }
+
