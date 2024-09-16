@@ -267,6 +267,66 @@ function getSortedCommandsArray(commandsObject) {
     }, []);
 }
 
+function findAttachments(input) {
+    input = unescapeHTML(input);
+    input = input.trim();
+    const attachmentsArray = input.split(';').map(attachment => attachment.trim()).filter(attachment => attachment !== '');
+    const result = {};
+    const regex = /^(\w+)(\s+.*)?$/;
+    const foundAttachments = {};
+    for (const attachmentStr of attachmentsArray) {
+        const match = attachmentStr.match(regex);
+        if (!match) {
+            return {invalid: true, error: `Invalid attachment format: "${attachmentStr}"`};
+        }
+        const attachmentName = match[1];
+        if (foundAttachments[attachmentName]) {
+            return {invalid: true, error: `Duplicate attachment "${attachmentName}" detected`};
+        }
+        foundAttachments[attachmentName] = match[2] ? match[2].trim() : '';
+    }
+    for (const attachmentName in foundAttachments) {
+        const attachmentParamsString = foundAttachments[attachmentName];
+        const attachmentConfig = constants.COMMANDS_CONFIG.ATTACHMENTS.find(attachment => attachment.NAME === attachmentName);
+        if (!attachmentConfig) {
+            return {invalid: true, error: `Unknown attachment "${attachmentName}"`};
+        }
+        const paramsObject = {};
+        if (attachmentParamsString) {
+            let paramsArray = attachmentParamsString.split(/\s+/);
+            for (let param of paramsArray) {
+                if (param.includes('=')) {
+                    let [name, value] = param.split('=');
+                    let parameter = attachmentConfig.PARAMETERS?.find(p => p.NAME === name);
+                    if (!parameter) {
+                        return {invalid: true, error: `Unknown parameter "${name}" in attachment: "${attachmentName}"`};
+                    }
+                    if (parameter.TYPE === 'number') {
+                        value = parseFloat(value);
+                        if (isNaN(value) || value < parameter.MIN_VALUE || value > parameter.MAX_VALUE) {
+                            return {
+                                invalid: true,
+                                error: `Invalid value for parameter "${name}" in attachment: "${attachmentName}"`
+                            };
+                        }
+                    }
+                    paramsObject[name] = value;
+                } else {
+                    return {
+                        invalid: true,
+                        error: `Invalid parameter format "${param}" in attachment: "${attachmentName}"`
+                    };
+                }
+            }
+        }
+        result[attachmentName] = {
+            name: attachmentName,
+            ...paramsObject
+        }
+    }
+    return result;
+}
+
 function findCommands(input) {
     input = unescapeHTML(input);
     input = input.trim();
@@ -338,7 +398,10 @@ function findCommands(input) {
                     }
                     paramsObject[name] = value;
                 } else {
-                    return {invalid: true, error: `Invalid parameter format "${param}" in command: "${commandName}"`};
+                    return {
+                        invalid: true,
+                        error: `Invalid parameter format "${param}" in command: "${commandName}"`
+                    };
                 }
             }
         }
@@ -351,7 +414,6 @@ function findCommands(input) {
     }
     return result;
 }
-
 
 function updateCommandsString(commandType, parameters, currentCommandsString) {
     const commands = findCommands(currentCommandsString);
@@ -391,7 +453,6 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     }
     return differencesObject;
 }
-
 
 function areCommandsDifferent(commandObj1, commandObj2) {
     if (normalizeString(commandObj1.action) !== normalizeString(commandObj2.action)) {
@@ -493,5 +554,6 @@ module.exports = {
     removeTask,
     sanitize,
     getSortedCommandsArray,
+    findAttachments,
     constants
 }

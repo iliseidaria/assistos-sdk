@@ -20,10 +20,9 @@ module.exports = {
         ],
         COMMANDS: [
             {
-                NAME: "speech", //mutat mai sus
+                NAME: "speech",
                 ACTION: "textToSpeech",//scos
                 ALLOWED_ALONG: ["lipsync", "video"],
-                REQUIRED: [],
                 VALIDATE: async (spaceId, documentId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
@@ -33,7 +32,7 @@ module.exports = {
                     if (!paragraph) {
                         throw ("Paragraph not found");
                     }
-                    if(paragraph.text.trim()===""){
+                    if (paragraph.text.trim() === "") {
                         throw ("Paragraph text is empty");
                     }
                     if (!paragraph.commands["speech"]) {
@@ -54,10 +53,11 @@ module.exports = {
                     return await documentModule.generateParagraphAudio(spaceId, documentId, paragraphId);
 
                 },
-                PARAMETERS: [{
-                    NAME: "personality",
-                    TYPE: "string",
-                },
+                PARAMETERS: [
+                    {
+                        NAME: "personality",
+                        TYPE: "string",
+                    },
                     {
                         NAME: "emotion",
                         TYPE: "string",
@@ -155,6 +155,70 @@ module.exports = {
                 ACTION:
                     "createLipSync"
             },
+        ],
+        ATTACHMENTS: [
+            {
+                NAME: "audio",
+                PARAMETERS: [
+                    {
+                        NAME: "id",
+                        TYPE: "string",
+                    },
+                ],
+                VALIDATE: async (spaceId, resourceId, securityContext) => {
+                    const spaceModule = require('assistos').loadModule('space', securityContext);
+                    const audio = await spaceModule.getAudioHead(spaceId, resourceId);
+                    if (!audio) {
+                        throw ("Invalid audio Id");
+                    }
+
+                }
+            },
+            {
+                NAME: "video",
+                PARAMETERS: [
+                    {
+                        NAME: "id",
+                        TYPE: "string",
+                    },
+                ],
+                VALIDATE: async (spaceId, resourceId, securityContext) => {
+                    const spaceModule = require('assistos').loadModule('space', securityContext);
+                    const video = await spaceModule.getVideoHead(spaceId, resourceId);
+                    if (!video) {
+                        throw ("Invalid video Id");
+                    }
+
+                }
+            },
+            {
+                NAME: "image",
+                PARAMETERS: [
+                    {
+                        NAME: "id",
+                        TYPE: "string",
+                    },
+                    {
+                        NAME: "width",
+                        TYPE: "number",
+                        MIN_VALUE: 100,
+                        MAX_VALUE: 1920
+                    }, {
+                        NAME: "height",
+                        TYPE: "number",
+                        MIN_VALUE: 100,
+                        MAX_VALUE: 1080
+                    }
+                ],
+                VALIDATE: async (spaceId, resourceId, securityContext) => {
+                    const spaceModule = require('assistos').loadModule('space', securityContext);
+                    const image = await spaceModule.getImageHead(spaceId, resourceId);
+                    if (!image) {
+                        throw ("Invalid image Id");
+                    }
+
+                }
+            }
         ]
     }
 }
