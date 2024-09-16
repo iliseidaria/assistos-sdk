@@ -243,6 +243,25 @@ function buildCommandsString(commandsObject) {
     }).join("\n");
 }
 
+function getCommandsFromCommandsObject(commandsObject) {
+    return Object.entries(commandsObject).reduce((acc, [key, value]) => {
+        if (constants.COMMANDS_CONFIG.ORDER.includes(key)) {
+            acc[key] = value;
+        }
+        return acc;
+    }, {});
+}
+
+function getAttachmentsFromCommandsObject(commandsObject) {
+    return Object.entries(commandsObject).reduce((acc, [key, value]) => {
+        if (!constants.COMMANDS_CONFIG.ORDER.includes(key)) {
+            acc[key] = value;
+        }
+        return acc
+    }, {});
+}
+
+
 function buildCommandString(commandType, parameters) {
     const commandName = commandType;
     const parametersString = Object.entries(parameters)
@@ -439,6 +458,10 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     const keys2 = Object.keys(commandsObject2);
 
     for (const key of keys1) {
+        /* A way to prevent attachments commands from being market as deleted */
+        if (!constants.COMMANDS_CONFIG.ORDER.includes(key)) {
+            continue;
+        }
         if (!keys2.includes(key)) {
             differencesObject[key] = "deleted"; // command no longer exists in the updated commands config
         } else {
@@ -447,13 +470,36 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     }
 
     for (const key of keys2) {
+        /* A way to prevent attachments commands from being market as deleted */
+        if (!constants.COMMANDS_CONFIG.ORDER.includes(key)) {
+            continue;
+        }
         if (!keys1.includes(key)) {
             differencesObject[key] = "new"; // command is new in the updated commands config
         }
     }
     return differencesObject;
 }
+function getAttachmentsDifferences(attachmentsObject1, attachmentsObject2) {
+    const differencesObject = {};
+    const keys1 = Object.keys(attachmentsObject1);
+    const keys2 = Object.keys(attachmentsObject2);
 
+    for (const key of keys1) {
+        if (keys2.includes(key)) {
+            differencesObject[key] = areCommandsDifferent(attachmentsObject1[key], attachmentsObject2[key]) ? "changed" : "same";
+        } else {
+            differencesObject[key] = "deleted";
+        }
+    }
+
+    for (const key of keys2) {
+        if (!keys1.includes(key)) {
+            differencesObject[key] = "new";
+        }
+    }
+    return differencesObject;
+}
 function areCommandsDifferent(commandObj1, commandObj2) {
     if (normalizeString(commandObj1.action) !== normalizeString(commandObj2.action)) {
         return true;
@@ -555,5 +601,8 @@ module.exports = {
     sanitize,
     getSortedCommandsArray,
     findAttachments,
+    getCommandsFromCommandsObject,
+    getAttachmentsFromCommandsObject,
+    getAttachmentsDifferences,
     constants
 }
