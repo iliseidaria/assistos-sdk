@@ -215,8 +215,17 @@ module.exports = {
             }
         ]
     },
-    IMAGE_SRC_PREFIX: "spaces/image/",
-    AUDIO_SRC_PREFIX: "spaces/audio/",
-    VIDEO_SRC_PREFIX: "spaces/video/"
+    getImageSrc: (spaceId, imageId) => {
+        return `spaces/image/${spaceId}/${imageId}`;
+    },
+    getAudioSrc: (spaceId, audioId) => {
+        return `spaces/audio/${spaceId}/${audioId}`;
+    },
+    getVideoSrc: (spaceId, videoId) => {
+        return `spaces/video/${spaceId}/${videoId}`;
+    },
+    getLipSyncSrc: (spaceId, videoId) => {
+        return `spaces/video/${spaceId}/${videoId}`;
+    }
 }
 
