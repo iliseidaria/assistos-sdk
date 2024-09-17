@@ -23,11 +23,8 @@ module.exports = {
                 NAME: "speech",
                 ACTION: "textToSpeech",//scos
                 ALLOWED_ALONG: ["lipsync", "video"],
-                VALIDATE: async (spaceId, documentId, paragraphId, securityContext) => {
-                    const documentModule = require('assistos').loadModule('document', securityContext);
+                VALIDATE: async (spaceId, paragraph, securityContext) => {
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
-
-                    const paragraph = await documentModule.getParagraph(spaceId, documentId, paragraphId);
 
                     if (!paragraph) {
                         throw ("Paragraph not found");
@@ -117,11 +114,8 @@ module.exports = {
                 NAME: "lipsync",
                 ALLOWED_ALONG: ["video", "speech"],
                 REQUIRED: ["speech"],
-                VALIDATE: async (spaceId, documentId, paragraphId, securityContext) => {
+                VALIDATE: async (spaceId, paragraph, securityContext) => {
                     const utilModule = require('assistos').loadModule('util', securityContext);
-                    const documentModule = require('assistos').loadModule('document', securityContext);
-
-                    const paragraph = await documentModule.getParagraph(spaceId, documentId, paragraphId);
 
                     if (!paragraph) {
                         throw ("Paragraph not found");
