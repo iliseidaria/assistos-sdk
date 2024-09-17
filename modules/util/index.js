@@ -342,7 +342,6 @@ function findAttachments(input) {
             }
         }
         result[attachmentName] = {
-            name: attachmentName,
             ...paramsObject
         }
     }
