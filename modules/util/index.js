@@ -119,6 +119,9 @@ async function request(url, method, securityContext, data) {
     if (contentType.includes('audio/')) {
         return await response.arrayBuffer();
     }
+    if (method.toUpperCase() === "HEAD") {
+        return response.ok;
+    }
     const responseJSON = await response.json();
     if (!responseJSON.success) {
         let errorData = {
@@ -480,6 +483,7 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     }
     return differencesObject;
 }
+
 function getAttachmentsDifferences(attachmentsObject1, attachmentsObject2) {
     const differencesObject = {};
     const keys1 = Object.keys(attachmentsObject1);
@@ -487,7 +491,7 @@ function getAttachmentsDifferences(attachmentsObject1, attachmentsObject2) {
 
     for (const key of keys1) {
         if (keys2.includes(key)) {
-            differencesObject[key] = areCommandsDifferent(attachmentsObject1[key], attachmentsObject2[key]) ? "changed" : "same";
+            differencesObject[key] = areAttachmentsDifferent(attachmentsObject1[key], attachmentsObject2[key]) ? "changed" : "same";
         } else {
             differencesObject[key] = "deleted";
         }
@@ -500,6 +504,33 @@ function getAttachmentsDifferences(attachmentsObject1, attachmentsObject2) {
     }
     return differencesObject;
 }
+
+function areAttachmentsDifferent(attachmentObj1, attachmentObj2) {
+    if (normalizeString(attachmentObj1.name) !== normalizeString(attachmentObj2.name)) {
+        return true;
+    }
+    const params1 = attachmentObj1;
+    const params2 = attachmentObj2;
+    const keys1 = Object.keys(attachmentObj1);
+    const keys2 = Object.keys(attachmentObj2);
+
+    if (keys1.length !== keys2.length) {
+        return true;
+    }
+
+    for (let key of keys1) {
+        if (params1[key] !== params2[key]) {
+            return true;
+        }
+    }
+    for (let key of keys2) {
+        if (!keys1.includes(key)) {
+            return true;
+        }
+    }
+    return false
+}
+
 function areCommandsDifferent(commandObj1, commandObj2) {
     if (normalizeString(commandObj1.action) !== normalizeString(commandObj2.action)) {
         return true;
@@ -604,5 +635,6 @@ module.exports = {
     getCommandsFromCommandsObject,
     getAttachmentsFromCommandsObject,
     getAttachmentsDifferences,
+    areAttachmentsDifferent,
     constants
 }
