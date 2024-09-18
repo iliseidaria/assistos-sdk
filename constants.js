@@ -100,7 +100,10 @@ module.exports = {
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100,
-                    }]
+                    }],
+                VALIDATE: async function (){
+                    return true;
+                }
             },
             {
                 NAME: "video",
