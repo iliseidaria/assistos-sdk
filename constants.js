@@ -115,31 +115,11 @@ module.exports = {
                 ALLOWED_ALONG: ["video", "speech"],
                 REQUIRED: ["speech"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
-                    const utilModule = require('assistos').loadModule('util', securityContext);
-
-                    if (!paragraph) {
-                        throw ("Paragraph not found");
+                    if (!paragraph.commands.speech) {
+                        throw ("Paragraph Must have a speech command before adding lip sync");
                     }
-
-                    if (paragraph.commands["speech"]) {
-                        const speechCommand = paragraph.commands["speech"];
-                        if (speechCommand.taskId) {
-                            let task = await utilModule.getTask(speechCommand.taskId);
-                            switch (task.status) {
-                                case "running":
-                                    throw ("Cannot lipSync paragraph while speech command is running");
-                                case "created":
-                                    throw ("Cannot lipSync paragraph before speech task is executed");
-                                case "canceled":
-                                    throw ("Cannot lipSync paragraph because speech task was canceled");
-                                case "failed":
-                                    throw ("Cannot lipSync paragraph because speech task failed");
-                                case "completed":
-                                    return;
-                            }
-                        }
-                    } else {
-                        throw ("Paragraph Must have a speech command before adding a lip sync command");
+                    if(!paragraph.commands.image && !paragraph.commands.video){
+                        throw ("Paragraph Must have an image or a video before adding lip sync");
                     }
                 },
                 EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
