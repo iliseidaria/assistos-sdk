@@ -564,6 +564,19 @@ function normalizeString(str) {
     return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
 }
 
+function unsanitize(value) {
+    if (value != null && typeof value === "string") {
+        return value.replace(/&nbsp;/g, ' ')
+            .replace(/&#13;/g, '\n')
+            .replace(/&amp;/g, '&')
+            .replace(/&#39;/g, "'")
+            .replace(/&quot;/g, '"')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>');
+    }
+    return '';
+}
+
 function sanitize(value) {
     if (value != null && typeof value === "string") {
         return value.replace(/&/g, '&amp;')
@@ -572,8 +585,7 @@ function sanitize(value) {
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/\r\n/g, '&#13;')
-            .replace(/[\r\n]/g, '&#13;')
-            .replace(/\s/g, '&nbsp;');
+            .replace(/[\r\n]/g, '&#13;').replace(/\s/g, '&nbsp;');
     }
     return value;
 }
@@ -601,9 +613,11 @@ async function getTasks(spaceId) {
 async function getTask(taskId) {
     return await this.sendRequest(`/tasks/${taskId}`, "GET");
 }
+
 async function getTaskRelevantInfo(taskId) {
     return await this.sendRequest(`/tasks/info/${taskId}`, "GET");
 }
+
 async function runTask(taskId) {
     return await this.sendRequest(`/tasks/${taskId}`, "POST", {});
 }
@@ -638,5 +652,6 @@ module.exports = {
     getAttachmentsFromCommandsObject,
     getAttachmentsDifferences,
     areAttachmentsDifferent,
+    unsanitize,
     constants
 }
