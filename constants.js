@@ -48,7 +48,6 @@ module.exports = {
                 EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.generateParagraphAudio(spaceId, documentId, paragraphId);
-
                 },
                 PARAMETERS: [
                     {
