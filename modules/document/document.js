@@ -4,6 +4,9 @@ async function sendRequest(url, method, data) {
 }
 const Document = require("./models/Document");
 const documentType = "documents";
+async function exportDocument(spaceId, documentId, exportType){
+    return await this.sendRequest(`/spaces/${spaceId}/export/documents/${documentId}`, "POST", {exportType});
+}
 async function getDocumentsMetadata(spaceId){
     return await this.sendRequest(`/spaces/containerObject/meta/${spaceId}/${documentType}`, "GET");
 }
@@ -94,5 +97,6 @@ module.exports = {
     documentToVideo,
     updateVideo,
     estimateDocumentVideoLength,
-    getDocumentTasks
+    getDocumentTasks,
+    exportDocument
 };

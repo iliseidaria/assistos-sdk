@@ -116,6 +116,9 @@ async function request(url, method, securityContext, data) {
         console.error(err);
     }
     const contentType = response.headers.get('Content-Type');
+    if(contentType === 'application/zip') {
+        return await response.blob();
+    }
     if (contentType.includes('audio/')) {
         return await response.arrayBuffer();
     }
