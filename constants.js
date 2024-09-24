@@ -100,7 +100,7 @@ module.exports = {
                         MIN_VALUE: 0,
                         MAX_VALUE: 100,
                     }],
-                VALIDATE: async function (){
+                VALIDATE: async function () {
                     return true;
                 }
             },
@@ -120,7 +120,7 @@ module.exports = {
                     if (!paragraph.commands.speech) {
                         throw ("Paragraph Must have a speech command before adding lip sync");
                     }
-                    if(!paragraph.commands.image && !paragraph.commands.video){
+                    if (!paragraph.commands.image && !paragraph.commands.video) {
                         throw ("Paragraph Must have an image or a video before adding lip sync");
                     }
                 },
@@ -142,12 +142,11 @@ module.exports = {
                     },
                 ],
                 VALIDATE: async (spaceId, resourceId, securityContext) => {
-                    const spaceModule = require('assistos').loadModule('space', securityContext);
-                    const audio = await spaceModule.getAudioHead(spaceId, resourceId);
-                    if (!audio) {
-                        throw ("Invalid audio Id");
-                    }
-
+                    /*  const spaceModule = require('assistos').loadModule('space', securityContext);
+                      const audio = await spaceModule.getAudioHead(spaceId, resourceId);
+                      if (!audio) {
+                          throw ("Invalid audio Id");
+                      }*/
                 }
             },
             {
@@ -160,13 +159,13 @@ module.exports = {
                     {
                         NAME: "width",
                         TYPE: "number",
-                        MIN_VALUE: 100,
-                        MAX_VALUE: 1920
+                        MIN_VALUE: 1,
+                        MAX_VALUE: 10920
                     }, {
                         NAME: "height",
                         TYPE: "number",
-                        MIN_VALUE: 100,
-                        MAX_VALUE: 1080
+                        MIN_VALUE: 1,
+                        MAX_VALUE: 10080
                     },
                     {
                         NAME: "duration",
@@ -176,12 +175,11 @@ module.exports = {
                     }
                 ],
                 VALIDATE: async (spaceId, resourceId, securityContext) => {
-                    const spaceModule = require('assistos').loadModule('space', securityContext);
-                    const video = await spaceModule.getVideoHead(spaceId, resourceId);
-                    if (!video) {
-                        throw ("Invalid video Id");
-                    }
-
+                    /*       const spaceModule = require('assistos').loadModule('space', securityContext);
+                           const video = await spaceModule.getVideoHead(spaceId, resourceId);
+                           if (!video) {
+                               throw ("Invalid video Id");
+                           }*/
                 }
             },
             {
@@ -204,12 +202,11 @@ module.exports = {
                     }
                 ],
                 VALIDATE: async (spaceId, resourceId, securityContext) => {
-                    const spaceModule = require('assistos').loadModule('space', securityContext);
-                    const image = await spaceModule.getImageHead(spaceId, resourceId);
-                    if (!image) {
-                        throw ("Invalid image Id");
-                    }
-
+                    /*     const spaceModule = require('assistos').loadModule('space', securityContext);
+                         const image = await spaceModule.getImageHead(spaceId, resourceId);
+                         if (!image) {
+                             throw ("Invalid image Id");
+                         }*/
                 }
             }
         ]
