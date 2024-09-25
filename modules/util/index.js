@@ -96,7 +96,7 @@ async function request(url, method, securityContext, data) {
         } else if (typeof data === "string") {
             init.body = data;
             init.headers["Content-Type"] = "text/plain; charset=UTF-8";
-        } else if (data instanceof ArrayBuffer ||Buffer.isBuffer(data)) {
+        } else if (data instanceof ArrayBuffer || Buffer.isBuffer(data) || data instanceof Uint8Array) {
             init.body = data;
             init.headers["Content-Type"] = "application/octet-stream";
         } else {
