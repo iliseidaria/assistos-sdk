@@ -192,13 +192,13 @@ module.exports = {
                     {
                         NAME: "width",
                         TYPE: "number",
-                        MIN_VALUE: 100,
-                        MAX_VALUE: 1920
+                        MIN_VALUE: 20,
+                        MAX_VALUE: 8000
                     }, {
                         NAME: "height",
                         TYPE: "number",
-                        MIN_VALUE: 100,
-                        MAX_VALUE: 1080
+                        MIN_VALUE: 20,
+                        MAX_VALUE: 8000
                     }
                 ],
                 VALIDATE: async (spaceId, resourceId, securityContext) => {
