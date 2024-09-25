@@ -96,7 +96,7 @@ async function request(url, method, securityContext, data) {
         } else if (typeof data === "string") {
             init.body = data;
             init.headers["Content-Type"] = "text/plain; charset=UTF-8";
-        } else if (data instanceof ArrayBuffer) {
+        } else if (data instanceof ArrayBuffer ||Buffer.isBuffer(data)) {
             init.body = data;
             init.headers["Content-Type"] = "application/octet-stream";
         } else {
@@ -116,10 +116,10 @@ async function request(url, method, securityContext, data) {
         console.error(err);
     }
     const contentType = response.headers.get('Content-Type');
-    if(contentType === 'application/zip') {
+    if (contentType === 'application/zip') {
         return await response.blob();
     }
-    if (contentType.includes('audio/')) {
+    if (contentType.includes('audio/') || contentType.includes('image/') || contentType.includes('video/') || contentType.includes('application/octet-stream')) {
         return await response.arrayBuffer();
     }
     if (method.toUpperCase() === "HEAD") {

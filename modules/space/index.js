@@ -102,6 +102,9 @@ async function getAPIKeysMetadata(spaceId) {
 async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails: collaboratorEmails});
 }
+async function getImage(spaceId, imageId) {
+    return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "GET");
+}
 async function addImage(spaceId, image) {
     return await this.sendRequest(`/spaces/image/${spaceId}`, "POST", image);
 }
@@ -163,6 +166,7 @@ module.exports = {
     getSpaceChat,
     getAudioHead,
     getImageHead,
+    getImage,
     getVideoHead
 }
 
