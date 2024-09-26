@@ -140,6 +140,12 @@ module.exports = {
                         NAME: "id",
                         TYPE: "string",
                     },
+                    {
+                        NAME: "duration",
+                        TYPE: "number",
+                        MIN_VALUE: 0,
+                        MAX_VALUE: 3600
+                    }
                 ],
                 VALIDATE: async (spaceId, resourceId, securityContext) => {
                     /*  const spaceModule = require('assistos').loadModule('space', securityContext);

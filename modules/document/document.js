@@ -76,7 +76,7 @@ async function documentToVideo(spaceId, documentId){
     return await this.sendRequest(`/tasks/video/${spaceId}/${documentId}`, "POST", {});
 }
 async function estimateDocumentVideoLength(spaceId, documentId){
-    return await this.sendRequest(`/spaces/video/estimate/${spaceId}/${documentId}`, "GET");
+    return await this.sendRequest(`/documents/video/estimate/${spaceId}/${documentId}`, "GET");
 }
 async function getDocumentTasks(spaceId, documentId){
     return await this.sendRequest(`/tasks/${spaceId}/${documentId}`, "GET");
