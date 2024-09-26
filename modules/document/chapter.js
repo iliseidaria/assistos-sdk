@@ -1,18 +1,14 @@
 async function getChapter(spaceId, documentId, chapterId){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`)
 }
 async function addChapter(spaceId, documentId, chapterData){
-    let objectURI = encodeURIComponent(`${documentId}/chapters`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", chapterData);
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}`, "POST", chapterData);
 }
 async function updateChapter(spaceId, documentId, chapterData){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterData.id}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", chapterData);
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterData.id}`, "PUT", chapterData);
 }
 async function deleteChapter(spaceId, documentId, chapterId){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "DELETE");
 }
 
 async function swapChapters(spaceId, documentId, chapterId1, chapterId2){
