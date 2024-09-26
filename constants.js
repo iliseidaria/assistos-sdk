@@ -66,10 +66,12 @@ module.exports = {
                 PARAMETERS: [
                     {
                         NAME: "personality",
+                        SHORTHAND: "p",
                         TYPE: "string",
                     },
                     {
                         NAME: "emotion",
+                        SHORTHAND: "e",
                         TYPE: "string",
                         VALUES: ['female_happy',
                             'female_sad',
@@ -86,16 +88,19 @@ module.exports = {
                     }
                     , {
                         NAME: "styleGuidance",
+                        SHORTHAND: "sg",
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100
                     }, {
                         NAME: "temperature",
+                        SHORTHAND: "t",
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100
                     }, {
                         NAME: "voiceGuidance",
+                        SHORTHAND: "vg",
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100
@@ -110,6 +115,7 @@ module.exports = {
                 PARAMETERS:
                     [{
                         NAME: "duration",
+                        SHORTHAND: "d",
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100,

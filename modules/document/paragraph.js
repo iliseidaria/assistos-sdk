@@ -1,21 +1,17 @@
 async function getParagraph(spaceId, documentId, paragraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}`, "GET");
 }
 
 async function addParagraph(spaceId, documentId, chapterId, paragraphData) {
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", paragraphData);
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${chapterId}`, "POST", paragraphData);
 }
 
 async function updateParagraph(spaceId, documentId, paragraphId, paragraphData) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", paragraphData);
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}`, "PUT", paragraphData);
 }
 
 async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${paragraphId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${chapterId}/${paragraphId}`, "DELETE");
 }
 
 async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2) {

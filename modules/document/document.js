@@ -14,18 +14,18 @@ async function getDocumentsMetadata(spaceId){
     return await this.sendRequest(`/spaces/containerObject/meta/${spaceId}/${documentType}`, "GET");
 }
 async function getDocument(spaceId, documentId){
-    let documentData = await this.sendRequest(`/spaces/containerObject/${spaceId}/${documentId}`, "GET");
+    let documentData = await this.sendRequest(`/documents/${spaceId}/${documentId}`, "GET");
     return new Document(documentData);
 }
 async function addDocument(spaceId, documentData){
     documentData.metadata = ["id", "title"];
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${documentType}`, "POST", documentData);
+    return await this.sendRequest(`/documents/${spaceId}`, "POST", documentData);
 }
 async function updateDocument(spaceId, documentId, documentData){
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${documentId}`, "PUT", documentData);
+    return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "PUT", documentData);
 }
 async function deleteDocument(spaceId, documentId){
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${documentId}`, "DELETE");
+    return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "DELETE");
 }
 async function getDocumentTitle(spaceId, documentId){
     let objectURI = encodeURIComponent(`${documentId}/title`);
