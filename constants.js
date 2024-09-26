@@ -18,6 +18,20 @@ module.exports = {
             "silence",
             "lipsync"
         ],
+        EMOJIS : {
+            'female_happy': '👩😊',
+            'female_sad': '👩😢',
+            'female_angry': '👩😡',
+            'female_fearful': '👩😨',
+            'female_disgust': '👩🤢',
+            'female_surprised': '👩😲',
+            'male_happy': '👨😊',
+            'male_sad': '👨😢',
+            'male_angry': '👨😡',
+            'male_fearful': '👨😨',
+            'male_disgust': '👨🤢',
+            'male_surprised': '👨😲'
+        },
         COMMANDS: [
             {
                 NAME: "speech",
