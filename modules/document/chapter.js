@@ -1,5 +1,5 @@
 async function getChapter(spaceId, documentId, chapterId){
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`)
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "GET");
 }
 async function addChapter(spaceId, documentId, chapterData){
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}`, "POST", chapterData);
