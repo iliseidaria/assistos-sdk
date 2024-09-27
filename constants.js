@@ -36,7 +36,7 @@ module.exports = {
             {
                 NAME: "speech",
                 ACTION: "textToSpeech",//scos
-                ALLOWED_ALONG: ["lipsync", "video"],
+                ALLOWED_ALONG: ["lipsync", "videoScreenshot"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
 
@@ -109,7 +109,7 @@ module.exports = {
             },
             {
                 NAME: "silence",
-                ALLOWED_ALONG: ["video"],
+                ALLOWED_ALONG: ["videoScreenshot"],
                 ACTION:
                     "createSilentAudio",
                 PARAMETERS:
@@ -125,16 +125,43 @@ module.exports = {
                 }
             },
             {
-                NAME: "video",
-                ALLOWED_ALONG: ["lipsync", "speech", "silence"],
-                REQUIRED: ["speech"],
-                VALIDATE: async (spaceId, documentId, paragraphId, commandStatus, commandObj, securityContext) => {
+                NAME: "videoScreenshot",
+                ALLOWED_ALONG: ["speech", "silence"],
+                PARAMETERS:
+                    [{
+                        NAME: "inputId",
+                        SHORTHAND: "i",
+                        TYPE: "string",
+                     },{
+                        NAME: "time",
+                        SHORTHAND: "t",
+                        TYPE: "number",
+                        MIN_VALUE: 0,
+                        MAX_VALUE: 999,
+                    },{
+                        NAME: "outputId",
+                        SHORTHAND: "o",
+                        TYPE: "string",
+                    }],
+                VALIDATE: async (spaceId, resourceId, paragraph) => {
+                 /*const spaceModule = require('assistos').loadModule('space', securityContext);
+                   const video = await spaceModule.getVideoHead(spaceId, resourceId);
+                   if (!video) {
+                       throw ("Invalid video Id");
+                   }*/
+                    if(!paragraph.commands.videoScreenshot.paramsObject.time > paragraph.commands.video.duration){
+                        throw ("Time should be less than video duration");
+                    }
                 },
-                ACTION: "createVideo"
+                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
+                    const documentModule = require('assistos').loadModule('document', securityContext);
+                    return await documentModule.addVideoScreenshot(spaceId, documentId, paragraphId);
+                },
+                ACTION: "videoScreenshot"
             },
             {
                 NAME: "lipsync",
-                ALLOWED_ALONG: ["video", "speech"],
+                ALLOWED_ALONG: ["speech", "videoScreenshot"],
                 REQUIRED: ["speech"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     if (!paragraph.commands.speech) {
@@ -150,7 +177,7 @@ module.exports = {
                 },
                 ACTION:
                     "createLipSync"
-            },
+            }
         ],
         ATTACHMENTS: [
             {
@@ -244,9 +271,6 @@ module.exports = {
         return `spaces/audio/${spaceId}/${audioId}`;
     },
     getVideoSrc: (spaceId, videoId) => {
-        return `spaces/video/${spaceId}/${videoId}`;
-    },
-    getLipSyncSrc: (spaceId, videoId) => {
         return `spaces/video/${spaceId}/${videoId}`;
     }
 }

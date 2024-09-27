@@ -98,14 +98,15 @@ async function getImageParagraphLipSync(spaceId, documentId, paragraphId) {
 async function generateParagraphAudio(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
 }
-
+async function addVideoScreenshot(spaceId, documentId, paragraphId) {
+    return await this.sendRequest(`/tasks/videoScreenshot/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
+}
 async function generateParagraphLipSync(spaceId, documentId, paragraphId, modelName, configs) {
     return await this.sendRequest(`/tasks/lipsync/${spaceId}/${documentId}/${paragraphId}`, "POST", {
         modelName: modelName,
         ...(configs || {})
     });
 }
-
 
 module.exports = {
     getParagraph,
@@ -127,5 +128,6 @@ module.exports = {
     getParagraphCommands,
     updateParagraphCommands,
     insertParagraph,
-    generateParagraphLipSync
+    generateParagraphLipSync,
+    addVideoScreenshot
 }
