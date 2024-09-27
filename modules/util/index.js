@@ -456,6 +456,13 @@ function updateCommandsString(commandType, parameters, currentCommandsString) {
 
     return updatedCommandsString;
 }
+function buildCommandObject(commandType, parameters) {
+    return {
+        name: commandType,
+        action: constants.COMMANDS_CONFIG.COMMANDS.find(command => command.NAME === `${commandType}`).ACTION,
+        paramsObject: parameters
+    };
+}
 
 function getCommandsDifferences(commandsObject1, commandsObject2) {
     const differencesObject = {};
@@ -656,5 +663,6 @@ module.exports = {
     getAttachmentsDifferences,
     areAttachmentsDifferent,
     unsanitize,
+    buildCommandObject,
     constants
 }
