@@ -14,7 +14,7 @@ class Space {
         this.apiKeys = spaceData.apiKeys || {};
         this.pages = spaceData.pages || [];
         /* TODO REFACTOR METADATA LOGIC for personalities nnd include default personality in the space object */
-        this.currentPersonalityId = spaceData.currentPersonalityId //|| this.personalities.find(personality => personality.id === constants.PERSONALITIES.DEFAULT_PERSONALITY_ID).id;
+        this.currentPersonalityId = spaceData.currentPersonalityId;
         this.llms = spaceData.llms || [{name:"GPT 3.5 Turbo",id:"q12437rgq39r845t"}, {name:"GPT 4",id:"q124wsreg"}].map(llm => new LLM(llm));
         this.currentLlmId = spaceData.currentLlmId || "q12437rgq39r845t";
         this.observers = [];
@@ -126,12 +126,6 @@ class Space {
     async getFlow(flowName) {
         let flow = this.flows.find(flow => flow.constructor.name === flowName);
         return flow || console.error(`Flow not found, flowName: ${flowName}`);
-    }
-
-    async getPersonality(id) {
-        const personalityModule = require("assistos").loadModule("personality", {});
-        let personalityData = await personalityModule.getPersonality(this.id, id);
-        return new Personality(personalityData);
     }
 
     async loadFlows() {
