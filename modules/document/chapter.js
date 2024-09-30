@@ -15,17 +15,11 @@ async function deleteChapter(spaceId, documentId, chapterId) {
 }
 
 async function swapChapters(spaceId, documentId, chapterId1, chapterId2) {
-    let objectURI = encodeURIComponent(`${documentId}/chapters`);
-    let body = {
-        item1: chapterId1,
-        item2: chapterId2
-    }
-    return await this.sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
+    return await this.sendRequest(`/documents/chapters/swap/${spaceId}/${documentId}/${chapterId1}/${chapterId2}`, "PUT");
 }
 
 async function getChapterTitle(spaceId, documentId, chapterId) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=title`, "GET");
-
 }
 
 async function updateChapterTitle(spaceId, documentId, chapterId, title) {

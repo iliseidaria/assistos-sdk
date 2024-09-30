@@ -15,12 +15,7 @@ async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
 }
 
 async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2) {
-    let body = {
-        item1: paragraphId,
-        item2: paragraphId2
-    }
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs`);
-    return await this.sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
+    return await this.sendRequest(`/documents/chapters/paragraphs/swap/${spaceId}/${documentId}/${chapterId}/${paragraphId}/${paragraphId2}`, "PUT");
 }
 
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
