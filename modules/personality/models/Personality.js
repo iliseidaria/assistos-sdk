@@ -5,7 +5,7 @@ class Personality {
         this.name = personalityData.name;
         this.description = personalityData.description;
         this.id = personalityData.id
-        this.image = personalityData.image;
+        this.imageId = personalityData.imageId;
         this.voiceId = personalityData.voiceId;
         this.conversationHistory = personalityData.conversationHistory || [];
         this.context = personalityData.context || [];
@@ -13,7 +13,7 @@ class Personality {
         this.capabilities = personalityData.capabilities || [];
         this.openers = personalityData.openers || [];
         this.tasks = personalityData.tasks || [];
-        this.metadata = ["id", "name", "image"];
+        this.metadata = ["id", "name", "imageId"];
     }
 
     simplify(){

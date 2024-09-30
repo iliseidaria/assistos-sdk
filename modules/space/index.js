@@ -126,6 +126,9 @@ async function importPersonality(spaceId,personalityFormData){
 async function addVideo(spaceId, video) {
     return await this.sendRequest(`/spaces/video/${spaceId}`, "POST", video);
 }
+async function getVideo(spaceId, videoId) {
+    return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "GET");
+}
 async function deleteVideo(spaceId, videoId) {
     return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "DELETE");
 }
@@ -163,6 +166,7 @@ module.exports = {
     importPersonality,
     deleteVideo,
     addVideo,
+    getVideo,
     getSpaceChat,
     getAudioHead,
     getImageHead,
