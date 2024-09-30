@@ -1,5 +1,6 @@
 const {request} = require("../util");
 const personalityType = "personalities";
+const Personality = require('./models/Personality.js');
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
@@ -10,7 +11,8 @@ async function getPersonalities(spaceId){
   return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/data`, "GET");
 }
 async function getPersonality(spaceId, fileName){
-    return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
+    let personality =  await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
+    return new Personality(personality);
 }
 async function getPersonalityByName(spaceId, name){
     let metadataList = await this.getPersonalitiesMetadata(spaceId);
@@ -37,7 +39,9 @@ async function deletePersonality(spaceId, fileName){
 async function loadFilteredKnowledge(spaceId, words, personalityId){
     return await this.sendRequest(`/personalities/${spaceId}/${personalityId}/search?param1=${words}`, "GET", this.__securityContext);
 }
-
+async function exportPersonality(spaceId, personalityId){
+    return await this.sendRequest(`/spaces/${spaceId}/export/personalities/${personalityId}`, "GET", this.__securityContext);
+}
 module.exports = {
     getPersonalitiesMetadata,
     getPersonality,
@@ -49,6 +53,7 @@ module.exports = {
     getAgent,
     getPersonalities,
     getPersonalityByName,
+    exportPersonality,
     models:{
         personality:require('./models/Personality.js'),
         agent:require('./models/Agent.js')
