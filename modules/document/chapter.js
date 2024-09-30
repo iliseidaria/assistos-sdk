@@ -1,17 +1,20 @@
-async function getChapter(spaceId, documentId, chapterId){
+async function getChapter(spaceId, documentId, chapterId) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "GET");
 }
-async function addChapter(spaceId, documentId, chapterData){
+
+async function addChapter(spaceId, documentId, chapterData) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}`, "POST", chapterData);
 }
-async function updateChapter(spaceId, documentId, chapterData){
+
+async function updateChapter(spaceId, documentId, chapterData) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterData.id}`, "PUT", chapterData);
 }
-async function deleteChapter(spaceId, documentId, chapterId){
+
+async function deleteChapter(spaceId, documentId, chapterId) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "DELETE");
 }
 
-async function swapChapters(spaceId, documentId, chapterId1, chapterId2){
+async function swapChapters(spaceId, documentId, chapterId1, chapterId2) {
     let objectURI = encodeURIComponent(`${documentId}/chapters`);
     let body = {
         item1: chapterId1,
@@ -19,57 +22,28 @@ async function swapChapters(spaceId, documentId, chapterId1, chapterId2){
     }
     return await this.sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
-async function getChapterTitle(spaceId, documentId, chapterId){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/title`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
-}
-async function updateChapterTitle(spaceId, documentId, chapterId, title) {
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/title`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", title);
-}
-async function updateChapterVisibility(spaceId, documentId, chapterId, visibility){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/visibility`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", visibility);
-}
-async function updateChapterMainIdeas(spaceId, documentId, chapterId, mainIdeas){
-    //mainIdeas is an array of strings
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/mainIdeas`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", mainIdeas);
-}
-async function updateChapterAlternativeTitles(spaceId, documentId, chapterId, alternativeTitles){
-    //alternativeTitles is an array of strings
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/alternativeTitles`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", alternativeTitles);
+
+async function getChapterTitle(spaceId, documentId, chapterId) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=title`, "GET");
+
 }
 
-async function getAlternativeChapter(spaceId, documentId, alternativeChapterId){
-    let objectURI = encodeURIComponent(`${documentId}/${alternativeChapterId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+async function updateChapterTitle(spaceId, documentId, chapterId, title) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=title`, "PUT", title);
 }
-async function addAlternativeChapter(spaceId, documentId, chapterId, alternativeChapter){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/alternativeChapters`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", alternativeChapter);
+
+async function updateChapterVisibility(spaceId, documentId, chapterId, visibility) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=visibility`, "PUT", visibility);
 }
-async function updateAlternativeChapter(spaceId, documentId, alternativeChapter){
-    let objectURI = encodeURIComponent(`${documentId}/${ alternativeChapter.id}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", alternativeChapter);
+
+async function getChapterBackgroundSound(spaceId, documentId, chapterId) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=backgroundSound`, "GET");
 }
-async function deleteAlternativeChapter(spaceId, documentId, chapterId, alternativeChapterId){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${alternativeChapterId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+
+async function updateChapterBackgroundSound(spaceId, documentId, chapterId, backgroundSound) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=backgroundSound`, "PUT", backgroundSound);
 }
-async function getChapterBackgroundSound(spaceId, documentId, chapterId){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/backgroundSound`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
-}
-async function updateChapterBackgroundSound(spaceId, documentId, chapterId, backgroundSound){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/backgroundSound`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", backgroundSound);
-}
-async function deleteChapterBackgroundSound(spaceId, documentId, chapterId){
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/backgroundSound`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
-}
+
 module.exports = {
     getChapter,
     addChapter,
@@ -79,13 +53,6 @@ module.exports = {
     getChapterTitle,
     updateChapterTitle,
     updateChapterVisibility,
-    updateChapterMainIdeas,
-    updateChapterAlternativeTitles,
-    getAlternativeChapter,
-    addAlternativeChapter,
-    updateAlternativeChapter,
-    deleteAlternativeChapter,
     getChapterBackgroundSound,
     updateChapterBackgroundSound,
-    deleteChapterBackgroundSound
 }

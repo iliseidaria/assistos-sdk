@@ -23,76 +23,37 @@ async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, parag
     return await this.sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", body);
 }
 
-async function insertParagraph(spaceId, documentId, chapterId, predecessorParagraphId, paragraphData) {
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/paragraphs/${predecessorParagraphId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/insert/${spaceId}/${objectURI}`, "POST", paragraphData);
-}
-
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/text`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", text);
-}
-
-
-async function updateParagraphMainIdea(spaceId, documentId, paragraphId, mainIdea) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/mainIdea`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", mainIdea);
-}
-
-async function getAlternativeParagraph(spaceId, documentId, alternativeParagraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${alternativeParagraphId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
-}
-
-async function addAlternativeParagraph(spaceId, documentId, chapterId, paragraphId, alternativeParagraph) {
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${paragraphId}/alternativeParagraphs`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", alternativeParagraph);
-}
-
-async function updateAlternativeParagraph(spaceId, documentId, alternativeParagraphId, alternativeParagraph) {
-    let objectURI = encodeURIComponent(`${documentId}/${alternativeParagraph.id}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", alternativeParagraph);
-}
-
-async function deleteAlternativeParagraph(spaceId, documentId, chapterId, paragraphId, alternativeParagraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${chapterId}/${paragraphId}/${alternativeParagraphId}`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "PUT", text);
 }
 
 // TODO remove
 async function updateParagraphAudio(spaceId, documentId, paragraphId, audioURL) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audio`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", audioURL);
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=audio`, "PUT", audioURL);
 }
 
 async function updateParagraphCommands(spaceId, documentId, paragraphId, commandsObject) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/commands`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", commandsObject);
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=commands`, "PUT", commandsObject);
 }
 
 async function getParagraphCommands(spaceId, documentId, paragraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/commands`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=commands`, "GET");
 }
 
 async function getParagraphAudio(spaceId, documentId, paragraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/audio`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=audio`, "GET");
 }
 
 async function updateImageParagraphDimensions(spaceId, documentId, paragraphId, dimensions) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/dimensions`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", dimensions);
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=dimensions`, "PUT", dimensions);
 }
 
 async function updateImageParagraphLipSync(spaceId, documentId, paragraphId, videoData) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/lipSync`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", videoData);
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=lipSync`, "PUT", videoData);
 }
 
 async function getImageParagraphLipSync(spaceId, documentId, paragraphId) {
-    let objectURI = encodeURIComponent(`${documentId}/${paragraphId}/lipSync`);
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+    return await this.sendRequest(`documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=lipSync`, "GET");
 }
 
 async function generateParagraphAudio(spaceId, documentId, paragraphId) {
@@ -114,10 +75,6 @@ module.exports = {
     deleteParagraph,
     swapParagraphs,
     updateParagraphText,
-    updateParagraphMainIdea,
-    addAlternativeParagraph,
-    updateAlternativeParagraph,
-    deleteAlternativeParagraph,
     updateParagraphAudio,
     updateImageParagraphDimensions,
     getParagraphAudio,
@@ -126,6 +83,5 @@ module.exports = {
     getImageParagraphLipSync,
     getParagraphCommands,
     updateParagraphCommands,
-    insertParagraph,
     generateParagraphLipSync
 }
