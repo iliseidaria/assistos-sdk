@@ -1,6 +1,7 @@
 const {request, notificationService} = require("../util");
 const Space = require('./models/Space.js');
 const Announcement = require('./models/Announcement.js');
+const constants = require("../../constants");
 
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
@@ -126,8 +127,29 @@ async function importPersonality(spaceId,personalityFormData){
 async function addVideo(spaceId, video) {
     return await this.sendRequest(`/spaces/video/${spaceId}`, "POST", video);
 }
-async function getVideo(spaceId, videoId) {
-    return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "GET");
+async function getVideo(spaceId, videoId, range) {
+    let url = `/spaces/video/${spaceId}/${videoId}`;
+    let init = {
+        method: "GET",
+        headers: {
+            Range: range
+        }
+    };
+    const assistOS = require("assistos");
+    if (assistOS.envType === constants.ENV_TYPE.NODE) {
+        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
+        init.headers.Cookie = this.__securityContext.cookies;
+    }
+    let response;
+    try {
+        response = await fetch(url, init);
+    } catch (err) {
+        console.error(err);
+    }
+    if(!response.ok){
+        throw new Error(`Failed to fetch video: ${response.statusText}`);
+    }
+    return await response.arrayBuffer();
 }
 async function deleteVideo(spaceId, videoId) {
     return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "DELETE");
