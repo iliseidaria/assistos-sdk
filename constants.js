@@ -16,18 +16,18 @@ module.exports = {
             "lipsync"
         ],
         EMOJIS : {
-            'female_happy': '👩😊',
-            'female_sad': '👩😢',
-            'female_angry': '👩😡',
-            'female_fearful': '👩😨',
-            'female_disgust': '👩🤢',
-            'female_surprised': '👩😲',
-            'male_happy': '👨😊',
-            'male_sad': '👨😢',
-            'male_angry': '👨😡',
-            'male_fearful': '👨😨',
-            'male_disgust': '👨🤢',
-            'male_surprised': '👨😲'
+            'female_happy': 'Female Happy',
+            'female_sad': 'Female Sad',
+            'female_angry': 'Female Angry',
+            'female_fearful': 'Female Fearful',
+            'female_disgust': 'Female Disgust',
+            'female_surprised': 'Female Surprised',
+            'male_happy': 'Male Happy',
+            'male_sad': 'Male Sad',
+            'male_angry': 'Male Angry',
+            'male_fearful': 'Male Fearful',
+            'male_disgust': 'Male Disgust',
+            'male_surprised': 'Male Surprised'
         },
         COMMANDS: [
             {
