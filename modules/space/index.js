@@ -99,7 +99,6 @@ async function addKeyToSpace(spaceId, userId, keyType, apiKey) {
 async function getAPIKeysMetadata(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
 }
-
 async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails: collaboratorEmails});
 }
@@ -107,6 +106,7 @@ async function getImage(spaceId, imageId) {
     return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "GET");
 }
 async function addImage(spaceId, image) {
+
     return await this.sendRequest(`/spaces/image/${spaceId}`, "POST", image);
 }
 async function deleteImage(spaceId, imageId) {
@@ -163,6 +163,7 @@ async function getImageHead(spaceId, imageId) {
 async function getVideoHead(spaceId, videoId) {
     return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "HEAD");
 }
+
 module.exports = {
     createSpace,
     loadSpace,
