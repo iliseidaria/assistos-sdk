@@ -248,7 +248,18 @@ function buildCommandsString(commandsObject) {
         return buildCommandString(command.name, command.paramsObject || {});
     }).join("\n");
 }
-
+function buildAttachmentsString(attachmentsObject) {
+    let commandArray = [];
+    for (const attachmentName in attachmentsObject) {
+        commandArray.push({
+            name: attachmentName,
+            values: attachmentsObject[attachmentName]
+        });
+    }
+    return commandArray.map(command => {
+        return buildCommandString(command.name, command.values || {});
+    }).join("\n");
+}
 function getCommandsFromCommandsObject(commandsObject) {
     return Object.entries(commandsObject).reduce((acc, [key, value]) => {
         if (constants.COMMANDS_CONFIG.ORDER.includes(key)) {
@@ -428,10 +439,14 @@ function findCommands(input) {
                     };
                 }
             }
+            for(let configParam of commandConfig.PARAMETERS){
+                if(configParam.REQUIRED && !paramsObject[configParam.NAME]){
+                    return {invalid: true, error: `Missing required parameter "${configParam.NAME}" in command: "${commandName}"`};
+                }
+            }
         }
         result[commandName] = {
             name: commandName,
-            action: commandConfig.ACTION,
             paramsObject: paramsObject,
         };
 
@@ -446,7 +461,6 @@ function updateCommandsString(commandType, parameters, currentCommandsString) {
     }
     commands[commandType] = {
         name: commandType,
-        action: constants.COMMANDS_CONFIG.COMMANDS.find(command => command.NAME === `${commandType}`).ACTION,
         paramsObject: parameters
     };
 
@@ -459,7 +473,6 @@ function updateCommandsString(commandType, parameters, currentCommandsString) {
 function buildCommandObject(commandType, parameters) {
     return {
         name: commandType,
-        action: constants.COMMANDS_CONFIG.COMMANDS.find(command => command.NAME === `${commandType}`).ACTION,
         paramsObject: parameters
     };
 }
@@ -541,9 +554,6 @@ function areAttachmentsDifferent(attachmentObj1, attachmentObj2) {
 }
 
 function areCommandsDifferent(commandObj1, commandObj2) {
-    if (normalizeString(commandObj1.action) !== normalizeString(commandObj2.action)) {
-        return true;
-    }
     const params1 = commandObj1.paramsObject || {};
     const params2 = commandObj2.paramsObject || {};
     const keys1 = Object.keys(params1);
@@ -657,6 +667,7 @@ module.exports = {
     removeTask,
     sanitize,
     getSortedCommandsArray,
+    buildAttachmentsString,
     findAttachments,
     getCommandsFromCommandsObject,
     getAttachmentsFromCommandsObject,

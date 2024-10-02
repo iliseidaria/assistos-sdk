@@ -17,7 +17,9 @@ async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
 async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2) {
     return await this.sendRequest(`/documents/chapters/paragraphs/swap/${spaceId}/${documentId}/${chapterId}/${paragraphId}/${paragraphId2}`, "PUT");
 }
-
+async function getParagraphText(spaceId, documentId, paragraphId) {
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "GET");
+}
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "PUT", text);
 }
@@ -71,6 +73,7 @@ module.exports = {
     deleteParagraph,
     swapParagraphs,
     updateParagraphText,
+    getParagraphText,
     updateParagraphAudio,
     updateImageParagraphDimensions,
     getParagraphAudio,

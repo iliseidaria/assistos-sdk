@@ -15,7 +15,7 @@ module.exports = {
             "silence",
             "lipsync"
         ],
-        EMOJIS : {
+        EMOTIONS : {
             'female_happy': 'Female Happy',
             'female_sad': 'Female Sad',
             'female_angry': 'Female Angry',
@@ -32,7 +32,6 @@ module.exports = {
         COMMANDS: [
             {
                 NAME: "speech",
-                ACTION: "textToSpeech",//scos
                 ALLOWED_ALONG: ["lipsync", "videoScreenshot"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
@@ -62,11 +61,13 @@ module.exports = {
                 },
                 PARAMETERS: [
                     {
+                        REQUIRED: true,
                         NAME: "personality",
                         SHORTHAND: "p",
                         TYPE: "string",
                     },
                     {
+                        REQUIRED: true,
                         NAME: "emotion",
                         SHORTHAND: "e",
                         TYPE: "string",
@@ -82,8 +83,7 @@ module.exports = {
                             'male_fearful',
                             'male_disgust',
                             'male_surprised']
-                    }
-                    , {
+                    }, {
                         NAME: "styleGuidance",
                         SHORTHAND: "sg",
                         TYPE: "number",
@@ -107,15 +107,13 @@ module.exports = {
             {
                 NAME: "silence",
                 ALLOWED_ALONG: ["videoScreenshot"],
-                ACTION:
-                    "createSilentAudio",
                 PARAMETERS:
                     [{
                         NAME: "duration",
                         SHORTHAND: "d",
                         TYPE: "number",
-                        MIN_VALUE: 0,
-                        MAX_VALUE: 100,
+                        MIN_VALUE: 1,
+                        MAX_VALUE: 3600,
                     }],
                 VALIDATE: async function () {
                     return true;
@@ -154,7 +152,6 @@ module.exports = {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.addVideoScreenshot(spaceId, documentId, paragraphId);
                 },
-                ACTION: "videoScreenshot"
             },
             {
                 NAME: "lipsync",
@@ -172,8 +169,6 @@ module.exports = {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.generateParagraphLipSync(spaceId, documentId, paragraphId);
                 },
-                ACTION:
-                    "createLipSync"
             }
         ],
         ATTACHMENTS: [
