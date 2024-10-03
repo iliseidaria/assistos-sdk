@@ -11,11 +11,14 @@ module.exports = {
     DEVELOPMENT_BASE_URL: "http://localhost:8080",
     COMMANDS_CONFIG: {
         ORDER: [
+            "audio",
+            "image",
+            "video",
             "speech",
             "silence",
             "lipsync"
         ],
-        EMOJIS : {
+        EMOTIONS : {
             'female_happy': 'Female Happy',
             'female_sad': 'Female Sad',
             'female_angry': 'Female Angry',
@@ -32,7 +35,6 @@ module.exports = {
         COMMANDS: [
             {
                 NAME: "speech",
-                ACTION: "textToSpeech",//scos
                 ALLOWED_ALONG: ["lipsync", "videoScreenshot"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
@@ -46,7 +48,7 @@ module.exports = {
                     if (!paragraph.commands["speech"]) {
                         throw ("Paragraph Must have a speech command");
                     }
-                    const speechPersonality = paragraph.commands["speech"].paramsObject.personality;
+                    const speechPersonality = paragraph.commands["speech"].personality;
                     const personalityData = await personalityModule.getPersonalityByName(spaceId, speechPersonality);
                     if (!personalityData) {
                         throw `Personality ${speechPersonality} not found`;
@@ -62,11 +64,13 @@ module.exports = {
                 },
                 PARAMETERS: [
                     {
+                        REQUIRED: true,
                         NAME: "personality",
                         SHORTHAND: "p",
                         TYPE: "string",
                     },
                     {
+                        REQUIRED: true,
                         NAME: "emotion",
                         SHORTHAND: "e",
                         TYPE: "string",
@@ -82,8 +86,7 @@ module.exports = {
                             'male_fearful',
                             'male_disgust',
                             'male_surprised']
-                    }
-                    , {
+                    }, {
                         NAME: "styleGuidance",
                         SHORTHAND: "sg",
                         TYPE: "number",
@@ -101,60 +104,27 @@ module.exports = {
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100
+                    },{
+                        NAME: "taskId",
+                        SHORTHAND: "t",
+                        TYPE: "string"
                     }
                 ]
             },
             {
                 NAME: "silence",
                 ALLOWED_ALONG: ["videoScreenshot"],
-                ACTION:
-                    "createSilentAudio",
                 PARAMETERS:
                     [{
                         NAME: "duration",
                         SHORTHAND: "d",
                         TYPE: "number",
-                        MIN_VALUE: 0,
-                        MAX_VALUE: 100,
+                        MIN_VALUE: 1,
+                        MAX_VALUE: 3600,
                     }],
                 VALIDATE: async function () {
                     return true;
                 }
-            },
-            {
-                NAME: "videoScreenshot",
-                ALLOWED_ALONG: ["speech", "silence"],
-                PARAMETERS:
-                    [{
-                        NAME: "inputId",
-                        SHORTHAND: "i",
-                        TYPE: "string",
-                     },{
-                        NAME: "time",
-                        SHORTHAND: "t",
-                        TYPE: "number",
-                        MIN_VALUE: 0,
-                        MAX_VALUE: 999,
-                    },{
-                        NAME: "outputId",
-                        SHORTHAND: "o",
-                        TYPE: "string",
-                    }],
-                VALIDATE: async (spaceId, resourceId, paragraph) => {
-                 /*const spaceModule = require('assistos').loadModule('space', securityContext);
-                   const video = await spaceModule.getVideoHead(spaceId, resourceId);
-                   if (!video) {
-                       throw ("Invalid video Id");
-                   }*/
-                    if(!paragraph.commands.videoScreenshot.paramsObject.time > paragraph.commands.video.duration){
-                        throw ("Time should be less than video duration");
-                    }
-                },
-                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
-                    const documentModule = require('assistos').loadModule('document', securityContext);
-                    return await documentModule.addVideoScreenshot(spaceId, documentId, paragraphId);
-                },
-                ACTION: "videoScreenshot"
             },
             {
                 NAME: "lipsync",
@@ -172,11 +142,12 @@ module.exports = {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.generateParagraphLipSync(spaceId, documentId, paragraphId);
                 },
-                ACTION:
-                    "createLipSync"
-            }
-        ],
-        ATTACHMENTS: [
+                PARAMETERS: [{
+                    NAME: "taskId",
+                    SHORTHAND: "t",
+                    TYPE: "string"
+                }]
+            },
             {
                 NAME: "audio",
                 PARAMETERS: [

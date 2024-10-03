@@ -17,7 +17,9 @@ async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
 async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2) {
     return await this.sendRequest(`/documents/chapters/paragraphs/swap/${spaceId}/${documentId}/${chapterId}/${paragraphId}/${paragraphId2}`, "PUT");
 }
-
+async function getParagraphText(spaceId, documentId, paragraphId) {
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "GET");
+}
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "PUT", text);
 }
@@ -54,9 +56,6 @@ async function getImageParagraphLipSync(spaceId, documentId, paragraphId) {
 async function generateParagraphAudio(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
 }
-async function addVideoScreenshot(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/tasks/videoScreenshot/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
-}
 async function generateParagraphLipSync(spaceId, documentId, paragraphId, modelName, configs) {
     return await this.sendRequest(`/tasks/lipsync/${spaceId}/${documentId}/${paragraphId}`, "POST", {
         modelName: modelName,
@@ -71,6 +70,7 @@ module.exports = {
     deleteParagraph,
     swapParagraphs,
     updateParagraphText,
+    getParagraphText,
     updateParagraphAudio,
     updateImageParagraphDimensions,
     getParagraphAudio,
@@ -80,5 +80,4 @@ module.exports = {
     getParagraphCommands,
     updateParagraphCommands,
     generateParagraphLipSync,
-    addVideoScreenshot
 }
