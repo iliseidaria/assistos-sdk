@@ -11,6 +11,9 @@ module.exports = {
     DEVELOPMENT_BASE_URL: "http://localhost:8080",
     COMMANDS_CONFIG: {
         ORDER: [
+            "audio",
+            "image",
+            "video",
             "speech",
             "silence",
             "lipsync"
@@ -45,7 +48,7 @@ module.exports = {
                     if (!paragraph.commands["speech"]) {
                         throw ("Paragraph Must have a speech command");
                     }
-                    const speechPersonality = paragraph.commands["speech"].paramsObject.personality;
+                    const speechPersonality = paragraph.commands["speech"].personality;
                     const personalityData = await personalityModule.getPersonalityByName(spaceId, speechPersonality);
                     if (!personalityData) {
                         throw `Personality ${speechPersonality} not found`;
@@ -101,6 +104,10 @@ module.exports = {
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100
+                    },{
+                        NAME: "taskId",
+                        SHORTHAND: "t",
+                        TYPE: "string"
                     }
                 ]
             },
@@ -120,40 +127,6 @@ module.exports = {
                 }
             },
             {
-                NAME: "videoScreenshot",
-                ALLOWED_ALONG: ["speech", "silence"],
-                PARAMETERS:
-                    [{
-                        NAME: "inputId",
-                        SHORTHAND: "i",
-                        TYPE: "string",
-                     },{
-                        NAME: "time",
-                        SHORTHAND: "t",
-                        TYPE: "number",
-                        MIN_VALUE: 0,
-                        MAX_VALUE: 999,
-                    },{
-                        NAME: "outputId",
-                        SHORTHAND: "o",
-                        TYPE: "string",
-                    }],
-                VALIDATE: async (spaceId, resourceId, paragraph) => {
-                 /*const spaceModule = require('assistos').loadModule('space', securityContext);
-                   const video = await spaceModule.getVideoHead(spaceId, resourceId);
-                   if (!video) {
-                       throw ("Invalid video Id");
-                   }*/
-                    if(!paragraph.commands.videoScreenshot.paramsObject.time > paragraph.commands.video.duration){
-                        throw ("Time should be less than video duration");
-                    }
-                },
-                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
-                    const documentModule = require('assistos').loadModule('document', securityContext);
-                    return await documentModule.addVideoScreenshot(spaceId, documentId, paragraphId);
-                },
-            },
-            {
                 NAME: "lipsync",
                 ALLOWED_ALONG: ["speech", "videoScreenshot"],
                 REQUIRED: ["speech"],
@@ -169,9 +142,12 @@ module.exports = {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.generateParagraphLipSync(spaceId, documentId, paragraphId);
                 },
-            }
-        ],
-        ATTACHMENTS: [
+                PARAMETERS: [{
+                    NAME: "taskId",
+                    SHORTHAND: "t",
+                    TYPE: "string"
+                }]
+            },
             {
                 NAME: "audio",
                 PARAMETERS: [

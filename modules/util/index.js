@@ -245,40 +245,11 @@ function arrayBufferToBase64(buffer) {
 function buildCommandsString(commandsObject) {
     const sortedCommandsArray = getSortedCommandsArray(commandsObject);
     return sortedCommandsArray.map(command => {
-        return buildCommandString(command.name, command.paramsObject || {});
+        let name = command.name;
+        delete command.name;
+        return buildCommandString(name, command || {});
     }).join("\n");
 }
-function buildAttachmentsString(attachmentsObject) {
-    let commandArray = [];
-    for (const attachmentName in attachmentsObject) {
-        commandArray.push({
-            name: attachmentName,
-            values: attachmentsObject[attachmentName]
-        });
-    }
-    return commandArray.map(command => {
-        return buildCommandString(command.name, command.values || {});
-    }).join("\n");
-}
-function getCommandsFromCommandsObject(commandsObject) {
-    return Object.entries(commandsObject).reduce((acc, [key, value]) => {
-        if (constants.COMMANDS_CONFIG.ORDER.includes(key)) {
-            acc[key] = value;
-        }
-        return acc;
-    }, {});
-}
-
-function getAttachmentsFromCommandsObject(commandsObject) {
-    return Object.entries(commandsObject).reduce((acc, [key, value]) => {
-        if (!constants.COMMANDS_CONFIG.ORDER.includes(key)) {
-            acc[key] = value;
-        }
-        return acc
-    }, {});
-}
-
-
 function buildCommandString(commandType, parameters) {
     const commandName = commandType;
     const parametersString = Object.entries(parameters)
@@ -301,65 +272,6 @@ function getSortedCommandsArray(commandsObject) {
         }
         return acc
     }, []);
-}
-
-function findAttachments(input) {
-    input = unescapeHTML(input);
-    input = input.trim();
-    const attachmentsArray = input.split(';').map(attachment => attachment.trim()).filter(attachment => attachment !== '');
-    const result = {};
-    const regex = /^(\w+)(\s+.*)?$/;
-    const foundAttachments = {};
-    for (const attachmentStr of attachmentsArray) {
-        const match = attachmentStr.match(regex);
-        if (!match) {
-            return {invalid: true, error: `Invalid attachment format: "${attachmentStr}"`};
-        }
-        const attachmentName = match[1];
-        if (foundAttachments[attachmentName]) {
-            return {invalid: true, error: `Duplicate attachment "${attachmentName}" detected`};
-        }
-        foundAttachments[attachmentName] = match[2] ? match[2].trim() : '';
-    }
-    for (const attachmentName in foundAttachments) {
-        const attachmentParamsString = foundAttachments[attachmentName];
-        const attachmentConfig = constants.COMMANDS_CONFIG.ATTACHMENTS.find(attachment => attachment.NAME === attachmentName);
-        if (!attachmentConfig) {
-            return {invalid: true, error: `Unknown attachment "${attachmentName}"`};
-        }
-        const paramsObject = {};
-        if (attachmentParamsString) {
-            let paramsArray = attachmentParamsString.split(/\s+/);
-            for (let param of paramsArray) {
-                if (param.includes('=')) {
-                    let [name, value] = param.split('=');
-                    let parameter = attachmentConfig.PARAMETERS?.find(p => p.NAME === name);
-                    if (!parameter) {
-                        return {invalid: true, error: `Unknown parameter "${name}" in attachment: "${attachmentName}"`};
-                    }
-                    if (parameter.TYPE === 'number') {
-                        value = parseFloat(value);
-                        if (isNaN(value) || value < parameter.MIN_VALUE || value > parameter.MAX_VALUE) {
-                            return {
-                                invalid: true,
-                                error: `Invalid value for parameter "${name}" in attachment: "${attachmentName}"`
-                            };
-                        }
-                    }
-                    paramsObject[name] = value;
-                } else {
-                    return {
-                        invalid: true,
-                        error: `Invalid parameter format "${param}" in attachment: "${attachmentName}"`
-                    };
-                }
-            }
-        }
-        result[attachmentName] = {
-            ...paramsObject
-        }
-    }
-    return result;
 }
 
 function findCommands(input) {
@@ -402,11 +314,18 @@ function findCommands(input) {
             }
         }
 
-        for (let previousCommand in result) {
-            if (!commandConfig.ALLOWED_ALONG.includes(previousCommand) && !constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommand).ALLOWED_ALONG.includes(commandName)) {
+        for (let previousCommandKey of Object.keys(result)) {
+            if(!commandConfig.ALLOWED_ALONG){
+                continue;
+            }
+            let previousCommandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommandKey);
+            if(!previousCommandConfig.ALLOWED_ALONG){
+                continue;
+            }
+            if (!commandConfig.ALLOWED_ALONG.includes(previousCommandKey) && !previousCommandConfig.ALLOWED_ALONG.includes(commandName)) {
                 return {
                     invalid: true,
-                    error: `Command "${commandName}" is not allowed alongside "${previousCommand}"`
+                    error: `Command "${commandName}" is not allowed alongside "${previousCommandKey}"`
                 };
             }
         }
@@ -445,36 +364,10 @@ function findCommands(input) {
                 }
             }
         }
-        result[commandName] = {
-            name: commandName,
-            paramsObject: paramsObject,
-        };
+        result[commandName] = paramsObject;
 
     }
     return result;
-}
-
-function updateCommandsString(commandType, parameters, currentCommandsString) {
-    const commands = findCommands(currentCommandsString);
-    if (commands.invalid) {
-        throw new Error(commands.error);
-    }
-    commands[commandType] = {
-        name: commandType,
-        paramsObject: parameters
-    };
-
-    const updatedCommandsString = Object.entries(commands)
-        .map(([key, command]) => buildCommandString(command.name, command.paramsObject))
-        .join("\n");
-
-    return updatedCommandsString;
-}
-function buildCommandObject(commandType, parameters) {
-    return {
-        name: commandType,
-        paramsObject: parameters
-    };
 }
 
 function getCommandsDifferences(commandsObject1, commandsObject2) {
@@ -483,10 +376,6 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     const keys2 = Object.keys(commandsObject2);
 
     for (const key of keys1) {
-        /* A way to prevent attachments commands from being market as deleted */
-        if (!constants.COMMANDS_CONFIG.ORDER.includes(key)) {
-            continue;
-        }
         if (!keys2.includes(key)) {
             differencesObject[key] = "deleted"; // command no longer exists in the updated commands config
         } else {
@@ -495,10 +384,6 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     }
 
     for (const key of keys2) {
-        /* A way to prevent attachments commands from being market as deleted */
-        if (!constants.COMMANDS_CONFIG.ORDER.includes(key)) {
-            continue;
-        }
         if (!keys1.includes(key)) {
             differencesObject[key] = "new"; // command is new in the updated commands config
         }
@@ -506,65 +391,17 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     return differencesObject;
 }
 
-function getAttachmentsDifferences(attachmentsObject1, attachmentsObject2) {
-    const differencesObject = {};
-    const keys1 = Object.keys(attachmentsObject1);
-    const keys2 = Object.keys(attachmentsObject2);
-
-    for (const key of keys1) {
-        if (keys2.includes(key)) {
-            differencesObject[key] = areAttachmentsDifferent(attachmentsObject1[key], attachmentsObject2[key]) ? "changed" : "same";
-        } else {
-            differencesObject[key] = "deleted";
-        }
-    }
-
-    for (const key of keys2) {
-        if (!keys1.includes(key)) {
-            differencesObject[key] = "new";
-        }
-    }
-    return differencesObject;
-}
-
-function areAttachmentsDifferent(attachmentObj1, attachmentObj2) {
-    if (normalizeString(attachmentObj1.name) !== normalizeString(attachmentObj2.name)) {
-        return true;
-    }
-    const params1 = attachmentObj1;
-    const params2 = attachmentObj2;
-    const keys1 = Object.keys(attachmentObj1);
-    const keys2 = Object.keys(attachmentObj2);
-
-    if (keys1.length !== keys2.length) {
-        return true;
-    }
-
-    for (let key of keys1) {
-        if (params1[key] !== params2[key]) {
-            return true;
-        }
-    }
-    for (let key of keys2) {
-        if (!keys1.includes(key)) {
-            return true;
-        }
-    }
-    return false
-}
 
 function areCommandsDifferent(commandObj1, commandObj2) {
-    const params1 = commandObj1.paramsObject || {};
-    const params2 = commandObj2.paramsObject || {};
-    const keys1 = Object.keys(params1);
-    const keys2 = Object.keys(params2);
+    const keys1 = Object.keys(commandObj1);
+    const keys2 = Object.keys(commandObj2);
 
     if (keys1.length !== keys2.length) {
         return true;
     }
 
     for (let key of keys1) {
-        if (params1[key] !== params2[key]) {
+        if (commandObj1[key] !== commandObj2[key]) {
             return true;
         }
     }
@@ -574,14 +411,7 @@ function areCommandsDifferent(commandObj1, commandObj2) {
             return true;
         }
     }
-    return false
-}
-
-function normalizeString(str) {
-    if (!str) {
-        return '';
-    }
-    return str.replace(/\s/g, ' '); // Replace all whitespace characters with a simple space
+    return false;
 }
 
 function unsanitize(value) {
@@ -656,7 +486,6 @@ module.exports = {
     getCommandsDifferences,
     buildCommandString,
     buildCommandsString,
-    updateCommandsString,
     cancelTask,
     getTasks,
     runTask,
@@ -667,13 +496,6 @@ module.exports = {
     removeTask,
     sanitize,
     getSortedCommandsArray,
-    buildAttachmentsString,
-    findAttachments,
-    getCommandsFromCommandsObject,
-    getAttachmentsFromCommandsObject,
-    getAttachmentsDifferences,
-    areAttachmentsDifferent,
     unsanitize,
-    buildCommandObject,
     constants
 }
