@@ -105,9 +105,6 @@ async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
     return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails: collaboratorEmails});
 }
 
-async function getImage(spaceId, imageId) {
-    return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "GET");
-}
 
 async function deleteImage(spaceId, imageId) {
     return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "DELETE");
@@ -134,6 +131,9 @@ async function sendGeneralRequest(url, method, data, contentType) {
         case "application/json":
             return (await response.json()).data;
         case "application/octet-stream":
+        case "audio/mp3":
+        case "video/mp4":
+        case "image/png":
             return await response.arrayBuffer();
         case "text/plain":
             return await response.text();
@@ -144,32 +144,30 @@ async function sendGeneralRequest(url, method, data, contentType) {
 
 async function addAudio(spaceId, audio) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/audios`, "GET");
-    await sendGeneralRequest(uploadURL, "POST", audio, "application/octet-stream");
+    await sendGeneralRequest(uploadURL, "PUT", audio, "audio/mpeg");
     return fileId;
 }
 
 async function addImage(spaceId, image) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/images`, "GET");
-    await sendGeneralRequest(uploadURL, "POST", image, "application/octet-stream");
+    await sendGeneralRequest(uploadURL, "PUT", image, "image/png");
     return fileId;
 }
 
 async function addVideo(spaceId, video) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/videos`, "GET");
-    await sendGeneralRequest(uploadURL, "POST", video, "application/octet-stream");
+    await sendGeneralRequest(uploadURL, "PUT", video, "video/mp4");
     return fileId;
 }
 
 async function getAudio(spaceId, audioId) {
-    return await this.sendRequest(`/spaces/audio/${spaceId}/${audioId}`, "GET");
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/audios/${audioId}`, "GET");
+    return await sendGeneralRequest(downloadURL, "GET", "", "audio/mp3");
 }
 
-async function deleteAudio(spaceId, audioId) {
-    return await this.sendRequest(`/spaces/audio/${spaceId}/${audioId}`, "DELETE");
-}
-
-async function importPersonality(spaceId, personalityFormData) {
-    return await this.sendRequest(`/spaces/${spaceId}/import/personalities`, "POST", personalityFormData);
+async function getImage(spaceId, imageId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/images/${imageId}`, "GET");
+    return await sendGeneralRequest(downloadURL, "GET", "", "image/png");
 }
 
 async function getVideo(spaceId, videoId, range) {
@@ -195,6 +193,14 @@ async function getVideo(spaceId, videoId, range) {
         throw new Error(`Failed to fetch video: ${response.statusText}`);
     }
     return await response.arrayBuffer();
+}
+
+async function deleteAudio(spaceId, audioId) {
+    return await this.sendRequest(`/spaces/audio/${spaceId}/${audioId}`, "DELETE");
+}
+
+async function importPersonality(spaceId, personalityFormData) {
+    return await this.sendRequest(`/spaces/${spaceId}/import/personalities`, "POST", personalityFormData);
 }
 
 async function deleteVideo(spaceId, videoId) {
