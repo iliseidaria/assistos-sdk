@@ -138,6 +138,7 @@ async function sendGeneralRequest(url, method, data = null, headers = {}) {
     }
 }
 
+
 async function addAudio(spaceId, audio) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/audios`, "GET");
     await sendGeneralRequest(uploadURL, "PUT", audio, {"Content-Type": "audio/mp3"});
@@ -169,6 +170,18 @@ async function getImage(spaceId, imageId) {
 async function getVideo(spaceId, videoId, range) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/videos/${videoId}`, "GET");
     return await sendGeneralRequest(downloadURL, "GET", null, {"Content-Type": "video/mp4", ...range ? {"Range": range} : {}});
+}
+async function getImageURL(spaceId, imageId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/images/${imageId}`, "GET");
+    return downloadURL;
+}
+async function getAudioURL(spaceId, audioId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/audios/${audioId}`, "GET");
+    return downloadURL;
+}
+async function getVideoURL(spaceId, imageId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/videos/${imageId}`, "GET");
+    return downloadURL;
 }
 
 async function deleteAudio(spaceId, audioId) {
@@ -225,7 +238,10 @@ module.exports = {
     getAudioHead,
     getImageHead,
     getImage,
-    getVideoHead
+    getVideoHead,
+    getAudioURL,
+    getVideoURL,
+    getImageURL
 }
 
 
