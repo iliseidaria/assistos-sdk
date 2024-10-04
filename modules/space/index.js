@@ -162,17 +162,17 @@ async function addVideo(spaceId, video) {
 
 async function getAudio(spaceId, audioId) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/audios/${audioId}`, "GET");
-    return await this.sendGeneralRequest(downloadURL, "GET", null, {"Content-Type": "audio/mp3"});
+    return await this.sendGeneralRequest(downloadURL, "GET", null);
 }
 
 async function getImage(spaceId, imageId) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/images/${imageId}`, "GET");
-    return await this.sendGeneralRequest(downloadURL, "GET", null, {"Content-Type": "image/png"});
+    return await this.sendGeneralRequest(downloadURL, "GET", null);
 }
 
 async function getVideo(spaceId, videoId, range) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/videos/${videoId}`, "GET");
-    return await this.sendGeneralRequest(downloadURL, "GET", null, {"Content-Type": "video/mp4", ...range ? {"Range": range} : {}});
+    return await this.sendGeneralRequest(downloadURL, "GET", null, {...range ? {"Range": range} : {}});
 }
 async function getImageURL(spaceId, imageId) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/images/${imageId}`, "GET");
