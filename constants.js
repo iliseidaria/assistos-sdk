@@ -38,7 +38,6 @@ module.exports = {
                 ALLOWED_ALONG: ["lipsync", "videoScreenshot"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
-
                     if (!paragraph) {
                         throw ("Paragraph not found");
                     }

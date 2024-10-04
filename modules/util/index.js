@@ -1,5 +1,5 @@
 const constants = require("../../constants.js");
-
+const envType = require("assistos").envType;
 function fillTemplate(templateObject, fillObject, depth = 0) {
     /* Todo: Implement a detection mechanism for circular dependencies instead of a hardcoded nested depth limit */
 
@@ -104,8 +104,7 @@ async function request(url, method, securityContext, data) {
             init.headers["Content-Type"] = "application/json; charset=UTF-8";
         }
     }
-    const assistOS = require("assistos");
-    if (assistOS.envType === constants.ENV_TYPE.NODE) {
+    if (envType === constants.ENV_TYPE.NODE) {
         url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
         init.headers.Cookie = securityContext.cookies;
     }
