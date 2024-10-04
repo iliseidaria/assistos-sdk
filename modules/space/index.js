@@ -140,7 +140,7 @@ async function sendGeneralRequest(url, method, data = null, headers = {}) {
 
 async function addAudio(spaceId, audio) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/audios`, "GET");
-    await sendGeneralRequest(uploadURL, "PUT", audio, {"Content-Type": "audio/mpeg"});
+    await sendGeneralRequest(uploadURL, "PUT", audio, {"Content-Type": "audio/mp3"});
     return fileId;
 }
 
