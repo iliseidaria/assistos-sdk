@@ -110,16 +110,13 @@ async function deleteImage(spaceId, imageId) {
     return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "DELETE");
 }
 
-async function sendGeneralRequest(url, method, data, contentType) {
+async function sendGeneralRequest(url, method, data = null, headers = {}) {
     let response;
-    const headers = {
-        "Content-Type": contentType
-    }
     try {
         response = await fetch(url, {
             method: method,
             headers: headers,
-            body: data
+            ...data ? {body: data} : {}
         });
     } catch (err) {
         console.error(err);
@@ -136,7 +133,6 @@ async function sendGeneralRequest(url, method, data, contentType) {
         case "image/png":
             return await response.arrayBuffer();
         case "text/plain":
-            return await response.text();
         default :
             return await response.text();
     }
@@ -144,55 +140,35 @@ async function sendGeneralRequest(url, method, data, contentType) {
 
 async function addAudio(spaceId, audio) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/audios`, "GET");
-    await sendGeneralRequest(uploadURL, "PUT", audio, "audio/mpeg");
+    await sendGeneralRequest(uploadURL, "PUT", audio, {"Content-Type": "audio/mpeg"});
     return fileId;
 }
 
 async function addImage(spaceId, image) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/images`, "GET");
-    await sendGeneralRequest(uploadURL, "PUT", image, "image/png");
+    await sendGeneralRequest(uploadURL, "PUT", image, {"Content-Type": "image/png"});
     return fileId;
 }
 
 async function addVideo(spaceId, video) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/videos`, "GET");
-    await sendGeneralRequest(uploadURL, "PUT", video, "video/mp4");
+    await sendGeneralRequest(uploadURL, "PUT", video, {"Content-Type": "video/mp4"});
     return fileId;
 }
 
 async function getAudio(spaceId, audioId) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/audios/${audioId}`, "GET");
-    return await sendGeneralRequest(downloadURL, "GET", "", "audio/mp3");
+    return await sendGeneralRequest(downloadURL, "GET", null, {"Content-Type": "audio/mp3"});
 }
 
 async function getImage(spaceId, imageId) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/images/${imageId}`, "GET");
-    return await sendGeneralRequest(downloadURL, "GET", "", "image/png");
+    return await sendGeneralRequest(downloadURL, "GET", null, {"Content-Type": "image/png"});
 }
 
 async function getVideo(spaceId, videoId, range) {
-    let url = `/spaces/video/${spaceId}/${videoId}`;
-    let init = {
-        method: "GET",
-        headers: {
-            Range: range
-        }
-    };
-    const assistOS = require("assistos");
-    if (assistOS.envType === constants.ENV_TYPE.NODE) {
-        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
-        init.headers.Cookie = this.__securityContext.cookies;
-    }
-    let response;
-    try {
-        response = await fetch(url, init);
-    } catch (err) {
-        console.error(err);
-    }
-    if (!response.ok) {
-        throw new Error(`Failed to fetch video: ${response.statusText}`);
-    }
-    return await response.arrayBuffer();
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/videos/${videoId}`, "GET");
+    return await sendGeneralRequest(downloadURL, "GET", null, {"Content-Type": "video/mp4", ...range ? {"Range": range} : {}});
 }
 
 async function deleteAudio(spaceId, audioId) {
