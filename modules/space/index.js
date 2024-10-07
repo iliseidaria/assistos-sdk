@@ -140,21 +140,17 @@ async function sendGeneralRequest(url, method, data = null, headers = {}) {
             return await response.text();
     }
 }
-
-
-async function addAudio(spaceId, audio) {
+async function putAudio(spaceId, audio) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/audios`, "GET");
     await this.sendGeneralRequest(uploadURL, "PUT", audio, {"Content-Type": "audio/mp3"});
     return fileId;
 }
-
-async function addImage(spaceId, image) {
+async function putImage(spaceId, image) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/images`, "GET");
     await this.sendGeneralRequest(uploadURL, "PUT", image, {"Content-Type": "image/png"});
     return fileId;
 }
-
-async function addVideo(spaceId, video) {
+async function putVideo(spaceId, video) {
     const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/videos`, "GET");
     await this.sendGeneralRequest(uploadURL, "PUT", video, {"Content-Type": "video/mp4"});
     return fileId;
@@ -226,16 +222,16 @@ module.exports = {
     inviteSpaceCollaborators,
     sendRequest,
     getAPIKeysMetadata,
-    addImage,
+    putImage,
     deleteImage,
     Space,
     Announcement,
-    addAudio,
+    putAudio,
     getAudio,
     deleteAudio,
     importPersonality,
     deleteVideo,
-    addVideo,
+    putVideo,
     getVideo,
     getSpaceChat,
     getAudioHead,
