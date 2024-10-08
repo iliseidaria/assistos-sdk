@@ -155,7 +155,6 @@ async function putVideo(spaceId, video) {
     await this.sendGeneralRequest(uploadURL, "PUT", video, {"Content-Type": "video/mp4"});
     return fileId;
 }
-
 async function getAudio(spaceId, audioId) {
     const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/audios/${audioId}`, "GET");
     return await this.sendGeneralRequest(downloadURL, "GET", null);

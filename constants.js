@@ -18,7 +18,7 @@ module.exports = {
             "silence",
             "lipsync"
         ],
-        EMOTIONS : {
+        EMOTIONS: {
             'female_happy': 'Female Happy',
             'female_sad': 'Female Sad',
             'female_angry': 'Female Angry',
@@ -91,19 +91,8 @@ module.exports = {
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 100
-                    }, {
-                        NAME: "temperature",
-                        SHORTHAND: "t",
-                        TYPE: "number",
-                        MIN_VALUE: 0,
-                        MAX_VALUE: 100
-                    }, {
-                        NAME: "voiceGuidance",
-                        SHORTHAND: "vg",
-                        TYPE: "number",
-                        MIN_VALUE: 0,
-                        MAX_VALUE: 100
-                    },{
+                    },
+                    {
                         NAME: "taskId",
                         SHORTHAND: "t",
                         TYPE: "string"
