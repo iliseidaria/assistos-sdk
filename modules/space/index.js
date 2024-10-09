@@ -107,7 +107,7 @@ async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
 
 
 async function deleteImage(spaceId, imageId) {
-    return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "DELETE");
+    return await this.sendRequest(`/spaces/images/${spaceId}/${imageId}`, "DELETE");
 }
 
 async function sendGeneralRequest(url, method, data = null, headers = {}) {
@@ -183,7 +183,7 @@ async function getVideoURL(spaceId, imageId) {
 }
 
 async function deleteAudio(spaceId, audioId) {
-    return await this.sendRequest(`/spaces/audio/${spaceId}/${audioId}`, "DELETE");
+    return await this.sendRequest(`/spaces/audios/${spaceId}/${audioId}`, "DELETE");
 }
 
 async function importPersonality(spaceId, personalityFormData) {
@@ -191,19 +191,19 @@ async function importPersonality(spaceId, personalityFormData) {
 }
 
 async function deleteVideo(spaceId, videoId) {
-    return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "DELETE");
+    return await this.sendRequest(`/spaces/videos/${spaceId}/${videoId}`, "DELETE");
 }
 
 async function getAudioHead(spaceId, audioId) {
-    return await this.sendRequest(`/spaces/audio/${spaceId}/${audioId}`, "HEAD");
+    return await this.sendRequest(`/spaces/audios/${spaceId}/${audioId}`, "HEAD");
 }
 
 async function getImageHead(spaceId, imageId) {
-    return await this.sendRequest(`/spaces/image/${spaceId}/${imageId}`, "HEAD");
+    return await this.sendRequest(`/spaces/images/${spaceId}/${imageId}`, "HEAD");
 }
 
 async function getVideoHead(spaceId, videoId) {
-    return await this.sendRequest(`/spaces/video/${spaceId}/${videoId}`, "HEAD");
+    return await this.sendRequest(`/spaces/videos/${spaceId}/${videoId}`, "HEAD");
 }
 
 module.exports = {

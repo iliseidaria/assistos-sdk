@@ -221,13 +221,13 @@ module.exports = {
         ]
     },
     getImageSrc: (spaceId, imageId) => {
-        return `spaces/image/${spaceId}/${imageId}`;
+        return `spaces/images/${spaceId}/${imageId}`;
     },
     getAudioSrc: (spaceId, audioId) => {
-        return `spaces/audio/${spaceId}/${audioId}`;
+        return `spaces/audios/${spaceId}/${audioId}`;
     },
     getVideoSrc: (spaceId, videoId) => {
-        return `spaces/video/${spaceId}/${videoId}`;
+        return `spaces/videos/${spaceId}/${videoId}`;
     }
 }
 
