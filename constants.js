@@ -11,6 +11,7 @@ module.exports = {
     DEVELOPMENT_BASE_URL: "http://localhost:8080",
     COMMANDS_CONFIG: {
         ORDER: [
+            "backgroundsound",
             "audio",
             "image",
             "video",
@@ -140,10 +141,12 @@ module.exports = {
                 NAME: "audio",
                 PARAMETERS: [
                     {
+                        REQUIRED:true,
                         NAME: "id",
                         TYPE: "string",
                     },
                     {
+                        REQUIRED:true,
                         NAME: "duration",
                         TYPE: "number",
                         MIN_VALUE: 0,
@@ -156,6 +159,59 @@ module.exports = {
                       if (!audio) {
                           throw ("Invalid audio Id");
                       }*/
+                }
+            },
+            {
+                NAME:"backgroundsound",
+                PARAMETERS: [
+                    {
+                        REQUIRED:true,
+                        NAME: "id",
+                        TYPE: "string"
+                    },
+                    {
+                        REQUIRED:true,
+                        NAME: "duration",
+                        TYPE: "number",
+                        MIN_VALUE: 0,
+                        MAX_VALUE: 3600
+                    },
+                    {
+                        DEFAULT:false,
+                        NAME: "loop",
+                        TYPE: "boolean"
+                    },
+                    {
+                        NAME: "volume",
+                        TYPE: "number",
+                        DEFAULT: 1.0,
+                        MIN_VALUE: 0.0,
+                        MAX_VALUE: 1.0,
+                        DESCRIPTION: "Controls the audio volume (range 0.0 to 1.0)."
+                    },
+                    {
+                        NAME: "currentTime",
+                        TYPE: "number",
+                        DEFAULT: 0.0,
+                        MIN_VALUE: 0.0,
+                        DESCRIPTION: "Gets or sets the current playback time in seconds."
+                    },
+                    {
+                        NAME: "playbackRate",
+                        TYPE: "number",
+                        DEFAULT: 1.0,
+                        MIN_VALUE: 0.5,
+                        MAX_VALUE: 4.0,
+                        DESCRIPTION: "Controls the speed at which the audio is played (1.0 is normal speed)."
+                    },
+                    {
+                        NAME: "muted",
+                        DEFAULT: false,
+                        TYPE: "boolean",
+                        DESCRIPTION: "Mutes or unmutes the audio."
+                    }
+                ],
+                VALIDATE: async () => {
                 }
             },
             {
