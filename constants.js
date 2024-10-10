@@ -222,6 +222,10 @@ module.exports = {
                         TYPE: "string",
                     },
                     {
+                        NAME: "thumbnailId",
+                        TYPE: "string"
+                    },
+                    {
                         NAME: "width",
                         TYPE: "number",
                         MIN_VALUE: 1,
