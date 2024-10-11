@@ -209,9 +209,21 @@ module.exports = {
                         DEFAULT: false,
                         TYPE: "boolean",
                         DESCRIPTION: "Mutes or unmutes the audio."
+                    },
+                    {
+                        NAME: "start",
+                        TYPE: "number",
+                        DESCRIPTION: "The time in seconds where the audio should start playing."
                     }
                 ],
-                VALIDATE: async () => {
+                VALIDATE: async (spaceId, paragraph) => {
+                    let startTime = paragraph.commands.soundEffect.start;
+                    let audioDuration = paragraph.commands.audio ? paragraph.commands.audio.duration : 0;
+                    let videoDuration = paragraph.commands.video ? paragraph.commands.video.duration : 0;
+                    let maxDuration = Math.max(audioDuration, videoDuration);
+                    if(startTime > maxDuration){
+                        throw ("Sound effect start time cannot be greater than audio or video duration");
+                    }
                 }
             },
             {
