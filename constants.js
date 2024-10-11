@@ -11,7 +11,7 @@ module.exports = {
     DEVELOPMENT_BASE_URL: "http://localhost:8080",
     COMMANDS_CONFIG: {
         ORDER: [
-            "backgroundsound",
+            "soundEffect",
             "audio",
             "image",
             "video",
@@ -162,7 +162,7 @@ module.exports = {
                 }
             },
             {
-                NAME:"backgroundsound",
+                NAME:"soundEffect",
                 PARAMETERS: [
                     {
                         REQUIRED:true,
