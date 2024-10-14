@@ -31,6 +31,8 @@ function _loadModule(moduleName) {
             return require('./modules/application');
         case 'gallery':
             return require('./modules/gallery');
+        case 'books':
+            return require('./modules/books');
         default:
             return null;
     }
