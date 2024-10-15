@@ -23,12 +23,15 @@ async function updateTemplate(spaceId, templateId, data) {
 async function deleteTemplate(spaceId, templateId) {
     return await this.sendRequest(`/books-generator/templates/${spaceId}/${templateId}`, "DELETE");
 }
-
+async function generateTemplate(spaceId,templateData){
+    return await this.sendRequest(`/books-generator/templates/generate/${spaceId}`, "POST", templateData);
+}
 module.exports = {
     sendRequest,
     getTemplates,
     getTemplate,
     addTemplate,
     updateTemplate,
-    deleteTemplate
+    deleteTemplate,
+    generateTemplate
 }

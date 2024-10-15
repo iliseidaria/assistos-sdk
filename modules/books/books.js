@@ -18,8 +18,11 @@ async function updateBook(spaceId, bookId, data){
 async function deleteBook(spaceId, bookId){
     return await this.sendRequest(`/books-generator/books/${spaceId}/${bookId}`, "DELETE");
 }
-async function generateBook(spaceId, templateId){
+/*async function generateBook(spaceId, templateId){
     return await this.sendRequest(`/books-generator/books/generate/${spaceId}/${templateId}`, "POST");
+}*/
+async function generateBook(spaceId,documentId,config){
+    return await this.sendRequest(`/books-generator/books/generate/${spaceId}/${documentId}`, "POST",config);
 }
 module.exports={
     sendRequest,
