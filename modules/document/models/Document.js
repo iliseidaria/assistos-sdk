@@ -1,4 +1,5 @@
 const Chapter = require("./Chapter.js");
+
 class Document {
     constructor(documentData) {
         this.id = documentData.id;
@@ -6,11 +7,8 @@ class Document {
         this.abstract = documentData.abstract || "";
         this.topic = documentData.topic || "";
         this.chapters = (documentData.chapters || []).map(chapterData => new Chapter(chapterData));
-        this.alternativeTitles = documentData.alternativeTitles || [];
-        this.alternativeAbstracts = documentData.alternativeAbstracts || [];
         this.currentChapterId = null;
         this.observers = [];
-        this.mainIdeas = documentData.mainIdeas || [];
         this.metadata = ["id", "title"];
         this.video = documentData.video || "";
     }

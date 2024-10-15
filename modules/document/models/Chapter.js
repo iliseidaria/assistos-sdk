@@ -6,7 +6,6 @@ class Chapter {
         this.id = chapterData.id || assistOS.services.generateId();
         this.visibility = chapterData.visibility || "show";
         this.paragraphs = (chapterData.paragraphs || []).map(paragraphData => new Paragraph(paragraphData));
-        this.alternativeChapters = [];
         this.backgroundSound = chapterData.backgroundSound || null;
         this.alternativeTitles = chapterData.alternativeTitles || [];
         if(chapterData.alternativeChapters && chapterData.alternativeChapters.length>0) {

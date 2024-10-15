@@ -39,6 +39,7 @@ async function updateDocumentTopic(spaceId, documentId, topic) {
 async function updateDocumentAbstract(spaceId, documentId, abstract) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=abstract`, "PUT", abstract);
 }
+
 async function getDocumentTopic(spaceId, documentId){
     return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=topic`, "GET");
 }
