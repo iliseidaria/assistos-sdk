@@ -9,29 +9,13 @@ const prepareSecret = (secret) => {
         .join('');
 }
 
-async function registerUser(email, password, photo, inviteToken) {
-    const headers = {
-        "Content-Type": "application/json; charset=UTF-8",
-    };
-    const options = {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-            email: email,
-            password: prepareSecret(password),
-            inviteToken: inviteToken,
-            ...(photo ? { photo: photo } : {})
-        })
-    };
-    const response = await fetch(`/users`, options);
-
-    if (!response.ok) {
-        const error = new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
-        error.statusCode = response.status;
-        throw error
-    }
-
-    return await response.json();
+async function registerUser(email, password, imageId, inviteToken) {
+    return await this.sendRequest(`/users`, "POST",{
+        email: email,
+        password: prepareSecret(password),
+        inviteToken: inviteToken,
+        imageId: imageId
+    });
 }
 async function generateVerificationCode(email,password){
     const headers = {
