@@ -20,7 +20,9 @@ async function getApplicationConfig(spaceId, applicationId) {
 async function loadApplicationsMetadata(spaceId) {
     return await this.sendRequest(`/applications/metadata/${spaceId}`, "GET");
 }
-
+async function runApplicationTask(spaceId, applicationId, taskName, taskData) {
+      return await this.sendRequest(`/applications/tasks/${spaceId}/${applicationId}/${taskName}`, "POST", taskData);
+}
 
 async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
     const pathSegments = relativeAppFilePath.split('/').map(segment => encodeURIComponent(segment));
@@ -60,5 +62,6 @@ module.exports = {
     getApplicationConfig,
     getApplicationFile,
     sendRequest,
+    runApplicationTask,
     Application
 };
