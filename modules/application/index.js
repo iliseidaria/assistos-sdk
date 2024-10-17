@@ -1,62 +1,64 @@
+const Application = require("./models/Application.js");
 const request = require("../util").request;
+
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 
 async function installApplication(spaceId, applicationId) {
-    return await this.sendRequest(`/space/${spaceId}/applications/${applicationId}`, "POST");
+    return await this.sendRequest(`/applications/${spaceId}/${applicationId}`, "POST");
 }
 
-async function getApplicationConfigs(spaceId, appId) {
-    return await this.sendRequest(`/space/${spaceId}/applications/${appId}/configs`, "GET");
+async function uninstallApplication(spaceId, applicationId) {
+    return await this.sendRequest(`/applications/${spaceId}/${applicationId}`, "DELETE");
 }
 
-async function getApplicationFile(spaceId, appId, relativeAppFilePath) {
-    const pathParts = relativeAppFilePath.split(".")
-    const type = pathParts[pathParts.length - 1] || "";
-    if (type !== "js") {
-        let response = await fetch(`/app/${spaceId}/applications/${appId}/file/${relativeAppFilePath}`, {
-            method: "GET",
-            headers: {
-                Cookie: this.__securityContext.cookies
-            }
-        });
-        return await response.text();
-    } else {
-        return await import(`/app/${spaceId}/applications/${appId}/file/${relativeAppFilePath}`);
-    }
-}
-
-async function storeAppObject(appName, objectType, objectId, stringData) {
-    return await this.sendRequest(`/app/${assistOS.space.id}/applications/${appName}/${objectType}/${objectId}`, "PUT", stringData);
-}
-
-async function loadAppObjects(appName, objectType) {
-    return await this.sendRequest(`/app/${assistOS.space.id}/applications/${appName}/${objectType}`, "GET");
-}
-
-async function uninstallApplication(spaceId, appName) {
-    return await this.sendRequest(`/space/${spaceId}/applications/${appName}`, "DELETE");
-}
-
-async function loadAppFlows(spaceId, appId) {
-    return import(`/app/${spaceId}/applications/${appId}`);
+async function getApplicationConfig(spaceId, applicationId) {
+    return await this.sendRequest(`/applications/config/${spaceId}/${applicationId}`, "GET");
 }
 
 async function loadApplicationsMetadata(spaceId) {
-    return await this.sendRequest(`/app/${spaceId}`, "GET");
+    return await this.sendRequest(`/applications/metadata/${spaceId}`, "GET");
 }
 
-const Application = require("./models/Application.js");
+
+async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
+    const pathSegments = relativeAppFilePath.split('/').map(segment => encodeURIComponent(segment));
+    const encodedPath = pathSegments.join('/');
+    const pathParts = relativeAppFilePath.split(".");
+    const type = pathParts[pathParts.length - 1].toLowerCase(); // Normalize file extension
+    if (type !== "js") {
+        let response = await fetch(`/applications/files/${spaceId}/${applicationId}/${encodedPath}`, {
+            method: "GET",
+            credentials: 'include'
+        });
+        return await response.text();
+    } else {
+        return await import(`/applications/files/${spaceId}/${applicationId}/${encodedPath}`);
+    }
+}
+
+
+/*
+async function storeAppObject(appName, objectType, objectId, stringData) {
+    return await this.sendRequest(`/app/${assistOS.space.id}/applications/${appName}/${objectType}/${objectId}`, "PUT", stringData);
+}
+async function loadAppObjects(appName, objectType) {
+    return await this.sendRequest(`/app/${assistOS.space.id}/applications/${appName}/${objectType}`, "GET");
+}
+*/
+/*
+async function loadAppFlows(spaceId, appId) {
+    return import(`/app/${spaceId}/applications/${appId}`);
+}*/
+
+
 module.exports = {
     installApplication,
-    getApplicationConfigs,
-    getApplicationFile,
-    storeAppObject,
-    loadAppObjects,
     uninstallApplication,
-    loadAppFlows,
     loadApplicationsMetadata,
+    getApplicationConfig,
+    getApplicationFile,
     sendRequest,
     Application
 };

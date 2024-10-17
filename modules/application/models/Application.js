@@ -1,6 +1,5 @@
 class Application {
     constructor(applicationData) {
-        this.id = applicationData.id;
         this.name = applicationData.name;
         this.description = applicationData.description;
         this.installationDate = applicationData.installationDate;
@@ -18,7 +17,6 @@ class Application {
     }
     stringifyApplication(){
         return {
-            id: this.id,
             name: this.name,
             description: this.description,
             installationDate: this.installationDate,
