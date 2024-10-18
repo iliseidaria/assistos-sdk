@@ -118,10 +118,10 @@ module.exports = {
             {
                 NAME: "lipsync",
                 ALLOWED_ALONG: ["speech", "videoScreenshot"],
-                REQUIRED: ["speech"],
+                REQUIRED: [],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
-                    if (!paragraph.commands.speech) {
-                        throw ("Paragraph Must have a speech command before adding lip sync");
+                    if (!paragraph.commands.audio && !paragraph.commands.speech) {
+                        throw ("Paragraph Must have an attached audio or a speech command before adding lip sync");
                     }
                     if (!paragraph.commands.image && !paragraph.commands.video) {
                         throw ("Paragraph Must have an image or a video before adding lip sync");
