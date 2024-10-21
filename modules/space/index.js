@@ -140,70 +140,70 @@ async function sendGeneralRequest(url, method, data = null, headers = {}) {
             return await response.text();
     }
 }
-async function putAudio(spaceId, audio) {
-    const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/audios`, "GET");
+async function putAudio(audio) {
+    const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/audios`, "GET");
     await this.sendGeneralRequest(uploadURL, "PUT", audio, {"Content-Type": "audio/mp3"});
     return fileId;
 }
-async function putImage(spaceId, image) {
-    const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/images`, "GET");
+async function putImage(image) {
+    const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/images`, "GET");
     await this.sendGeneralRequest(uploadURL, "PUT", image, {"Content-Type": "image/png"});
     return fileId;
 }
-async function putVideo(spaceId, video) {
-    const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/${spaceId}/videos`, "GET");
+async function putVideo(video) {
+    const {uploadURL, fileId} = await this.sendRequest(`/spaces/uploads/videos`, "GET");
     await this.sendGeneralRequest(uploadURL, "PUT", video, {"Content-Type": "video/mp4"});
     return fileId;
 }
-async function getAudio(spaceId, audioId) {
-    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/audios/${audioId}`, "GET");
+async function getAudio(audioId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/audios/${audioId}`, "GET");
     return await this.sendGeneralRequest(downloadURL, "GET", null);
 }
 
-async function getImage(spaceId, imageId) {
-    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/images/${imageId}`, "GET");
+async function getImage(imageId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/images/${imageId}`, "GET");
     return await this.sendGeneralRequest(downloadURL, "GET", null);
 }
 
-async function getVideo(spaceId, videoId, range) {
-    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/videos/${videoId}`, "GET");
+async function getVideo(videoId, range) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/videos/${videoId}`, "GET");
     return await this.sendGeneralRequest(downloadURL, "GET", null, {...range ? {"Range": range} : {}});
 }
-async function getImageURL(spaceId, imageId) {
-    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/images/${imageId}`, "GET");
+async function getImageURL(imageId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/images/${imageId}`, "GET");
     return downloadURL;
 }
-async function getAudioURL(spaceId, audioId) {
-    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/audios/${audioId}`, "GET");
+async function getAudioURL(audioId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/audios/${audioId}`, "GET");
     return downloadURL;
 }
-async function getVideoURL(spaceId, imageId) {
-    const {downloadURL} = await this.sendRequest(`/spaces/downloads/${spaceId}/videos/${imageId}`, "GET");
+async function getVideoURL(imageId) {
+    const {downloadURL} = await this.sendRequest(`/spaces/downloads/videos/${imageId}`, "GET");
     return downloadURL;
 }
 
-async function deleteAudio(spaceId, audioId) {
-    return await this.sendRequest(`/spaces/audios/${spaceId}/${audioId}`, "DELETE");
+async function deleteAudio(audioId) {
+    return await this.sendRequest(`/spaces/audios/${audioId}`, "DELETE");
 }
 
 async function importPersonality(spaceId, personalityFormData) {
     return await this.sendRequest(`/spaces/${spaceId}/import/personalities`, "POST", personalityFormData);
 }
 
-async function deleteVideo(spaceId, videoId) {
-    return await this.sendRequest(`/spaces/videos/${spaceId}/${videoId}`, "DELETE");
+async function deleteVideo(videoId) {
+    return await this.sendRequest(`/spaces/videos/${videoId}`, "DELETE");
 }
 
-async function getAudioHead(spaceId, audioId) {
-    return await this.sendRequest(`/spaces/audios/${spaceId}/${audioId}`, "HEAD");
+async function getAudioHead(audioId) {
+    return await this.sendRequest(`/spaces/audios/${audioId}`, "HEAD");
 }
 
-async function getImageHead(spaceId, imageId) {
-    return await this.sendRequest(`/spaces/images/${spaceId}/${imageId}`, "HEAD");
+async function getImageHead(imageId) {
+    return await this.sendRequest(`/spaces/images/${imageId}`, "HEAD");
 }
 
-async function getVideoHead(spaceId, videoId) {
-    return await this.sendRequest(`/spaces/videos/${spaceId}/${videoId}`, "HEAD");
+async function getVideoHead(videoId) {
+    return await this.sendRequest(`/spaces/videos/${videoId}`, "HEAD");
 }
 
 module.exports = {
