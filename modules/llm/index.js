@@ -5,8 +5,8 @@ async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 
-async function sendLLMRequest(data) {
-    return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/llms/text/generate`, "POST", data)
+async function sendLLMRequest(data,spaceId) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId||assistOS.space.id}/llms/text/generate`, "POST", data)
 }
 
 async function generateImage(spaceId, modelConfigs) {
