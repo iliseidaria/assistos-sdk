@@ -23,6 +23,9 @@ async function loadApplicationsMetadata(spaceId) {
 async function runApplicationTask(spaceId, applicationId, taskName, taskData) {
       return await this.sendRequest(`/applications/tasks/${spaceId}/${applicationId}/${taskName}`, "POST", taskData);
 }
+async function runApplicationFlow(spaceId, applicationId, flowId, flowData) {
+        return await this.sendRequest(`/applications/flows/${spaceId}/${applicationId}/${flowId}`, "POST", flowData);
+}
 
 async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
     const pathSegments = relativeAppFilePath.split('/').map(segment => encodeURIComponent(segment));
@@ -63,5 +66,6 @@ module.exports = {
     getApplicationFile,
     sendRequest,
     runApplicationTask,
+    runApplicationFlow,
     Application
 };

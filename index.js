@@ -35,6 +35,7 @@ function _loadModule(moduleName) {
             return null;
     }
 }
+
 function sdkModule(moduleName, securityContext) {
     let module = _loadModule(moduleName);
     this.__securityContext = securityContext;
