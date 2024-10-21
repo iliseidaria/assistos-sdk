@@ -13,6 +13,7 @@ class Chapter {
                 new Chapter(alternativeChapterData)
             );
         }
+        this.idea=chapterData.idea || "";
         this.currentParagraphId = null;
         this.mainIdeas = chapterData.mainIdeas || [];
     }
