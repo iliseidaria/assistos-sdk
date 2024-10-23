@@ -470,7 +470,12 @@ async function getTaskRelevantInfo(taskId) {
 async function runTask(taskId) {
     return await this.sendRequest(`/tasks/${taskId}`, "POST", {});
 }
-
+async function runAllDocumentTasks(spaceId, documentId) {
+    return await this.sendRequest(`/tasks/run-all/${spaceId}/${documentId}`, "POST", {});
+}
+async function cancelAllDocumentTasks(spaceId, documentId) {
+    return await this.sendRequest(`/tasks/cancel-all/${spaceId}/${documentId}`, "DELETE");
+}
 module.exports = {
     request,
     notificationService,
@@ -488,6 +493,8 @@ module.exports = {
     cancelTask,
     getTasks,
     runTask,
+    runAllDocumentTasks,
+    cancelAllDocumentTasks,
     getTaskRelevantInfo,
     cancelTaskAndRemove,
     sendRequest,
