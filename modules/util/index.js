@@ -1,5 +1,6 @@
 const constants = require("../../constants.js");
 const envType = require("assistos").envType;
+
 function fillTemplate(templateObject, fillObject, depth = 0) {
     /* Todo: Implement a detection mechanism for circular dependencies instead of a hardcoded nested depth limit */
 
@@ -249,6 +250,7 @@ function buildCommandsString(commandsObject) {
         return buildCommandString(name, command || {});
     }).join("\n");
 }
+
 function buildCommandString(commandType, parameters) {
     const commandName = commandType;
     const parametersString = Object.entries(parameters)
@@ -314,11 +316,11 @@ function findCommands(input) {
         }
 
         for (let previousCommandKey of Object.keys(result)) {
-            if(!commandConfig.ALLOWED_ALONG){
+            if (!commandConfig.ALLOWED_ALONG) {
                 continue;
             }
             let previousCommandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommandKey);
-            if(!previousCommandConfig.ALLOWED_ALONG){
+            if (!previousCommandConfig.ALLOWED_ALONG) {
                 continue;
             }
             if (!commandConfig.ALLOWED_ALONG.includes(previousCommandKey) && !previousCommandConfig.ALLOWED_ALONG.includes(commandName)) {
@@ -357,9 +359,12 @@ function findCommands(input) {
                     };
                 }
             }
-            for(let configParam of commandConfig.PARAMETERS){
-                if(configParam.REQUIRED && !paramsObject[configParam.NAME]){
-                    return {invalid: true, error: `Missing required parameter "${configParam.NAME}" in command: "${commandName}"`};
+            for (let configParam of commandConfig.PARAMETERS) {
+                if (configParam.REQUIRED && !paramsObject[configParam.NAME]) {
+                    return {
+                        invalid: true,
+                        error: `Missing required parameter "${configParam.NAME}" in command: "${commandName}"`
+                    };
                 }
             }
         }
