@@ -1,152 +1,180 @@
-const constants = require("../../constants.js");
-const envType = require("assistos").envType;
+const { SubscriptionManager } = require('./SubscribtionManager.js');
 
-let objectsToRefresh = [];
-let refreshDelay = 2000;
-let eventSource;
+class NotificationRouter {
 
-async function request(url, method, securityContext, data) {
-    let init = {
-        method: method,
-        headers: {}
-    };
-    if (method === "POST" || method === "PUT") {
-        if (data instanceof FormData || typeof data === "function") {
-            /* let the browser decide the content type */
-            init.body = data;
-        } else if (typeof data === "string") {
-            init.body = data;
-            init.headers["Content-Type"] = "text/plain; charset=UTF-8";
-        } else if (data instanceof ArrayBuffer || Buffer.isBuffer(data) || data instanceof Uint8Array) {
-            init.body = data;
-            init.headers["Content-Type"] = "application/octet-stream";
-        } else {
-            init.body = JSON.stringify(data);
-            init.headers["Content-Type"] = "application/json; charset=UTF-8";
+    constructor(debounceRefreshTimeout) {
+        if(NotificationRouter.instance){
+           return NotificationRouter.instance;
         }
-    }
-    if (envType === constants.ENV_TYPE.NODE) {
-        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
-        init.headers.Cookie = securityContext.cookies;
-    }
-    let response;
-    try {
-        response = await fetch(url, init);
-    } catch (err) {
-        console.error(err);
-    }
-    const contentType = response.headers.get('Content-Type');
-    if (contentType === 'application/zip') {
-        return await response.blob();
-    }
-    if (contentType.includes('audio/') || contentType.includes('image/') || contentType.includes('video/') || contentType.includes('application/octet-stream')) {
-        return await response.arrayBuffer();
-    }
-    if (method.toUpperCase() === "HEAD") {
-        return response.ok;
-    }
-    const responseJSON = await response.json();
-    if (!responseJSON.success) {
-        let errorData = {
-            status: response.status,
-            message: responseJSON.message
-        }
-        throw new Error(JSON.stringify(errorData));
-    }
-    return responseJSON.data;
-}
-
-const notificationService = (function createNotificationService() {
-    const listeners = {};
-
-    function on(event, callback) {
-        if (!listeners[event]) {
-            listeners[event] = [];
-        }
-        listeners[event].push(callback);
+        this._debounceRefreshTimeout = debounceRefreshTimeout;
+        this._refreshTimer = null;
+        this._objectsToRefresh = {};
+        this._connections = new Map();
+        this.subscriptionManager = new SubscriptionManager();
+        NotificationRouter.instance = this;
     }
 
-    function off(event) {
-        delete listeners[event];
-    }
+    async _handleContentEvent(event, connectionId) {
+        const parsedMessage = JSON.parse(event.data);
+        const objectPath = parsedMessage.objectId;
 
-    function emit(event, data) {
-        const eventListeners = listeners[event] || [];
-        eventListeners.forEach(callback => callback(data));
-    }
-
-    return {
-        on,
-        emit,
-        off
-    };
-})();
-
-
-
-function createSSEConnection(config) {
-    if (typeof window !== 'undefined') {
-        eventSource = new EventSource(config.url, {withCredentials: true});
-        let intervalId = setInterval(() => {
-            for (let objects of objectsToRefresh) {
-                notificationService.emit(objects.objectId, objects.data);
+        for (const [subscribedPath, callbacks] of Object.entries(this._objectsToRefresh)) {
+            if (this._matchesSubscription(objectPath, subscribedPath)) {
+                callbacks.forEach(callback => callback(parsedMessage.data, parsedMessage.type, connectionId));
             }
-            objectsToRefresh = [];
-        }, refreshDelay);
-        eventSource.intervalId = intervalId;
-        eventSource.addEventListener('content', function (event) {
-            console.log("Notification received");
-            let parsedMessage = JSON.parse(event.data);
-            objectsToRefresh.push({objectId: parsedMessage.objectId, data: parsedMessage.data});
-        });
+        }
 
-        eventSource.addEventListener('disconnect', async (event) => {
-            let disconnectReason = JSON.parse(event.data);
-            clearInterval(intervalId);
-            eventSource.close();
-            await config.onDisconnect(disconnectReason);
-        })
-        eventSource.onerror = async (err) => {
-            eventSource.close();
-            clearInterval(intervalId);
-            await config.onError(err);
-        };
-        console.log("SSE Connection created");
-        eventSource.intervalId = intervalId;
-        return eventSource;
-    } else {
-        console.warn("This function is only available in the browser");
+        this.debounceRefresh();
     }
-}
 
-async function closeSSEConnection(eventSource) {
-    clearInterval(eventSource.intervalId);
-    await this.request("/events/close", "GET");
-}
+    async _handleDisconnectEvent(event, connectionId) {
+        const disconnectReason = JSON.parse(event.data);
+        clearTimeout(this._refreshTimer);
+        const connectionInfo = this._connections.get(connectionId);
+        if (connectionInfo) {
+            connectionInfo.eventSource.close();
+            if (connectionInfo.sseConfig.onDisconnect) {
+                await connectionInfo.sseConfig.onDisconnect(disconnectReason);
+            }
+            this._connections.delete(connectionId);
+        }
+    }
 
-async function unsubscribeFromObject(objectId) {
-    notificationService.off(objectId);
-    let encodedObjectId = encodeURIComponent(objectId);
-    await this.request(`/events/unsubscribe/${encodedObjectId}`, "GET");
-}
+    async _handleErrorEvent(err, connectionId) {
+        clearTimeout(this._refreshTimer);
+        const connectionInfo = this._connections.get(connectionId);
+        if (connectionInfo) {
+            connectionInfo.eventSource.close();
+            if (connectionInfo.sseConfig.onError) {
+                await connectionInfo.sseConfig.onError(err);
+            }
+            this._connections.delete(connectionId);
+        }
+    }
 
-async function subscribeToObject(objectId, handler) {
-    notificationService.on(objectId, handler);
-    let encodedObjectId = encodeURIComponent(objectId);
-    await this.request(`/events/subscribe/${encodedObjectId}`, "GET");
-}
+    _refresh() {
+        for (const [objectId, callbacks] of Object.entries(this._objectsToRefresh)) {
+            callbacks.forEach(callback => {
+                callback(objectId);
+            });
+        }
 
-async function sendRequest(url, method, data) {
-    return await request(url, method, this.__securityContext, data);
+        this._objectsToRefresh = {};
+    }
+
+    registerConnection(url, sseConfig = {}) {
+        const connectionId = Symbol();
+
+        const eventSource = new EventSource(url, { withCredentials: true });
+        eventSource.addEventListener('content', (event) => this._handleContentEvent(event, connectionId));
+        eventSource.addEventListener('disconnect', (event) => this._handleDisconnectEvent(event, connectionId));
+        eventSource.onerror = (err) => this._handleErrorEvent(err, connectionId);
+
+        this._connections.set(connectionId, { eventSource, sseConfig });
+        return connectionId;
+    }
+
+    closeConnection(connectionId) {
+        const connectionInfo = this._connections.get(connectionId);
+        if (connectionInfo) {
+            clearTimeout(this._refreshTimer);
+            connectionInfo.eventSource.close();
+            this._connections.delete(connectionId);
+        }
+    }
+
+    debounceRefresh() {
+        if (this._refreshTimer) {
+            clearTimeout(this._refreshTimer);
+        }
+
+        this._refreshTimer = setTimeout(() => {
+            this._refresh();
+        }, this._debounceRefreshTimeout);
+    }
+
+    async subscribeToObject(path, callback) {
+        const pathSegments = path.split('/');
+
+        if (this.subscriptionManager.isSubscribed(pathSegments)) {
+            if (!this._objectsToRefresh[path]) {
+                this._objectsToRefresh[path] = [];
+            }
+            this._objectsToRefresh[path].push(callback);
+            return;
+        }
+
+        const needsSubscription = this.subscriptionManager.addSubscription(pathSegments);
+
+        if (needsSubscription) {
+            await fetch('/events/subscribe', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ path })
+            });
+        }
+
+        if (!this._objectsToRefresh[path]) {
+            this._objectsToRefresh[path] = [];
+        }
+        this._objectsToRefresh[path].push(callback);
+    }
+
+    async unsubscribeFromObject(path, callback) {
+        const pathSegments = path.split('/');
+
+        if (this._objectsToRefresh[path]) {
+            this._objectsToRefresh[path] = this._objectsToRefresh[path].filter(cb => cb !== callback);
+            if (this._objectsToRefresh[path].length === 0) {
+                delete this._objectsToRefresh[path];
+
+                this.subscriptionManager.removeSubscription(pathSegments);
+
+                await fetch('/events/unsubscribe', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ path })
+                });
+            }
+        }
+    }
+
+    _matchesSubscription(objectPath, subscribedPath) {
+        const objectParts = objectPath.split('/');
+        const subscribedParts = subscribedPath.split('/');
+
+        let i = 0;
+        let j = 0;
+
+        while (i < objectParts.length && j < subscribedParts.length) {
+            if (subscribedParts[j] === '**') {
+                return true;
+            } else if (subscribedParts[j] === '*') {
+                i++;
+                j++;
+            } else {
+                if (objectParts[i].toLowerCase() !== subscribedParts[j].toLowerCase()) {
+                    return false;
+                }
+                i++;
+                j++;
+            }
+        }
+
+        if (j < subscribedParts.length && subscribedParts[j] === '**') {
+            return true;
+        }
+
+        return i === objectParts.length && j === subscribedParts.length;
+    }
 }
 
 module.exports = {
-    request,
-    NotificationRouter : require('./NotificationRouter.js'),
-    notificationService,
-    createSSEConnection,
-    closeSSEConnection,
-    subscribeToObject,
-    unsubscribeFromObject,
-    sendRequest,
-}
+    NotificationRouter:NotificationRouter
+};
