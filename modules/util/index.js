@@ -478,6 +478,7 @@ async function runAllDocumentTasks(spaceId, documentId) {
 async function cancelAllDocumentTasks(spaceId, documentId) {
     return await this.sendRequest(`/tasks/cancel-all/${spaceId}/${documentId}`, "DELETE");
 }
+
 module.exports = {
     request,
     notificationService,
