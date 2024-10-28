@@ -34,8 +34,6 @@ function _loadModule(moduleName) {
             return require('./modules/application');
         case 'gallery':
             return require('./modules/gallery');
-        case 'notification':
-            return require('./modules/notification');
         default:
             return null;
     }
