@@ -1,5 +1,7 @@
+const Chapter = require("./models/Chapter");
 async function getChapter(spaceId, documentId, chapterId) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "GET");
+    let chapterData = await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "GET");
+    return new Chapter(chapterData);
 }
 
 async function addChapter(spaceId, documentId, chapterData) {
