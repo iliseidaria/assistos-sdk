@@ -397,7 +397,87 @@ async function runAllDocumentTasks(spaceId, documentId) {
 async function cancelAllDocumentTasks(spaceId, documentId) {
     return await this.sendRequest(`/tasks/cancel-all/${spaceId}/${documentId}`, "DELETE");
 }
+const notificationService = (function createNotificationService() {
+    const listeners = {};
 
+    function on(event, callback) {
+        if (!listeners[event]) {
+            listeners[event] = [];
+        }
+        listeners[event].push(callback);
+    }
+
+    function off(event) {
+        delete listeners[event];
+    }
+
+    function emit(event, data) {
+        const eventListeners = listeners[event] || [];
+        eventListeners.forEach(callback => callback(data));
+    }
+
+    return {
+        on,
+        emit,
+        off
+    };
+})();
+
+let objectsToRefresh = [];
+let refreshDelay = 2000;
+let eventSource;
+
+function createSSEConnection(config) {
+    if (typeof window !== 'undefined') {
+        eventSource = new EventSource(config.url, {withCredentials: true});
+        let intervalId = setInterval(() => {
+            for (let objects of objectsToRefresh) {
+                notificationService.emit(objects.objectId, objects.data);
+            }
+            objectsToRefresh = [];
+        }, refreshDelay);
+        eventSource.intervalId = intervalId;
+        eventSource.addEventListener('content', function (event) {
+            console.log("Notification received");
+            let parsedMessage = JSON.parse(event.data);
+            objectsToRefresh.push({objectId: parsedMessage.objectId, data: parsedMessage.data});
+        });
+
+        eventSource.addEventListener('disconnect', async (event) => {
+            let disconnectReason = JSON.parse(event.data);
+            clearInterval(intervalId);
+            eventSource.close();
+            await config.onDisconnect(disconnectReason);
+        })
+        eventSource.onerror = async (err) => {
+            eventSource.close();
+            clearInterval(intervalId);
+            await config.onError(err);
+        };
+        console.log("SSE Connection created");
+        eventSource.intervalId = intervalId;
+        return eventSource;
+    } else {
+        console.warn("This function is only available in the browser");
+    }
+}
+
+async function closeSSEConnection(eventSource) {
+    clearInterval(eventSource.intervalId);
+    await this.request("/events/close", "GET");
+}
+
+async function unsubscribeFromObject(objectId) {
+    notificationService.off(objectId);
+    let encodedObjectId = encodeURIComponent(objectId);
+    await this.request(`/events/unsubscribe/${encodedObjectId}`, "GET");
+}
+
+async function subscribeToObject(objectId, handler) {
+    notificationService.on(objectId, handler);
+    let encodedObjectId = encodeURIComponent(objectId);
+    await this.request(`/events/subscribe/${encodedObjectId}`, "GET");
+}
 module.exports = {
     request,
     fillTemplate,
@@ -420,5 +500,10 @@ module.exports = {
     sanitize,
     getSortedCommandsArray,
     unsanitize,
-    constants
+    constants,
+    createSSEConnection,
+    closeSSEConnection,
+    subscribeToObject,
+    unsubscribeFromObject,
+    notificationService
 }
