@@ -3,7 +3,7 @@ class Chapter {
     constructor(chapterData) {
         this.position = chapterData.position;
         this.title = chapterData.title;
-        this.id = chapterData.id || assistOS.services.generateId();
+        this.id = chapterData.id;
         this.visibility = chapterData.visibility || "show";
         this.paragraphs = (chapterData.paragraphs || []).map(paragraphData => new Paragraph(paragraphData));
         this.backgroundSound = chapterData.backgroundSound || null;
@@ -13,7 +13,7 @@ class Chapter {
                 new Chapter(alternativeChapterData)
             );
         }
-        this.idea=chapterData.idea || "";
+        this.idea = chapterData.idea || "";
         this.currentParagraphId = null;
         this.mainIdeas = chapterData.mainIdeas || [];
     }

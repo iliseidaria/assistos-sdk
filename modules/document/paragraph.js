@@ -1,5 +1,7 @@
+const Paragraph = require("./models/Paragraph");
 async function getParagraph(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}`, "GET");
+    let paragraphData = await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}`, "GET");
+    return new Paragraph(paragraphData);
 }
 
 async function addParagraph(spaceId, documentId, chapterId, paragraphData) {
@@ -14,8 +16,8 @@ async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${chapterId}/${paragraphId}`, "DELETE");
 }
 
-async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/swap/${spaceId}/${documentId}/${chapterId}/${paragraphId}/${paragraphId2}`, "PUT");
+async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2, direction) {
+    return await this.sendRequest(`/documents/chapters/paragraphs/swap/${spaceId}/${documentId}/${chapterId}/${paragraphId}/${paragraphId2}`, "PUT", { direction });
 }
 async function getParagraphText(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "GET");

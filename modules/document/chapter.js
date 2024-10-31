@@ -16,8 +16,8 @@ async function deleteChapter(spaceId, documentId, chapterId) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "DELETE");
 }
 
-async function swapChapters(spaceId, documentId, chapterId1, chapterId2) {
-    return await this.sendRequest(`/documents/chapters/swap/${spaceId}/${documentId}/${chapterId1}/${chapterId2}`, "PUT");
+async function swapChapters(spaceId, documentId, chapterId1, chapterId2, direction) {
+    return await this.sendRequest(`/documents/chapters/swap/${spaceId}/${documentId}/${chapterId1}/${chapterId2}`, "PUT", {direction});
 }
 
 async function getChapterTitle(spaceId, documentId, chapterId) {
