@@ -230,6 +230,7 @@ module.exports = {
                 NAME: "video",
                 PARAMETERS: [
                     {
+                        REQUIRED: true,
                         NAME: "id",
                         TYPE: "string",
                     },
@@ -249,18 +250,37 @@ module.exports = {
                         MAX_VALUE: 10080
                     },
                     {
+                        REQUIRED: true,
                         NAME: "duration",
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 3600
+                    },
+                    {
+                        REQUIRED: true,
+                        NAME: "start",
+                        TYPE: "number",
+                        MIN_VALUE: 0,
+                    },
+                    {
+                        REQUIRED: true,
+                        NAME: "end",
+                        TYPE: "number",
+                        MIN_VALUE: 0,
                     }
                 ],
-                VALIDATE: async (spaceId, resourceId, securityContext) => {
-                    /*       const spaceModule = require('assistos').loadModule('space', securityContext);
-                           const video = await spaceModule.getVideoHead(spaceId, resourceId);
-                           if (!video) {
-                               throw ("Invalid video Id");
-                           }*/
+                VALIDATE: async (spaceId, paragraph, securityContext) => {
+                    const spaceModule = require('assistos').loadModule('space', securityContext);
+                    const video = await spaceModule.getVideoHead(spaceId, paragraph.commands.video.id);
+                    if (!video) {
+                        throw ("Invalid video Id");
+                    }
+                    if(paragraph.commands.video.start >= video.duration){
+                        throw ("Invalid video start time");
+                    }
+                    if(paragraph.commands.video.end > video.duration){
+                        throw ("Invalid video end time");
+                    }
                 }
             },
             {

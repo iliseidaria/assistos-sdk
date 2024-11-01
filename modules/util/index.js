@@ -277,7 +277,7 @@ function findCommands(input) {
                 }
             }
             for (let configParam of commandConfig.PARAMETERS) {
-                if (configParam.REQUIRED && !paramsObject[configParam.NAME]) {
+                if (configParam.REQUIRED && !paramsObject.hasOwnProperty(configParam.NAME)) {
                     return {
                         invalid: true,
                         error: `Missing required parameter "${configParam.NAME}" in command: "${commandName}"`
