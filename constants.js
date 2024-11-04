@@ -270,15 +270,16 @@ module.exports = {
                     }
                 ],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
-                    const spaceModule = require('assistos').loadModule('space', securityContext);
-                    const video = await spaceModule.getVideoHead(spaceId, paragraph.commands.video.id);
-                    if (!video) {
-                        throw ("Invalid video Id");
-                    }
-                    if(paragraph.commands.video.start >= video.duration){
+                    // const spaceModule = require('assistos').loadModule('space', securityContext);
+                    // const video = await spaceModule.getVideoHead(spaceId, paragraph.commands.video.id);
+                    // if (!video) {
+                    //     throw ("Invalid video Id");
+                    // }
+                    let videoCommand = paragraph.commands.video;
+                    if(videoCommand.start >= videoCommand.duration){
                         throw ("Invalid video start time");
                     }
-                    if(paragraph.commands.video.end > video.duration){
+                    if(videoCommand.end > videoCommand.duration){
                         throw ("Invalid video end time");
                     }
                 }
