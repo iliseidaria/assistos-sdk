@@ -64,8 +64,8 @@ async function generateParagraphLipSync(spaceId, documentId, paragraphId, modelN
         ...(configs || {})
     });
 }
-async function selectParagraph(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}/select`, "PUT");
+async function selectParagraph(spaceId, documentId, paragraphId, paragraphData) {
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}/select`, "PUT", paragraphData);
 }
 async function deselectParagraph(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}/select`, "DELETE");
