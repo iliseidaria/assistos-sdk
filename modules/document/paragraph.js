@@ -70,8 +70,8 @@ async function selectParagraph(spaceId, documentId, paragraphId) {
 async function deselectParagraph(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}/select`, "DELETE");
 }
-async function getSelectedParagraphs(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}/select`, "GET");
+async function getSelectedParagraphs(spaceId, documentId) {
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/select`, "GET");
 }
 module.exports = {
     getParagraph,
