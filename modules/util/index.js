@@ -418,6 +418,5 @@ module.exports = {
     removeTask,
     sanitize,
     getSortedCommandsArray,
-    unsanitize,
-    constants
+    unsanitize
 }
