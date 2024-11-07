@@ -25,6 +25,9 @@ async function getParagraphText(spaceId, documentId, paragraphId) {
 async function updateParagraphText(spaceId, documentId, paragraphId, text) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "PUT", text);
 }
+async function updateParagraphComment(spaceId, documentId, paragraphId, text) {
+    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=comment`, "PUT", text);
+}
 
 // TODO remove
 async function updateParagraphAudio(spaceId, documentId, paragraphId, audioURL) {
@@ -92,5 +95,6 @@ module.exports = {
     generateParagraphLipSync,
     selectParagraph,
     deselectParagraph,
-    getSelectedParagraphs
+    getSelectedParagraphs,
+    updateParagraphComment
 }
