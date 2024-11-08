@@ -113,27 +113,35 @@ async function request(url, method, securityContext, data) {
     try {
         response = await fetch(url, init);
     } catch (err) {
-        console.error(err);
+        throw new Error(err.message);
     }
     const contentType = response.headers.get('Content-Type');
-    if (contentType === 'application/zip') {
+    if (contentType.includes('application/zip')) {
         return await response.blob();
     }
     if (contentType.includes('audio/') || contentType.includes('image/') || contentType.includes('video/') || contentType.includes('application/octet-stream')) {
         return await response.arrayBuffer();
     }
-    if (method.toUpperCase() === "HEAD") {
+    if (method === "HEAD") {
         return response.ok;
     }
-    const responseJSON = await response.json();
-    if (!responseJSON.success) {
-        let errorData = {
-            status: response.status,
-            message: responseJSON.message
+    if(contentType.includes('application/json')) {
+        const responseJSON = await response.json();
+        if (!response.ok) {
+            let errorData = {
+                status: response.status,
+                message: responseJSON.message || "Unknown error"
+            }
+            throw new Error(JSON.stringify(errorData));
         }
-        throw new Error(JSON.stringify(errorData));
+        return responseJSON.data;
     }
-    return responseJSON.data;
+
+    let textResponse = await response.text();
+    if(!response.ok){
+        throw new Error(textResponse);
+    }
+    return textResponse;
 }
 
 function unescapeHTML(value) {
