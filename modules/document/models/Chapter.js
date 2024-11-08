@@ -16,6 +16,7 @@ class Chapter {
         this.idea = chapterData.idea || "";
         this.currentParagraphId = null;
         this.mainIdeas = chapterData.mainIdeas || [];
+        this.comment=chapterData.comment||"";
     }
     simplifyChapter() {
         return {

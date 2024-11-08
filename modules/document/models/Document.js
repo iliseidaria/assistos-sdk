@@ -11,6 +11,7 @@ class Document {
         this.observers = [];
         this.metadata = ["id", "title"];
         this.video = documentData.video || "";
+        this.comment= documentData.comment || "";
     }
 
     toString() {

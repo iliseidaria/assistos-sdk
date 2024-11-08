@@ -27,7 +27,9 @@ async function getChapterTitle(spaceId, documentId, chapterId) {
 async function updateChapterTitle(spaceId, documentId, chapterId, title) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=title`, "PUT", title);
 }
-
+async function updateChapterComment(spaceId, documentId, chapterId, comment) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=comment`, "PUT", comment);
+}
 async function updateChapterVisibility(spaceId, documentId, chapterId, visibility) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=visibility`, "PUT", visibility);
 }
@@ -51,4 +53,5 @@ module.exports = {
     updateChapterVisibility,
     getChapterBackgroundSound,
     updateChapterBackgroundSound,
+    updateChapterComment
 }

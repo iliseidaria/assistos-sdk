@@ -30,6 +30,10 @@ async function deleteDocument(spaceId, documentId){
 async function updateDocumentTitle(spaceId, documentId, title) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=title`, "PUT", title);
 }
+async function updateDocumentComment(spaceId, documentId, comment) {
+    return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=comment`, "PUT", comment);
+}
+
 async function updateVideo(spaceId, documentId, videoPath){
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=video`, "PUT", videoPath);
 }
@@ -76,5 +80,6 @@ module.exports = {
     estimateDocumentVideoLength,
     getDocumentTasks,
     exportDocument,
-    importDocument
+    importDocument,
+    updateDocumentComment
 };
