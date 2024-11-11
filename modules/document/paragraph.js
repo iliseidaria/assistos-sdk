@@ -67,15 +67,7 @@ async function generateParagraphLipSync(spaceId, documentId, paragraphId, modelN
         ...(configs || {})
     });
 }
-async function selectParagraph(spaceId, documentId, paragraphId, paragraphData) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}/select`, "PUT", paragraphData);
-}
-async function deselectParagraph(spaceId, documentId, paragraphId, selectId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}/${selectId}/select`, "DELETE");
-}
-async function getSelectedParagraphs(spaceId, documentId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/select`, "GET");
-}
+
 module.exports = {
     getParagraph,
     addParagraph,
@@ -93,8 +85,5 @@ module.exports = {
     getParagraphCommands,
     updateParagraphCommands,
     generateParagraphLipSync,
-    selectParagraph,
-    deselectParagraph,
-    getSelectedParagraphs,
     updateParagraphComment
 }
