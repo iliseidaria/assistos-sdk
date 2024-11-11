@@ -14,6 +14,7 @@ class Personality {
         this.openers = personalityData.openers || [];
         this.tasks = personalityData.tasks || [];
         this.metadata = ["id", "name", "imageId"];
+        this.llms = personalityData.llms||{};
     }
 
     simplify(){

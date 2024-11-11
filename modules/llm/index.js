@@ -26,7 +26,9 @@ async function listEmotions(spaceId){
 async function getLLMConfigs(spaceId) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/configs`, "GET");
 }
-
+async function listLlms(spaceId) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms`, "GET");
+}
 async function editImage(spaceId, modelName, options) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", {
         modelName: modelName,
@@ -58,5 +60,6 @@ module.exports = {
     getLLMConfigs,
     editImage,
     sendLLMChatRequest,
-    lipSync
+    lipSync,
+    listLlms
 }
