@@ -8,7 +8,8 @@ async function getPersonalitiesMetadata(spaceId){
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}`, "GET");
 }
 async function getPersonalities(spaceId){
-  return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/data`, "GET");
+    let personalities = await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/data`, "GET");
+    return personalities.map(personality => new Personality(personality));
 }
 async function getPersonality(spaceId, fileName){
     let personality =  await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
