@@ -330,7 +330,7 @@ class Agent {
             messagesQueue: messagesQueue,
             agentId: this.agentData.id
         };
-        return await LLM.sendLLMChatRequest(requestData);
+        return await LLM.generateText(requestData);
     }
 
     async createChatUnitResponse(conversationContainer, inReplyToMessageId) {

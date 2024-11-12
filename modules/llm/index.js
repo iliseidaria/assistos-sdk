@@ -5,8 +5,8 @@ async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 
-async function sendLLMRequest(data,spaceId) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId||assistOS.space.id}/llms/text/generate`, "POST", data)
+async function generateText(data, spaceId) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", data)
 }
 
 async function generateImage(spaceId, modelConfigs) {
@@ -35,10 +35,6 @@ async function editImage(spaceId, modelName, options) {
         ...options
     });
 }
-
-async function sendLLMChatRequest(data) {
-    return await this.sendRequest(`apis/v1/spaces/${assistOS.space.id}/llms/text/generate`, "POST", data)
-}
 async function lipSync(spaceId,taskId, videoId, audioId, modelName, configs) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", {
         modelName: modelName,
@@ -50,7 +46,7 @@ async function lipSync(spaceId,taskId, videoId, audioId, modelName, configs) {
 }
 
 module.exports = {
-    sendLLMRequest,
+    generateText,
     LLM,
     sendRequest,
     generateImage,
@@ -59,7 +55,7 @@ module.exports = {
     listEmotions,
     getLLMConfigs,
     editImage,
-    sendLLMChatRequest,
+    generateText,
     lipSync,
     listLlms
 }
