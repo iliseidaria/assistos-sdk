@@ -10,9 +10,16 @@ module.exports = {
     PRODUCTION_BASE_URL: "http://demo.assistos.net:8080",
     DEVELOPMENT_BASE_URL: "http://localhost:8080",
     COMMANDS_CONFIG: {
-        ORDER: [
-            "soundEffect",
+        ATTACHMENTS:[
+            "effects",
+            "image",
+            "video",
             "audio",
+            "silence"
+        ],
+        ORDER: [
+            "audio",
+            "effects",
             "image",
             "video",
             "speech",
@@ -36,7 +43,7 @@ module.exports = {
         COMMANDS: [
             {
                 NAME: "speech",
-                ALLOWED_ALONG: ["lipsync", "videoScreenshot"],
+                NOT_ALLOWED_ALONG: ["silence"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     const personalityModule = require('assistos').loadModule('personality', securityContext);
                     if (!paragraph) {
@@ -102,7 +109,6 @@ module.exports = {
             },
             {
                 NAME: "silence",
-                ALLOWED_ALONG: ["videoScreenshot"],
                 PARAMETERS:
                     [{
                         NAME: "duration",
@@ -117,7 +123,7 @@ module.exports = {
             },
             {
                 NAME: "lipsync",
-                ALLOWED_ALONG: ["speech", "videoScreenshot"],
+                NOT_ALLOWED_ALONG: ["silence"],
                 REQUIRED: [],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     if (!paragraph.commands.audio && !paragraph.commands.speech) {
@@ -139,6 +145,7 @@ module.exports = {
             },
             {
                 NAME: "audio",
+                NOT_ALLOWED_ALONG: ["silence"],
                 PARAMETERS: [
                     {
                         REQUIRED:true,
@@ -162,7 +169,10 @@ module.exports = {
                 }
             },
             {
-                NAME:"soundEffect",
+                NAME:"effects",
+                TYPE: "array",
+                ITEM_NAME: "effect",
+                NOT_ALLOWED_ALONG: ["silence"],
                 PARAMETERS: [
                     {
                         REQUIRED:true,
@@ -171,63 +181,57 @@ module.exports = {
                     },
                     {
                         REQUIRED:true,
-                        NAME: "duration",
-                        TYPE: "number",
-                        MIN_VALUE: 0,
-                        MAX_VALUE: 3600
+                        NAME: "name",
+                        TYPE: "string"
                     },
                     {
-                        DEFAULT:false,
-                        NAME: "loop",
-                        TYPE: "boolean"
+                        REQUIRED:true,
+                        NAME: "duration",
+                        TYPE: "number",
+                        MIN_VALUE: 0
                     },
                     {
                         NAME: "volume",
                         TYPE: "number",
                         DEFAULT: 1.0,
                         MIN_VALUE: 0.0,
-                        MAX_VALUE: 1.0,
-                        DESCRIPTION: "Controls the audio volume (range 0.0 to 1.0)."
+                        MAX_VALUE: 1.0
                     },
                     {
-                        NAME: "currentTime",
-                        TYPE: "number",
-                        DEFAULT: 0.0,
-                        MIN_VALUE: 0.0,
-                        DESCRIPTION: "Gets or sets the current playback time in seconds."
-                    },
-                    {
-                        NAME: "playbackRate",
-                        TYPE: "number",
-                        DEFAULT: 1.0,
-                        MIN_VALUE: 0.5,
-                        MAX_VALUE: 4.0,
-                        DESCRIPTION: "Controls the speed at which the audio is played (1.0 is normal speed)."
-                    },
-                    {
-                        NAME: "muted",
-                        DEFAULT: false,
-                        TYPE: "boolean",
-                        DESCRIPTION: "Mutes or unmutes the audio."
-                    },
-                    {
+                        REQUIRED:true,
                         NAME: "start",
                         TYPE: "number",
-                        DESCRIPTION: "The time in seconds where the audio should start playing."
+                        MIN_VALUE: 0
+                    },
+                    {
+                        REQUIRED:true,
+                        NAME: "end",
+                        TYPE: "number",
+                        MIN_VALUE: 0
                     }
                 ],
                 VALIDATE: async (spaceId, paragraph) => {
-                    let startTime = paragraph.commands.soundEffect.start;
+                    let effects = paragraph.commands.effects;
                     let audioDuration = paragraph.commands.audio ? paragraph.commands.audio.duration : 0;
-                    let videoDuration = paragraph.commands.video ? paragraph.commands.video.duration : 0;
+                    let videoDuration = paragraph.commands.video ? paragraph.commands.video.end - paragraph.commands.video.start : 0;
                     let maxDuration = Math.max(audioDuration, videoDuration);
-                    if(startTime > maxDuration){
-                        throw ("Sound effect start time cannot be greater than audio or video duration");
+                    for(let effect of effects){
+                        if(effect.start > effect.end){
+                            throw (`Sound effect ${effect.name} start time cannot be greater than end time`);
+                        }
+                        if(effect.end > effect.duration){
+                            throw (`Sound effect ${effect.name} end time cannot be greater than effect duration`);
+                        }
+                        if(effect.duration > maxDuration){
+                            throw (`Sound effect ${effect.name} duration cannot be greater than audio or video duration`);
+                        }
                     }
+
                 }
             },
             {
                 NAME: "video",
+                NOT_ALLOWED_ALONG: ["silence"],
                 PARAMETERS: [
                     {
                         REQUIRED: true,
@@ -312,15 +316,6 @@ module.exports = {
                 }
             }
         ]
-    },
-    getImageSrc: (spaceId, imageId) => {
-        return `spaces/images/${spaceId}/${imageId}`;
-    },
-    getAudioSrc: (spaceId, audioId) => {
-        return `spaces/audios/${spaceId}/${audioId}`;
-    },
-    getVideoSrc: (spaceId, videoId) => {
-        return `spaces/videos/${spaceId}/${videoId}`;
     }
 }
 

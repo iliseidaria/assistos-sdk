@@ -176,13 +176,20 @@ function buildCommandsString(commandsObject) {
     }).join("\n");
 }
 
-function buildCommandString(commandType, parameters) {
-    const commandName = commandType;
+function buildCommandString(commandName, parameters) {
+    let commandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === commandName);
+    if(commandConfig.TYPE === "array"){
+        return parameters.map(commandParams => {
+            const parametersString = Object.entries(commandParams).map(([key, value]) => {
+                    return `${key}=${value}`;
+                }).join(' ');
+            return `${commandConfig.ITEM_NAME} ${parametersString};`
+        }).join('\n');
+    }
     const parametersString = Object.entries(parameters)
         .map(([key, value]) => {
             return `${key}=${value}`;
-        })
-        .join(' ');
+        }).join(' ');
     return `${commandName} ${parametersString};`
 }
 
@@ -199,7 +206,39 @@ function getSortedCommandsArray(commandsObject) {
         return acc
     }, []);
 }
-
+function processCommandParams(stringParams, commandConfig) {
+    let commandParams = {};
+    if(!stringParams){
+        return commandParams;
+    }
+    let paramsArray = stringParams.split(/\s+/);
+    for (let param of paramsArray) {
+        if (param.includes('=')) {
+            let [name, value] = param.split('=');
+            let parameter = commandConfig.PARAMETERS?.find(p => p.NAME === name);
+            if (!parameter) {
+                throw new Error(`Unknown parameter "${name}" in command: "${commandConfig.NAME}"`);
+            }
+            if (parameter.TYPE === 'number') {
+                value = parseFloat(value);
+                if (isNaN(value) || value < parameter.MIN_VALUE || value > parameter.MAX_VALUE) {
+                    throw new Error(`Invalid value for parameter "${name}" in command: "${commandConfig.NAME}"`);
+                }
+            } else if (parameter.TYPE === 'string' && parameter.VALUES && !parameter.VALUES.includes(value)) {
+                throw new Error(`Invalid value for parameter "${name}" in command: "${commandConfig.NAME}"`);
+            }
+            commandParams[name] = value;
+        } else {
+            throw new Error(`Invalid parameter format "${param}" in command: "${commandConfig.NAME}"`);
+        }
+    }
+    for (let configParam of commandConfig.PARAMETERS) {
+        if (configParam.REQUIRED && !commandParams.hasOwnProperty(configParam.NAME)) {
+            throw new Error(`Missing required parameter "${configParam.NAME}" in command: "${commandConfig.NAME}"`);
+        }
+    }
+    return commandParams;
+}
 function findCommands(input) {
     input = unescapeHTML(input);
     input = input.trim();
@@ -213,88 +252,49 @@ function findCommands(input) {
     for (const commandStr of commandsArray) {
         const match = commandStr.match(regex);
         if (!match) {
-            return {invalid: true, error: `Invalid command format: "${commandStr}"`};
+            throw new Error(`Invalid command format: "${commandStr}"`);
         }
         const commandName = match[1];
-        if (foundCommands[commandName]) {
-            return {invalid: true, error: `Duplicate command "${commandName}" detected`};
+        let repeatableCommand = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.ITEM_NAME === commandName);
+        if (repeatableCommand) {
+            if (!foundCommands[repeatableCommand.NAME]) {
+                foundCommands[repeatableCommand.NAME] = [];
+            }
+            foundCommands[repeatableCommand.NAME].push(match[2] ? match[2].trim() : '');
+        } else if (foundCommands[commandName]) {
+            throw new Error(`Command "${commandName}" is not repeatable`);
+        } else {
+            foundCommands[commandName] = match[2] ? match[2].trim() : '';
         }
-        foundCommands[commandName] = match[2] ? match[2].trim() : '';
     }
 
 
     for (const commandName in foundCommands) {
         const commandParamsString = foundCommands[commandName];
+        if(Array.isArray(commandParamsString)){
+            let commandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === commandName);
+            let resultArray = [];
+            for(let stringParam of commandParamsString){
+                resultArray.push(processCommandParams(stringParam, commandConfig));
+            }
+            result[commandName] = resultArray;
+            continue;
+        }
+
         const commandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === commandName);
         if (!commandConfig) {
-            return {invalid: true, error: `Unknown command "${commandName}"`};
-        }
-        if (commandConfig.REQUIRED) {
-            for (let requiredCommand of commandConfig.REQUIRED) {
-                if (!foundCommands[requiredCommand]) {
-                    return {
-                        invalid: true,
-                        error: `Command "${commandName}" requires "${requiredCommand}" to be present`
-                    };
-                }
-            }
+            throw new Error(`Unknown command "${commandName}"`);
         }
 
         for (let previousCommandKey of Object.keys(result)) {
-            if (!commandConfig.ALLOWED_ALONG) {
+            if (!commandConfig.NOT_ALLOWED_ALONG) {
                 continue;
             }
-            let previousCommandConfig = constants.COMMANDS_CONFIG.COMMANDS.find(cmd => cmd.NAME === previousCommandKey);
-            if (!previousCommandConfig.ALLOWED_ALONG) {
-                continue;
-            }
-            if (!commandConfig.ALLOWED_ALONG.includes(previousCommandKey) && !previousCommandConfig.ALLOWED_ALONG.includes(commandName)) {
-                return {
-                    invalid: true,
-                    error: `Command "${commandName}" is not allowed alongside "${previousCommandKey}"`
-                };
+            if (commandConfig.NOT_ALLOWED_ALONG.includes(previousCommandKey)) {
+                throw new Error(`Command "${commandName}" is not allowed alongside "${previousCommandKey}"`);
             }
         }
-        const paramsObject = {};
-        if (commandParamsString) {
-            let paramsArray = commandParamsString.split(/\s+/);
-            for (let param of paramsArray) {
-                if (param.includes('=')) {
-                    let [name, value] = param.split('=');
-                    let parameter = commandConfig.PARAMETERS?.find(p => p.NAME === name);
-                    if (!parameter) {
-                        return {invalid: true, error: `Unknown parameter "${name}" in command: "${commandName}"`};
-                    }
-                    if (parameter.TYPE === 'number') {
-                        value = parseFloat(value);
-                        if (isNaN(value) || value < parameter.MIN_VALUE || value > parameter.MAX_VALUE) {
-                            return {
-                                invalid: true,
-                                error: `Invalid value for parameter "${name}" in command: "${commandName}"`
-                            };
-                        }
-                    } else if (parameter.TYPE === 'string' && parameter.VALUES && !parameter.VALUES.includes(value)) {
-                        return {invalid: true, error: `Invalid value "${value}" for parameter "${name}"`};
-                    }
-                    paramsObject[name] = value;
-                } else {
-                    return {
-                        invalid: true,
-                        error: `Invalid parameter format "${param}" in command: "${commandName}"`
-                    };
-                }
-            }
-            for (let configParam of commandConfig.PARAMETERS) {
-                if (configParam.REQUIRED && !paramsObject.hasOwnProperty(configParam.NAME)) {
-                    return {
-                        invalid: true,
-                        error: `Missing required parameter "${configParam.NAME}" in command: "${commandName}"`
-                    };
-                }
-            }
-        }
-        result[commandName] = paramsObject;
-
+        result[commandName] = processCommandParams(commandParamsString, commandConfig);
     }
     return result;
 }
@@ -320,26 +320,39 @@ function getCommandsDifferences(commandsObject1, commandsObject2) {
     return differencesObject;
 }
 
-function areCommandsDifferent(commandObj1, commandObj2) {
-    const keys1 = Object.keys(commandObj1);
-    const keys2 = Object.keys(commandObj2);
-
-    if (keys1.length !== keys2.length) {
-        return true;
-    }
-
-    for (let key of keys1) {
-        if (commandObj1[key] !== commandObj2[key]) {
+function areCommandsDifferent(commandParams1, commandParams2) {
+    if (Array.isArray(commandParams1) && Array.isArray(commandParams2)) {
+        if (commandParams1.length !== commandParams2.length) {
             return true;
         }
-    }
+        for (let i = 0; i < commandParams1.length; i++) {
+            if (areCommandsDifferent(commandParams1[i], commandParams2[i])) {
+                return true;
+            }
+        }
+        return false;
+    } else if (typeof commandParams1 === 'object' && typeof commandParams2 === 'object') {
+        const keys1 = Object.keys(commandParams1);
+        const keys2 = Object.keys(commandParams2);
 
-    for (let key of keys2) {
-        if (!keys1.includes(key)) {
+        if (keys1.length !== keys2.length) {
             return true;
         }
+
+        for (let key of keys1) {
+            if (commandParams1[key] !== commandParams2[key]) {
+                return true;
+            }
+        }
+
+        for (let key of keys2) {
+            if (!keys1.includes(key)) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
+    return commandParams1 !== commandParams2;
 }
 
 function unsanitize(value) {
