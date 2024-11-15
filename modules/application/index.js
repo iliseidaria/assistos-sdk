@@ -26,7 +26,12 @@ async function runApplicationTask(spaceId, applicationId, taskName, taskData) {
 async function runApplicationFlow(spaceId, applicationId, flowId, flowData) {
         return await this.sendRequest(`/applications/flows/${spaceId}/${applicationId}/${flowId}`, "POST", flowData);
 }
-
+async function updateApplication(spaceId, applicationId) {
+    return await this.sendRequest(`/applications/updates/${spaceId}/${applicationId}`, "PUT");
+}
+async function requiresUpdate(spaceId, applicationId) {
+    return await this.sendRequest(`/applications/updates/${spaceId}/${applicationId}`, "GET");
+}
 async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
     const pathSegments = relativeAppFilePath.split('/').map(segment => encodeURIComponent(segment));
     const encodedPath = pathSegments.join('/');
@@ -67,5 +72,7 @@ module.exports = {
     sendRequest,
     runApplicationTask,
     runApplicationFlow,
+    updateApplication,
+    requiresUpdate,
     Application
 };
