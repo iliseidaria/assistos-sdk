@@ -9,6 +9,12 @@ async function generateText(data, spaceId) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", data)
 }
 
+/* {roles:["system","user","assistant/agent"], message:"String"} */
+
+async function getChatCompletion(spaceId, chat) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/chat/generate`, "POST", chat)
+}
+
 async function generateImage(spaceId, modelConfigs) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", modelConfigs);
 }
@@ -55,7 +61,7 @@ module.exports = {
     listEmotions,
     getLLMConfigs,
     editImage,
-    generateText,
+    getChatCompletion,
     lipSync,
     listLlms
 }
