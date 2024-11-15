@@ -158,6 +158,14 @@ module.exports = {
                         TYPE: "number",
                         MIN_VALUE: 0,
                         MAX_VALUE: 3600
+                    },
+                    {
+                        REQUIRED:true,
+                        NAME: "volume",
+                        TYPE: "number",
+                        DEFAULT: 1,
+                        MIN_VALUE: 0,
+                        MAX_VALUE: 1
                     }
                 ],
                 VALIDATE: async (spaceId, resourceId, securityContext) => {
@@ -191,11 +199,12 @@ module.exports = {
                         MIN_VALUE: 0
                     },
                     {
+                        REQUIRED:true,
                         NAME: "volume",
                         TYPE: "number",
-                        DEFAULT: 1.0,
-                        MIN_VALUE: 0.0,
-                        MAX_VALUE: 1.0
+                        DEFAULT: 1,
+                        MIN_VALUE: 0,
+                        MAX_VALUE: 1
                     },
                     {
                         REQUIRED:true,
@@ -252,6 +261,14 @@ module.exports = {
                         TYPE: "number",
                         MIN_VALUE: 1,
                         MAX_VALUE: 10080
+                    },
+                    {
+                        REQUIRED: true,
+                        NAME: "volume",
+                        TYPE: "number",
+                        MIN_VALUE: 0,
+                        MAX_VALUE: 1,
+                        DEFAULT: 1
                     },
                     {
                         REQUIRED: true,
