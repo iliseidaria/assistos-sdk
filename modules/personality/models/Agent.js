@@ -127,43 +127,47 @@ class Agent {
 
     async processUserRequest(userRequest, context, responseContainerLocation) {
         context.availableFlows = this.flows;
+        const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
+
+        /* TODO huggingface models only support alternating assistant/user so we need to find a solution for this */
+        await this.handleNormalLLMResponse(userRequest, responseLocation);
+        /* //huggingface models are too dumb for this
         const decision = await this.analyzeRequest(userRequest, context);
-        const promises = [];
-        if (decision.flows.length > 0) {
-            const flowPromises = decision.flows.map(async (flow) => {
-                const missingParameters = Object.keys(this.flows[flow.flowName].flowParametersSchema).filter(parameter => !Object.keys(flow.extractedParameters).includes(parameter));
-                const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
-                if (missingParameters.length > 0) {
-                    return this.handleMissingParameters(context, missingParameters, userRequest, this.flows[flow.flowName], responseLocation);
-                } else {
-                    return this.callFlow(flow.flowName, flow.extractedParameters, responseLocation);
-                }
-            });
-            promises.push(...flowPromises);
-        }
+         const promises = [];
+         if (decision.flows.length > 0) {
+             const flowPromises = decision.flows.map(async (flow) => {
+                 const missingParameters = Object.keys(this.flows[flow.flowName].flowParametersSchema).filter(parameter => !Object.keys(flow.extractedParameters).includes(parameter));
+                 const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
+                 if (missingParameters.length > 0) {
+                     return this.handleMissingParameters(context, missingParameters, userRequest, this.flows[flow.flowName], responseLocation);
+                 } else {
+                     return this.callFlow(flow.flowName, flow.extractedParameters, responseLocation);
+                 }
+             });
+             promises.push(...flowPromises);
+         }
 
-        if (decision.normalLLMRequest.skipRewrite === "true") {
-            const normalLLMPromise = (async () => {
-                const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
-                await this.handleNormalLLMResponse(userRequest, responseLocation);
-            })();
-            promises.push(normalLLMPromise);
-        }
+         if (decision.normalLLMRequest.skipRewrite === "true") {
+             const normalLLMPromise = (async () => {
+                 const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
+                 await this.handleNormalLLMResponse(userRequest, responseLocation);
+             })();
+             promises.push(normalLLMPromise);
+         }
 
-        if (decision.normalLLMRequest.prompt !== "") {
-            const normalLLMPromise = (async () => {
-                const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
-                await this.handleNormalLLMResponse(decision.normalLLMRequest.prompt, responseLocation);
-            })();
-            promises.push(normalLLMPromise);
-        }
-        await Promise.all(promises);
+         if (decision.normalLLMRequest.prompt !== "") {
+             const normalLLMPromise = (async () => {
+                 const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
+                 await this.handleNormalLLMResponse(decision.normalLLMRequest.prompt, responseLocation);
+             })();
+             promises.push(normalLLMPromise);
+         }
+         await Promise.all(promises);*/
     }
-
 
     async handleNormalLLMResponse(userRequest, responseContainerLocation) {
         const requestData = {
-            modelName: "GPT-4o",
+            modelName: "meta-llama/Meta-Llama-3.1-8B-Instruct",
             prompt: userRequest,
             agentId: this.agentData.id
         };
@@ -198,7 +202,7 @@ class Agent {
             Inform the user that the action is possible, but they need to provide the missing parameters in a short and concise human-like way, perhaps asking them questions that would make them provide the parameters.
         `;
         const requestData = {
-            modelName: "GPT-4o",
+            modelName: "meta-llama/Meta-Llama-3.1-8B-Instruct",
             prompt: prompt,
             agentId: this.agentData.id,
         };
@@ -243,7 +247,7 @@ class Agent {
         const prompt = `The flow executed is {"flowName": "${this.flows[flowId].name}", "flowDescription": "${this.flows[flowId].description}", "flowExecutionResult": "${JSON.stringify(flowResult)}"}`;
 
         const requestData = {
-            modelName: "GPT-4o",
+            modelName: "meta-llama/Meta-Llama-3.1-8B-Instruct",
             prompt: prompt,
             messagesQueue: systemPrompt,
             agentId: this.agentData.id
@@ -300,18 +304,15 @@ class Agent {
     async analyzeRequest(userRequest, context) {
         let decisionObject = {...analyzeRequestPrompt.decision};
         let depthReached = 0;
-        const requestPrompt = [
-            {"role": "system", "content": analyzeRequestPrompt.system},
-            {
-                "role": "system",
-                "content": `context: { applicationStateContext: ${JSON.stringify(context.applicationStateContext)}, availableFlows: ${JSON.stringify(context.availableFlows)} }`
-            },
-            {"role": "user", "content": userRequest}
-        ];
-        let chatHistory = this.createChatHistory(context.chatHistory);
+        let chatPrompt=[];
+        chatPrompt.push({"role": "system", "content": analyzeRequestPrompt.system});
+        this.createChatHistory(context.chatHistory).forEach(chatHistory =>
+            chatPrompt.push(chatHistory)
+        );
         while (decisionObject.flows.length === 0 && decisionObject.normalLLMRequest.prompt === "" && decisionObject.normalLLMRequest.skipRewrite === false && depthReached < 3) {
-            const response = await this.callLLM(JSON.stringify(requestPrompt), chatHistory);
-            let responseContent = response.messages[0];
+            const response = await this.callLLM(chatPrompt);
+
+            let responseContent = response.messages?.[0]||response.message;
 
             decisionObject = JSON.parse(responseContent);
             depthReached++;
@@ -320,17 +321,17 @@ class Agent {
         return decisionObject;
     }
 
-    async callLLM(requestPrompt, messagesQueue) {
+    async callLLM(chatPrompt) {
         const requestData = {
-            modelName: "GPT-4o",
-            prompt: requestPrompt,
+            modelName: "meta-llama/Llama-2-7b-chat-hf",
+            chat:chatPrompt,
             modelConfig: {
                 response_format: "json"
             },
-            messagesQueue: messagesQueue,
             agentId: this.agentData.id
         };
-        return await LLM.generateText(requestData);
+        /* TODO huggingface models only support alternating assistant/user so we need to find a solution for this */
+        return await LLM.getChatCompletion(requestData,assistOS.space.id);
     }
 
     async createChatUnitResponse(conversationContainer, inReplyToMessageId) {
