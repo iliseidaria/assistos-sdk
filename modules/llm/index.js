@@ -11,7 +11,7 @@ async function generateText(data, spaceId) {
 
 /* {roles:["system","user","assistant/agent"], message:"String"} */
 
-async function getChatCompletion(spaceId, chat) {
+async function getChatCompletion(chat,spaceId) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/chat/generate`, "POST", chat)
 }
 
