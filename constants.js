@@ -217,6 +217,12 @@ module.exports = {
                         NAME: "end",
                         TYPE: "number",
                         MIN_VALUE: 0
+                    },
+                    {
+                        REQUIRED:true,
+                        NAME: "playAt",
+                        TYPE: "number",
+                        MIN_VALUE: 0
                     }
                 ],
                 VALIDATE: async (spaceId, paragraph) => {
@@ -231,8 +237,8 @@ module.exports = {
                         if(effect.end > effect.duration){
                             throw (`Sound effect ${effect.name} end time cannot be greater than effect duration`);
                         }
-                        if(effect.duration > maxDuration){
-                            throw (`Sound effect ${effect.name} duration cannot be greater than audio or video duration`);
+                        if(effect.playAt >= maxDuration){
+                            throw (`Sound effect ${effect.name} playAt cannot be greater/equal than video duration`);
                         }
                     }
 
