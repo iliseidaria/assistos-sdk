@@ -5,6 +5,11 @@ async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 async function getPersonalitiesMetadata(spaceId){
+    try {
+        await this.sendRequest(`/personalities/${spaceId}/ensure-default-llms`, "POST");
+    }catch(error){
+        //ignore error
+    }
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}`, "GET");
 }
 async function getPersonalities(spaceId){
@@ -37,9 +42,6 @@ async function updatePersonality(spaceId, fileName, personalityData){
 async function deletePersonality(spaceId, fileName){
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "DELETE", this.__securityContext);
 }
-async function loadFilteredKnowledge(spaceId, words, personalityId){
-    return await this.sendRequest(`/personalities/${spaceId}/${personalityId}/search?param1=${words}`, "GET", this.__securityContext);
-}
 async function exportPersonality(spaceId, personalityId){
     return await this.sendRequest(`/spaces/${spaceId}/export/personalities/${personalityId}`, "GET", this.__securityContext);
 }
@@ -49,7 +51,6 @@ module.exports = {
     addPersonality,
     updatePersonality,
     deletePersonality,
-    loadFilteredKnowledge,
     sendRequest,
     getAgent,
     getPersonalities,
