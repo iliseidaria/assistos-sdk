@@ -132,16 +132,31 @@ module.exports = {
                     if (!paragraph.commands.image && !paragraph.commands.video) {
                         throw ("Paragraph Must have an image or a video before adding lip sync");
                     }
+                    if(paragraph.commands.lipsync.videoId && paragraph.commands.lipsync.imageId){
+                        throw ("Cannot have both video and image for lip sync");
+                    }
+                    if(!paragraph.commands.lipsync.videoId && !paragraph.commands.lipsync.imageId){
+                        throw ("Must have either video or image for lip sync");
+                    }
                 },
                 EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.generateParagraphLipSync(spaceId, documentId, paragraphId);
                 },
-                PARAMETERS: [{
+                PARAMETERS:
+                    [{
+                        NAME: "videoId",
+                        TYPE: "string"
+                    },
+                    {
+                        NAME: "imageId",
+                        TYPE: "string"
+                    },
+                    {
                     NAME: "taskId",
                     SHORTHAND: "t",
                     TYPE: "string"
-                }]
+                    }]
             },
             {
                 NAME: "audio",
