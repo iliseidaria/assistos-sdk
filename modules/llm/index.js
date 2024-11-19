@@ -1,4 +1,3 @@
-const LLM = require("./models/LLM.js");
 const {request} = require("../util");
 
 async function sendRequest(url, method, data) {
@@ -50,10 +49,12 @@ async function lipSync(spaceId,taskId, videoId, audioId, modelName, configs) {
         ...configs
     });
 }
+async function getDefaultModels() {
+    return await this.sendRequest(`/apis/v1/llms/defaults`, "GET");
+}
 
 module.exports = {
     generateText,
-    LLM,
     sendRequest,
     generateImage,
     textToSpeech,
@@ -63,5 +64,6 @@ module.exports = {
     editImage,
     getChatCompletion,
     lipSync,
-    listLlms
+    listLlms,
+    getDefaultModels
 }
