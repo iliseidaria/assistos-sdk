@@ -135,9 +135,6 @@ module.exports = {
                     if(paragraph.commands.lipsync.videoId && paragraph.commands.lipsync.imageId){
                         throw ("Cannot have both video and image for lip sync");
                     }
-                    if(!paragraph.commands.lipsync.videoId && !paragraph.commands.lipsync.imageId){
-                        throw ("Must have either video or image for lip sync");
-                    }
                 },
                 EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
