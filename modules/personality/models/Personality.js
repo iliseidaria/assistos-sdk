@@ -1,5 +1,8 @@
-const flowModule = require('assistos').loadModule('flow', {});
-const llmModule = require('assistos').loadModule('llm', {});
+const {request} = require("../../util");
+
+async function sendRequest(url, method, data) {
+    return await request(url, method, this.__securityContext, data);
+}
 
 class Personality {
     constructor(personalityData) {
@@ -8,14 +11,9 @@ class Personality {
         this.id = personalityData.id
         this.imageId = personalityData.imageId;
         this.metadata = personalityData.metadata;
-
         /* TODO: TBD */
         this.voiceId = personalityData.voiceId;
         this.llms = personalityData.llms || {};
-    }
-
-    async callFlow(flowName, context) {
-        await flowModule.callFlow(assistOS.space.id, flowName, context, this.id);
     }
 
     getCurrentModel(modelType) {
@@ -30,40 +28,64 @@ class Personality {
             modelName: this.getCurrentModel("text"),
             prompt: prompt
         }
-        const response = await llmModule.generateText(requestData, spaceId);
+        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", requestData)
         return response;
     }
 
-    async getChatCompletion(spaceId, chat) {
+    //We can inject Personality Description as system prompt here
+    async getChatCompletion(spaceId, chat, injectPersonalityAsSysPrompt) {
+        const applyPersonalityToSysPromptChat = () => {
+            const sysPrompt = {"role": "system", "content": this.description}
+            chat = [sysPrompt,...chat]
+        }
+        if(injectPersonalityAsSysPrompt){
+            applyPersonalityToSysPromptChat()
+        }
         const requestData = {
             modelName: this.getCurrentModel("chat"),
             chat: chat
         }
-        const response = await llmModule.getChatCompletion(requestData, spaceId);
+        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/chat/generate`, "POST", requestData);
         return response;
     }
 
-
     async textToSpeech(spaceId, modelConfigs) {
-        return await llmModule.textToSpeech(assistOS.space.id, modelConfigs);
+        const requestData = {
+            modelName: this.getCurrentModel("audio"),
+            ...modelConfigs
+        }
+        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", requestData);
+        return response
     }
 
     async generateImage(spaceId, modelConfigs) {
-        return await llmModule.generateImage(assistOS.space.id, modelConfigs);
+        const requestData = {
+            modelName: this.getCurrentModel("image"),
+            ...modelConfigs
+        }
+        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", requestData);
+        return response;
     }
 
-    async editImage(spaceId, options) {
-        return await llmModule.editImage(assistOS.space.id, modelName, options);
+    async editImage(spaceId, modelConfigs) {
+        const requestData = {
+            modelName: this.getCurrentModel("image"),
+            ...modelConfigs
+        }
+        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", requestData);
+        return response
     }
 
-    async lipSync(spaceId,taskId, videoId, audioId, configs) {
+    async lipSync(spaceId, taskId, videoId, audioId, modelConfigs = {}) {
         const requestData = {
             modelName: this.getCurrentModel("video"),
             taskId: taskId,
             videoId: videoId,
             audioId: audioId,
-            ...configs
+            ...modelConfigs
         }
+        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", requestData);
+        return response;
     }
 }
 

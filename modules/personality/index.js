@@ -16,15 +16,18 @@ async function getPersonalities(spaceId){
     let personalities = await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/data`, "GET");
     return personalities.map(personality => new Personality(personality));
 }
+
 async function getPersonality(spaceId, fileName){
     let personality =  await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
     return new Personality(personality);
 }
+
 async function getPersonalityByName(spaceId, name){
-    let metadataList = await this.getPersonalitiesMetadata(spaceId);
+    let metadataList = await this.getPersonalitiesMetadata(spaceId)
     let personalityId = metadataList.find(pers => pers.name === name).id;
     return await this.getPersonality(spaceId, personalityId);
 }
+
 async function getAgent(spaceId, agentId) {
     let url = `/spaces/${spaceId}/agents`;
     if (agentId) {

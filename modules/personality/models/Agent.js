@@ -322,16 +322,8 @@ class Agent {
     }
 
     async callLLM(chatPrompt) {
-        const requestData = {
-            modelName: "meta-llama/Llama-2-7b-chat-hf",
-            chat:chatPrompt,
-            modelConfig: {
-                response_format: "json"
-            },
-            agentId: this.agentData.id
-        };
         /* TODO huggingface models only support alternating assistant/user so we need to find a solution for this */
-        return await LLM.getChatCompletion(requestData,assistOS.space.id);
+        return await LLM.getChatCompletion(assistOS.space.id,chatPrompt);
     }
 
     async createChatUnitResponse(conversationContainer, inReplyToMessageId) {
