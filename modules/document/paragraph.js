@@ -29,11 +29,6 @@ async function updateParagraphComment(spaceId, documentId, paragraphId, text) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=comment`, "PUT", text);
 }
 
-// TODO remove
-async function updateParagraphAudio(spaceId, documentId, paragraphId, audioURL) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=audio`, "PUT", audioURL);
-}
-
 async function updateParagraphCommands(spaceId, documentId, paragraphId, commandsObject) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=commands`, "PUT", commandsObject);
 }
@@ -42,26 +37,10 @@ async function getParagraphCommands(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=commands`, "GET");
 }
 
-async function getParagraphAudio(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=audio`, "GET");
-}
-
-async function updateImageParagraphDimensions(spaceId, documentId, paragraphId, dimensions) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=dimensions`, "PUT", dimensions);
-}
-
-async function updateImageParagraphLipSync(spaceId, documentId, paragraphId, videoData) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=lipSync`, "PUT", videoData);
-}
-
-async function getImageParagraphLipSync(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=lipSync`, "GET");
-}
-
-async function generateParagraphAudio(spaceId, documentId, paragraphId) {
+async function createTextToSpeechTask(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
 }
-async function generateParagraphLipSync(spaceId, documentId, paragraphId, modelName, configs) {
+async function createLipSyncTask(spaceId, documentId, paragraphId, modelName, configs) {
     return await this.sendRequest(`/tasks/lipsync/${spaceId}/${documentId}/${paragraphId}`, "POST", {
         modelName: modelName,
         ...(configs || {})
@@ -76,14 +55,9 @@ module.exports = {
     swapParagraphs,
     updateParagraphText,
     getParagraphText,
-    updateParagraphAudio,
-    updateImageParagraphDimensions,
-    getParagraphAudio,
-    generateParagraphAudio,
-    updateImageParagraphLipSync,
-    getImageParagraphLipSync,
+    createTextToSpeechTask,
     getParagraphCommands,
     updateParagraphCommands,
-    generateParagraphLipSync,
+    createLipSyncTask,
     updateParagraphComment
 }
