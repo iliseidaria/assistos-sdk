@@ -67,7 +67,7 @@ module.exports = {
                 },
                 EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
-                    return await documentModule.generateParagraphAudio(spaceId, documentId, paragraphId);
+                    return await documentModule.createTextToSpeechTask(spaceId, documentId, paragraphId);
                 },
                 PARAMETERS: [
                     {
@@ -138,7 +138,7 @@ module.exports = {
                 },
                 EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
-                    return await documentModule.generateParagraphLipSync(spaceId, documentId, paragraphId);
+                    return await documentModule.createLipSyncTask(spaceId, documentId, paragraphId);
                 },
                 PARAMETERS:
                     [{

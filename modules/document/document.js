@@ -34,9 +34,6 @@ async function updateDocumentComment(spaceId, documentId, comment) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=comment`, "PUT", comment);
 }
 
-async function updateVideo(spaceId, documentId, videoPath){
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=video`, "PUT", videoPath);
-}
 async function updateDocumentTopic(spaceId, documentId, topic) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=topic`, "PUT", topic);
 }
@@ -62,6 +59,7 @@ async function documentToVideo(spaceId, documentId){
 async function getDocumentTasks(spaceId, documentId){
     return await this.sendRequest(`/tasks/${spaceId}/${documentId}`, "GET");
 }
+
 async function deselectDocumentItem(spaceId, documentId, itemId, selectId) {
     return await this.sendRequest(`/documents/select/${spaceId}/${documentId}/${itemId}/${selectId}`, "DELETE");
 }
@@ -85,7 +83,6 @@ module.exports = {
     updateDocumentAbstract,
     sendRequest,
     documentToVideo,
-    updateVideo,
     estimateDocumentVideoLength,
     getDocumentTasks,
     exportDocument,

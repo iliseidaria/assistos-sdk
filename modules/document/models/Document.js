@@ -36,11 +36,6 @@ class Document {
         return JSON.stringify(this, replacer);
     }
 
-    getParagraphAudio(chapterId, paragraphId) {
-        let chapter = this.getChapter(chapterId);
-        let paragraph = chapter.getParagraph(paragraphId);
-        return paragraph.audio;
-    }
     async addChapters(chaptersData){
         for(let i= 0; i < chaptersData.length; i++){
             let chapterData= {
