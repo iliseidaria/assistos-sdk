@@ -17,9 +17,7 @@ async function getPersonality(spaceId, fileName) {
     } else {
         personality = await this.getDefaultPersonality(spaceId);
     }
-    personality = new Personality(personality);
-    personality.__securityContext = this.__securityContext;
-    return personality;
+    return new Personality(personality);
 }
 
 async function getDefaultPersonality(spaceId) {
@@ -30,32 +28,64 @@ async function getDefaultPersonality(spaceId) {
 
 async function generateText(spaceId, prompt, personalityName) {
     const personality = await this.getPersonality(spaceId, personalityName)
-    return await personality.generateText(spaceId, prompt);
+    const requestData = {
+        modelName: personality.getCurrentSettings("text"),
+        prompt: prompt
+    }
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", requestData)
 }
 
-async function getChatCompletion(spaceId, chat,personalityName, injectPersonalityAsSysPrompt = false) {
+async function getChatCompletion(spaceId, chat, personalityName, injectPersonalityAsSysPrompt = false) {
     const personality = await this.getPersonality(spaceId, personalityName);
-    return await personality.getChatCompletion(spaceId, chat, injectPersonalityAsSysPrompt);
+    if (injectPersonalityAsSysPrompt) {
+        personality.applyPersonalityToSysPromptChat(chat);
+    }
+    const requestData = {
+        modelName: personality.getCurrentSettings("chat"),
+        chat: chat
+    }
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/chat/generate`, "POST", requestData);
 }
+
 
 async function textToSpeech(spaceId, modelConfigs, personalityName) {
     const personality = await this.getPersonality(spaceId, personalityName);
-    return await personality.textToSpeech(spaceId, modelConfigs);
+    const requestData = {
+        modelName: personality.getCurrentSettings("audio"),
+        ...modelConfigs
+    }
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", requestData);
 }
 
 async function generateImage(spaceId, modelConfigs, personalityName) {
     const personality = await this.getPersonality(spaceId, personalityName);
-    return await personality.generateImage(spaceId, modelConfigs);
+    const requestData = {
+        modelName: personality.getCurrentSettings("image"),
+        ...modelConfigs
+    }
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", requestData);
+
 }
 
-async function editImage(spaceId, modelName, options, personalityName) {
+async function editImage(spaceId, modelName, modelConfigs, personalityName) {
     const personality = await this.getPersonality(spaceId, personalityName);
-    return await personality.editImage(spaceId, modelName, options);
+    const requestData = {
+        modelName: personality.getCurrentSettings("image"),
+        ...modelConfigs
+    }
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", requestData);
 }
 
-async function lipSync(spaceId, taskId, videoId, audioId, configs, personalityName) {
+async function lipSync(spaceId, taskId, videoId, audioId, modelConfigs, personalityName) {
     const personality = await this.getPersonality(spaceId, personalityName);
-    return await personality.lipSync(spaceId, taskId, videoId, audioId, configs);
+    const requestData = {
+        modelName: personality.getCurrentSettings("video"),
+        taskId: taskId,
+        videoId: videoId,
+        audioId: audioId,
+        ...modelConfigs
+    }
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", requestData);
 }
 
 async function listVoices(spaceId) {
