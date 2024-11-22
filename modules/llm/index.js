@@ -17,7 +17,9 @@ async function getPersonality(spaceId, fileName) {
     } else {
         personality = await this.getDefaultPersonality(spaceId);
     }
-    return new Personality(personality);
+    personality = new Personality(personality);
+    personality.__securityContext = this.__securityContext;
+    return personality;
 }
 
 async function getDefaultPersonality(spaceId) {

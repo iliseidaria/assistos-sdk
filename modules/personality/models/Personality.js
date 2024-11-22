@@ -1,9 +1,5 @@
 const {request} = require("../../util");
 
-async function sendRequest(url, method, data) {
-    return await request(url, method, this.__securityContext, data);
-}
-
 class Personality {
     constructor(personalityData) {
         this.name = personalityData.name;
@@ -15,7 +11,9 @@ class Personality {
         this.voiceId = personalityData.voiceId;
         this.llms = personalityData.llms || {};
     }
-
+    async sendRequest(url, method, data) {
+        return await request(url, method, this.__securityContext, data);
+    }
     getCurrentModel(modelType) {
         if (!this.llms[modelType]) {
             throw new Error(`Invalid model Type ${modelType}!, available LLM Model types are : ${Object.keys(this.llms).join(", ")}`);
@@ -28,7 +26,7 @@ class Personality {
             modelName: this.getCurrentModel("text"),
             prompt: prompt
         }
-        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", requestData)
+        const response = await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", requestData)
         return response;
     }
 
@@ -45,7 +43,7 @@ class Personality {
             modelName: this.getCurrentModel("chat"),
             chat: chat
         }
-        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/chat/generate`, "POST", requestData);
+        const response = await  this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/chat/generate`, "POST", requestData);
         return response;
     }
 
@@ -54,7 +52,7 @@ class Personality {
             modelName: this.getCurrentModel("audio"),
             ...modelConfigs
         }
-        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", requestData);
+        const response = await  this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", requestData);
         return response
     }
 
@@ -63,7 +61,7 @@ class Personality {
             modelName: this.getCurrentModel("image"),
             ...modelConfigs
         }
-        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", requestData);
+        const response = await  this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", requestData);
         return response;
     }
 
@@ -72,7 +70,7 @@ class Personality {
             modelName: this.getCurrentModel("image"),
             ...modelConfigs
         }
-        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", requestData);
+        const response = await  this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", requestData);
         return response
     }
 
@@ -84,7 +82,7 @@ class Personality {
             audioId: audioId,
             ...modelConfigs
         }
-        const response = await sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", requestData);
+        const response = await  this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", requestData);
         return response;
     }
 }
