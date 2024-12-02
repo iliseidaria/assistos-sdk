@@ -23,8 +23,20 @@ async function getPersonality(spaceId, fileName){
 }
 
 async function getPersonalityByName(spaceId, name){
+    function unsanitize(value) {
+        if (value != null && typeof value === "string") {
+            return value.replace(/&nbsp;/g, ' ')
+                .replace(/&#13;/g, '\n')
+                .replace(/&amp;/g, '&')
+                .replace(/&#39;/g, "'")
+                .replace(/&quot;/g, '"')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>');
+        }
+        return '';
+    }
     let metadataList = await this.getPersonalitiesMetadata(spaceId)
-    let personalityId = metadataList.find(pers => pers.name === name).id;
+    let personalityId = metadataList.find(pers => unsanitize(pers.name) === name).id;
     return await this.getPersonality(spaceId, personalityId);
 }
 
