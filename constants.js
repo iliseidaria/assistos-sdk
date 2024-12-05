@@ -175,10 +175,10 @@ module.exports = {
                         REQUIRED:true,
                         NAME: "volume",
                         TYPE: "number",
-                        DEFAULT: 1,
+                        DEFAULT: 100,
                         MIN_VALUE: 0,
-                        MAX_VALUE: 1
-                    }
+                        MAX_VALUE: 100
+                    },
                 ],
                 VALIDATE: async (spaceId, resourceId, securityContext) => {
                     /*  const spaceModule = require('assistos').loadModule('space', securityContext);
@@ -214,9 +214,9 @@ module.exports = {
                         REQUIRED:true,
                         NAME: "volume",
                         TYPE: "number",
-                        DEFAULT: 1,
+                        DEFAULT: 100,
                         MIN_VALUE: 0,
-                        MAX_VALUE: 1
+                        MAX_VALUE: 100
                     },
                     {
                         REQUIRED:true,
@@ -285,8 +285,8 @@ module.exports = {
                         NAME: "volume",
                         TYPE: "number",
                         MIN_VALUE: 0,
-                        MAX_VALUE: 1,
-                        DEFAULT: 1
+                        MAX_VALUE: 100,
+                        DEFAULT: 100
                     },
                     {
                         REQUIRED: true,
