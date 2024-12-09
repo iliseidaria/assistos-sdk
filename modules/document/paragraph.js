@@ -46,7 +46,9 @@ async function createLipSyncTask(spaceId, documentId, paragraphId, modelName, co
         ...(configs || {})
     });
 }
-
+async function createParagraphCompileVideoTask(spaceId, documentId, paragraphId) {
+    return await this.sendRequest(`/tasks/video/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
+}
 module.exports = {
     getParagraph,
     addParagraph,
@@ -59,5 +61,6 @@ module.exports = {
     getParagraphCommands,
     updateParagraphCommands,
     createLipSyncTask,
-    updateParagraphComment
+    updateParagraphComment,
+    createParagraphCompileVideoTask
 }

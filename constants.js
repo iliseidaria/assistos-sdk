@@ -24,7 +24,8 @@ module.exports = {
             "video",
             "speech",
             "silence",
-            "lipsync"
+            "lipsync",
+            "compileVideo"
         ],
         EMOTIONS: {
             'female_happy': 'Female Happy',
@@ -321,6 +322,35 @@ module.exports = {
                     if(videoCommand.end > videoCommand.duration){
                         throw ("Invalid video end time");
                     }
+                }
+            },
+            {
+                NAME: "compileVideo",
+                PARAMETERS: [
+                    {
+                        NAME: "id",
+                        TYPE: "string"
+                    },
+                    {
+                        NAME: "taskId",
+                        TYPE: "string"
+                    }
+                ],
+                VALIDATE: async (spaceId, paragraph, securityContext) => {
+                    let commands = paragraph.commands;
+                    if(commands.video){
+                        if(commands.audio){
+                            if(commands.video.duration < commands.audio.duration){
+                                throw new Error(`Audio duration is longer than video duration`);
+                            }
+                        }
+                    } else if(!commands.image) {
+                        throw new Error("Paragraph doesnt have a visual source");
+                    }
+                },
+                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
+                    const documentModule = require('assistos').loadModule('document', securityContext);
+                    return await documentModule.createParagraphCompileVideoTask(spaceId, documentId, paragraphId);
                 }
             },
             {
