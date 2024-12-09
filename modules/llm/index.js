@@ -4,7 +4,6 @@ const personalityType = "personalities";
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
-
 async function getPersonality(spaceId, fileName) {
     const Personality = require("../personality/models/Personality");
     let personality;
@@ -24,6 +23,18 @@ async function getDefaultPersonality(spaceId) {
     const Personality = require("../personality/models/Personality");
     const personality = await this.sendRequest(`/personalities/default/${spaceId}`, "GET");
     return new Personality(personality);
+}
+
+async function generateTextAdvanced(spaceId,personalityName, promptContext,promptInstructions){
+    const personality = await this.getPersonality(spaceId, personalityName);
+    const requestData = {
+        modelName: personality.getCurrentSettings("text"),
+        promptObject:{
+            promptContext: promptContext,
+            promptInstructions: promptInstructions
+        }
+    }
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate/advanced`, "POST", requestData)
 }
 
 async function generateText(spaceId, prompt, personalityName) {
@@ -110,6 +121,7 @@ async function getDefaultModels() {
 
 module.exports = {
     generateText,
+    generateTextAdvanced,
     sendRequest,
     generateImage,
     textToSpeech,
