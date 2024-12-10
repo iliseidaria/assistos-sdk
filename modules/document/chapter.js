@@ -42,6 +42,13 @@ async function updateChapterBackgroundSound(spaceId, documentId, chapterId, back
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=backgroundSound`, "PUT", backgroundSound);
 }
 
+async function getChapterCommands(spaceId, documentId, chapterId) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=commands`, "GET");
+}
+
+async function updateChapterCommands(spaceId, documentId, chapterId, commands) {
+    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=commands`, "PUT", commands);
+}
 module.exports = {
     getChapter,
     addChapter,
@@ -53,5 +60,7 @@ module.exports = {
     updateChapterVisibility,
     getChapterBackgroundSound,
     updateChapterBackgroundSound,
-    updateChapterComment
+    updateChapterComment,
+    getChapterCommands,
+    updateChapterCommands
 }
