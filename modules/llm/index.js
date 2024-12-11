@@ -4,6 +4,7 @@ const personalityType = "personalities";
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
+
 async function getPersonality(spaceId, fileName) {
     const Personality = require("../personality/models/Personality");
     let personality;
@@ -25,14 +26,12 @@ async function getDefaultPersonality(spaceId) {
     return new Personality(personality);
 }
 
-async function generateTextAdvanced(spaceId,personalityName, promptContext,promptInstructions){
-    const personality = await this.getPersonality(spaceId, personalityName);
+async function generateTextAdvanced(spaceId, initiatorPersonality, targetPersonality, requestPrompt, outputFormatPrompt) {
     const requestData = {
-        modelName: personality.getCurrentSettings("text"),
-        promptObject:{
-            promptContext: promptContext,
-            promptInstructions: promptInstructions
-        }
+        initiator: initiatorPersonality,
+        target: targetPersonality,
+        text: requestPrompt,
+        outputFormat: outputFormatPrompt
     }
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate/advanced`, "POST", requestData)
 }
