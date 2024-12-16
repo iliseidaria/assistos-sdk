@@ -399,6 +399,9 @@ async function cancelTaskAndRemove(taskId) {
 async function removeTask(taskId) {
     return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
 }
+async function downloadLogsFile(spaceId) {
+    return await this.sendRequest(`/tasks/logs/download/${spaceId}`, "GET");
+}
 
 async function getTasks(spaceId) {
     return await this.sendRequest(`/tasks/space/${spaceId}`, "GET");
@@ -441,6 +444,7 @@ module.exports = {
     getTask,
     getTaskLogs,
     removeTask,
+    downloadLogsFile,
     sanitize,
     getSortedCommandsArray,
     unsanitize
