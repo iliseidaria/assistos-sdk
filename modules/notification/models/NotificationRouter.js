@@ -85,11 +85,8 @@ class NotificationRouter{
         return false;
     }
     handleContentEvent(event) {
-        console.log("Notification received:");
         let parsedMessage = JSON.parse(event.data);
-        // if(this.isDuplicateObject(parsedMessage.objectId, parsedMessage.data)){
-        //     return;
-        // }
+        console.log(`Notification received for: ${parsedMessage.objectId}`);
         this.objectsToRefresh.push({objectId: parsedMessage.objectId, data: parsedMessage.data});
     }
     async handleDisconnectEvent(event,callback) {
