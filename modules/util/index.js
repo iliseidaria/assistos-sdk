@@ -384,6 +384,9 @@ function sanitize(value) {
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
+async function getTaskLogs(spaceId, taskId) {
+    return await this.sendRequest(`/tasks/logs/${spaceId}/${taskId}`, "GET");
+}
 
 async function cancelTask(taskId) {
     return await this.sendRequest(`/tasks/cancel/${taskId}`, "DELETE");
@@ -436,6 +439,7 @@ module.exports = {
     cancelTaskAndRemove,
     sendRequest,
     getTask,
+    getTaskLogs,
     removeTask,
     sanitize,
     getSortedCommandsArray,
