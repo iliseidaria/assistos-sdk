@@ -97,7 +97,7 @@ class NotificationRouter{
         clearInterval(this.intervalId);
         clearInterval(this.garbageInterval);
         this.eventSource.close();
-        await callback();
+        await callback(disconnectReason);
     }
 
     handleErrorEvent(err) {
