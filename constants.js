@@ -238,16 +238,12 @@ module.exports = {
                         MIN_VALUE: 0
                     },
                     {
-                        REQUIRED:true,
                         NAME: "fadeIn",
                         TYPE: "boolean",
-                        DEFAULT: false
                     },
                     {
-                        REQUIRED:true,
                         NAME: "fadeOut",
                         TYPE: "boolean",
-                        DEFAULT: true
                     }
                 ],
                 VALIDATE: async (spaceId, paragraph) => {
