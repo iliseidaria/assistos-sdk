@@ -69,6 +69,12 @@ async function getSelectedDocumentItems(spaceId, documentId) {
 async function selectDocumentItem(spaceId, documentId, itemId, itemData) {
     return await this.sendRequest(`/documents/select/${spaceId}/${documentId}/${itemId}`, "PUT", itemData);
 }
+async function getDocumentCommands(spaceId, documentId){
+    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=commands`, "GET");
+}
+async function updateDocumentCommands(spaceId, documentId, commands){
+    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=commands`, "PUT", commands);
+}
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
@@ -90,5 +96,7 @@ module.exports = {
     updateDocumentComment,
     deselectDocumentItem,
     getSelectedDocumentItems,
-    selectDocumentItem
+    selectDocumentItem,
+    getDocumentCommands,
+    updateDocumentCommands
 };

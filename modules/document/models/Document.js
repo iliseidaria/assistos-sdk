@@ -12,6 +12,7 @@ class Document {
         this.metadata = ["id", "title"];
         this.video = documentData.video || "";
         this.comment= documentData.comment || "";
+        this.commands = documentData.commands || {};
     }
 
     toString() {
