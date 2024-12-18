@@ -49,6 +49,10 @@ async function getChapterCommands(spaceId, documentId, chapterId) {
 async function updateChapterCommands(spaceId, documentId, chapterId, commands) {
     return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=commands`, "PUT", commands);
 }
+
+async function compileChapterVideo(spaceId, documentId, chapterId) {
+    return await this.sendRequest(`/tasks/video/${spaceId}/${documentId}/${chapterId}`, "POST", {});
+}
 module.exports = {
     getChapter,
     addChapter,
@@ -62,5 +66,6 @@ module.exports = {
     updateChapterBackgroundSound,
     updateChapterComment,
     getChapterCommands,
-    updateChapterCommands
+    updateChapterCommands,
+    compileChapterVideo
 }

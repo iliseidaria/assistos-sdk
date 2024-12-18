@@ -66,7 +66,7 @@ module.exports = {
                     }
 
                 },
-                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
+                EXECUTE: async (spaceId, documentId, chapterId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.createTextToSpeechTask(spaceId, documentId, paragraphId);
                 },
@@ -137,7 +137,7 @@ module.exports = {
                         throw ("Cannot have both video and image for lip sync");
                     }
                 },
-                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
+                EXECUTE: async (spaceId, documentId, chapterId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
                     return await documentModule.createLipSyncTask(spaceId, documentId, paragraphId);
                 },
@@ -356,9 +356,9 @@ module.exports = {
                         throw new Error("Paragraph doesnt have a visual source");
                     }
                 },
-                EXECUTE: async (spaceId, documentId, paragraphId, securityContext) => {
+                EXECUTE: async (spaceId, documentId, chapterId, paragraphId, securityContext) => {
                     const documentModule = require('assistos').loadModule('document', securityContext);
-                    return await documentModule.createParagraphCompileVideoTask(spaceId, documentId, paragraphId);
+                    return await documentModule.createParagraphCompileVideoTask(spaceId, documentId, chapterId, paragraphId);
                 }
             },
             {

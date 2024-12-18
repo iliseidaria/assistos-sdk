@@ -46,8 +46,8 @@ async function createLipSyncTask(spaceId, documentId, paragraphId, modelName, co
         ...(configs || {})
     });
 }
-async function createParagraphCompileVideoTask(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/tasks/video/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
+async function createParagraphCompileVideoTask(spaceId, documentId, chapterId, paragraphId) {
+    return await this.sendRequest(`/tasks/video/${spaceId}/${documentId}/${chapterId}/${paragraphId}`, "POST", {});
 }
 module.exports = {
     getParagraph,
