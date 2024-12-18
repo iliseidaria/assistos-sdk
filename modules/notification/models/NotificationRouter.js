@@ -86,6 +86,8 @@ class NotificationRouter{
     }
     handleContentEvent(event) {
         let parsedMessage = JSON.parse(event.data);
+        // Too computationally expensive
+        //console.log(`Notification received for: ${parsedMessage.objectId}`);
         this.objectsToRefresh.push({objectId: parsedMessage.objectId, data: parsedMessage.data});
     }
     async handleDisconnectEvent(event,callback) {
