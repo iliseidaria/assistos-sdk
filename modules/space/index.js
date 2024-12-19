@@ -101,8 +101,16 @@ async function getAPIKeysMetadata(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
 }
 
+async function getSpaceCollaborators(spaceId) {
+    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "GET");
+}
+
+async function deleteSpaceCollaborator(spaceId, userId) {
+    return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "DELETE");
+}
+
 async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
-    return await this.sendRequest(`/spaces/${spaceId}/collaborators`, "POST", {emails: collaboratorEmails});
+    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "POST", {emails: collaboratorEmails});
 }
 
 
@@ -240,7 +248,9 @@ module.exports = {
     getAudioURL,
     getVideoURL,
     getImageURL,
-    sendGeneralRequest
+    sendGeneralRequest,
+    getSpaceCollaborators,
+    deleteSpaceCollaborator,
 }
 
 
