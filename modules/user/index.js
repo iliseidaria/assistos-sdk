@@ -139,7 +139,9 @@ async function deleteAPIKey(spaceId, type) {
 async function editAPIKey(apiKeyObj) {
     return await this.sendRequest(`/spaces/secrets/keys`, "POST", apiKeyObj);
 }
-
+async function getUserProfileImage(userId) {
+    return await this.sendRequest(`/users/profileImage/${userId}`, "GET");
+}
 module.exports = {
     registerUser,
     activateUser,
@@ -153,5 +155,6 @@ module.exports = {
     deleteAPIKey,
     sendRequest,
     generateVerificationCode,
-    resetPassword
+    resetPassword,
+    getUserProfileImage
 }

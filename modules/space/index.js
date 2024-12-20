@@ -109,8 +109,8 @@ async function deleteSpaceCollaborator(spaceId, userId) {
     return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "DELETE");
 }
 
-async function inviteSpaceCollaborators(spaceId, collaboratorEmails) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "POST", {emails: collaboratorEmails});
+async function inviteSpaceCollaborators(spaceId, collaborators) {
+    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "POST", {collaborators});
 }
 
 
