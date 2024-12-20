@@ -400,7 +400,7 @@ async function removeTask(taskId) {
     return await this.sendRequest(`/tasks/remove/${taskId}`, "DELETE");
 }
 async function downloadLogsFile(spaceId) {
-    return await this.sendRequest(`/tasks/logs/download/${spaceId}`, "GET");
+    return await this.sendRequest(`/logs/${spaceId}`, "GET");
 }
 
 async function getTasks(spaceId) {
