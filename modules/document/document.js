@@ -7,6 +7,9 @@ const Document = require("./models/Document");
 async function exportDocument(spaceId, documentId, exportType){
     return await this.sendRequest(`/documents/export/${spaceId}/${documentId}`, "POST", {exportType});
 }
+async function exportDocumentAsDocx(spaceId, documentId){
+    return await this.sendRequest(`/documents/export/docx/${spaceId}/${documentId}`, "POST");
+}
 async function importDocument(spaceId,documentFormData){
     return await this.sendRequest(`/documents/import/${spaceId}`, "POST", documentFormData);
 }
@@ -98,5 +101,6 @@ module.exports = {
     getSelectedDocumentItems,
     selectDocumentItem,
     getDocumentCommands,
-    updateDocumentCommands
+    updateDocumentCommands,
+    exportDocumentAsDocx
 };
