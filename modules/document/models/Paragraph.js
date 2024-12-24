@@ -7,6 +7,7 @@ class Paragraph {
         this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
         this.commands = paragraphData.commands || {};
         this.comment= paragraphData.comment || "";
+        this.type = paragraphData.type;
     }
     simplifyParagraph() {
         return {
