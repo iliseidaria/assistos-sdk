@@ -112,7 +112,9 @@ async function deleteSpaceCollaborator(spaceId, userId) {
 async function inviteSpaceCollaborators(spaceId, collaborators) {
     return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "POST", {collaborators});
 }
-
+async function setSpaceCollaboratorRole(spaceId, userId, role) {
+    return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "PUT", {role});
+}
 
 async function deleteImage(spaceId, imageId) {
     return await this.sendRequest(`/spaces/images/${spaceId}/${imageId}`, "DELETE");
@@ -250,6 +252,7 @@ module.exports = {
     getImageURL,
     sendGeneralRequest,
     getSpaceCollaborators,
+    setSpaceCollaboratorRole,
     deleteSpaceCollaborator,
 }
 
