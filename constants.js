@@ -78,7 +78,6 @@ module.exports = {
                         TYPE: "string",
                     },
                     {
-                        REQUIRED: true,
                         NAME: "emotion",
                         SHORTHAND: "e",
                         TYPE: "string",

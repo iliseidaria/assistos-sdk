@@ -98,12 +98,12 @@ async function lipSync(spaceId, taskId, videoId, audioId, modelConfigs, personal
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", requestData);
 }
 
-async function listVoices(spaceId) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listVoices`, "GET");
+async function listVoices(spaceId, modelName) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listVoices`, "POST", {modelName});
 }
 
-async function listEmotions(spaceId) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listEmotions`, "GET");
+async function listEmotions(spaceId, modelName) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listEmotions`, "POST", {modelName});
 }
 
 async function getLLMConfigs(spaceId) {
