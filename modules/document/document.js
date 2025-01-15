@@ -78,6 +78,9 @@ async function getDocumentCommands(spaceId, documentId){
 async function updateDocumentCommands(spaceId, documentId, commands){
     return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=commands`, "PUT", commands);
 }
+async function translateDocument(spaceId, documentId, language, personalityId){
+    return await this.sendRequest(`/tasks/translate/${spaceId}/${documentId}`, "POST", {language, personalityId});
+}
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
@@ -102,5 +105,6 @@ module.exports = {
     selectDocumentItem,
     getDocumentCommands,
     updateDocumentCommands,
-    exportDocumentAsDocx
+    exportDocumentAsDocx,
+    translateDocument
 };

@@ -36,8 +36,8 @@ async function generateTextAdvanced(spaceId, initiatorPersonality, targetPersona
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate/advanced`, "POST", requestData)
 }
 
-async function generateText(spaceId, prompt, personalityName) {
-    const personality = await this.getPersonality(spaceId, personalityName)
+async function generateText(spaceId, prompt, personalityId) {
+    const personality = await this.getPersonality(spaceId, personalityId)
     const requestData = {
         modelName: personality.getCurrentSettings("text"),
         prompt: prompt
@@ -45,8 +45,8 @@ async function generateText(spaceId, prompt, personalityName) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", requestData)
 }
 
-async function getChatCompletion(spaceId, chat, personalityName, injectPersonalityAsSysPrompt = false) {
-    const personality = await this.getPersonality(spaceId, personalityName);
+async function getChatCompletion(spaceId, chat, personalityId, injectPersonalityAsSysPrompt = false) {
+    const personality = await this.getPersonality(spaceId, personalityId);
     if (injectPersonalityAsSysPrompt) {
         personality.applyPersonalityToSysPromptChat(chat);
     }
@@ -58,8 +58,8 @@ async function getChatCompletion(spaceId, chat, personalityName, injectPersonali
 }
 
 
-async function textToSpeech(spaceId, modelConfigs, personalityName) {
-    const personality = await this.getPersonality(spaceId, personalityName);
+async function textToSpeech(spaceId, modelConfigs, personalityId) {
+    const personality = await this.getPersonality(spaceId, personalityId);
     const requestData = {
         modelName: personality.getCurrentSettings("audio"),
         ...modelConfigs
@@ -67,8 +67,8 @@ async function textToSpeech(spaceId, modelConfigs, personalityName) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", requestData);
 }
 
-async function generateImage(spaceId, modelConfigs, personalityName) {
-    const personality = await this.getPersonality(spaceId, personalityName);
+async function generateImage(spaceId, modelConfigs, personalityId) {
+    const personality = await this.getPersonality(spaceId, personalityId);
     const requestData = {
         modelName: personality.getCurrentSettings("image"),
         ...modelConfigs
@@ -77,8 +77,8 @@ async function generateImage(spaceId, modelConfigs, personalityName) {
 
 }
 
-async function editImage(spaceId, modelName, modelConfigs, personalityName) {
-    const personality = await this.getPersonality(spaceId, personalityName);
+async function editImage(spaceId, modelName, modelConfigs, personalityId) {
+    const personality = await this.getPersonality(spaceId, personalityId);
     const requestData = {
         modelName: personality.getCurrentSettings("image"),
         ...modelConfigs
@@ -86,8 +86,8 @@ async function editImage(spaceId, modelName, modelConfigs, personalityName) {
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", requestData);
 }
 
-async function lipSync(spaceId, taskId, videoId, audioId, modelConfigs, personalityName) {
-    const personality = await this.getPersonality(spaceId, personalityName);
+async function lipSync(spaceId, taskId, videoId, audioId, modelConfigs, personalityId) {
+    const personality = await this.getPersonality(spaceId, personalityId);
     const requestData = {
         modelName: personality.getCurrentSettings("video"),
         taskId: taskId,
@@ -117,6 +117,9 @@ async function listLlms(spaceId) {
 async function getDefaultModels() {
     return await this.sendRequest(`/apis/v1/llms/defaults`, "GET");
 }
+async function getModelLanguages(spaceId, modelName) {
+    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/languages`, "POST", {modelName});
+}
 
 module.exports = {
     generateText,
@@ -133,5 +136,6 @@ module.exports = {
     listLlms,
     getDefaultModels,
     getPersonality,
-    getDefaultPersonality
+    getDefaultPersonality,
+    getModelLanguages
 }
