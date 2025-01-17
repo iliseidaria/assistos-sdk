@@ -167,7 +167,7 @@ class Agent {
 
     async handleNormalLLMResponse(userRequest, responseContainerLocation) {
         const requestData = {
-            modelName: "meta-llama/Meta-Llama-3.1-8B-Instruct",
+            modelName: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
             prompt: userRequest,
             agentId: this.agentData.id
         };
