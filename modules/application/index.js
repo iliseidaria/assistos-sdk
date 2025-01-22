@@ -47,7 +47,9 @@ async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
         return await import(`/applications/files/${spaceId}/${applicationId}/${encodedPath}`);
     }
 }
-
+async function getApplicationTasks(spaceId, applicationId) {
+    return await this.sendRequest(`/applications/tasks/${spaceId}/${applicationId}`, "GET");
+}
 
 /*
 async function storeAppObject(appName, objectType, objectId, stringData) {
@@ -74,5 +76,6 @@ module.exports = {
     runApplicationFlow,
     updateApplication,
     requiresUpdate,
+    getApplicationTasks,
     Application
 };
