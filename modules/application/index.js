@@ -50,7 +50,9 @@ async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
 async function getApplicationTasks(spaceId, applicationId) {
     return await this.sendRequest(`/applications/tasks/${spaceId}/${applicationId}`, "GET");
 }
-
+async function getApplicationsPlugins(spaceId) {
+    return await this.sendRequest(`/applications/plugins/${spaceId}`, "GET");
+}
 /*
 async function storeAppObject(appName, objectType, objectId, stringData) {
     return await this.sendRequest(`/app/${assistOS.space.id}/applications/${appName}/${objectType}/${objectId}`, "PUT", stringData);
@@ -77,5 +79,6 @@ module.exports = {
     updateApplication,
     requiresUpdate,
     getApplicationTasks,
+    getApplicationsPlugins,
     Application
 };
