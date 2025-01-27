@@ -167,7 +167,7 @@ class Agent {
 
     async handleNormalLLMResponse(userRequest, responseContainerLocation) {
         const requestData = {
-            modelName: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
+            modelName: this.agentData.llms.text,
             prompt: userRequest,
             agentId: this.agentData.id
         };
