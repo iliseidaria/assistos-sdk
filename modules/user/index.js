@@ -142,6 +142,9 @@ async function editAPIKey(apiKeyObj) {
 async function getUserProfileImage(userId) {
     return await this.sendRequest(`/users/profileImage/${userId}`, "GET");
 }
+async function updateUserImage(userId, imageId) {
+    return await this.sendRequest(`/users/profileImage/${userId}`, "POST", {imageId});
+}
 module.exports = {
     registerUser,
     activateUser,
@@ -156,5 +159,6 @@ module.exports = {
     sendRequest,
     generateVerificationCode,
     resetPassword,
-    getUserProfileImage
+    getUserProfileImage,
+    updateUserImage
 }

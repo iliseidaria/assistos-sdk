@@ -345,13 +345,7 @@ module.exports = {
                 ],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
                     let commands = paragraph.commands;
-                    if(commands.video){
-                        if(commands.audio){
-                            if(commands.video.duration < commands.audio.duration){
-                                throw new Error(`Audio duration is longer than video duration`);
-                            }
-                        }
-                    } else if(!commands.image) {
+                    if(!commands.image && !commands.video){
                         throw new Error("Paragraph doesnt have a visual source");
                     }
                 },
