@@ -49,8 +49,10 @@ async function getAgent(spaceId, agentId) {
 }
 
 async function addPersonality(spaceId, personalityData){
-    return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}`, "POST", personalityData, this.__securityContext);
+    //return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}`, "POST", personalityData, this.__securityContext);
+    return await this.sendRequest(`/personalities/${spaceId}`, "POST", personalityData, this.__securityContext);
 }
+
 async function updatePersonality(spaceId, fileName, personalityData){
     return await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "PUT", personalityData, this.__securityContext);
 }
