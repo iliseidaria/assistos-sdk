@@ -79,8 +79,11 @@ class Agent {
         });
     }
 
-    async dataStreamContainer(response, responseContainerLocation) {
+    async dataStreamContainer(response, responseContainerLocation,controller) {
+        const responseContainerPresenter = responseContainerLocation.closest("[data-presenter]")?.webSkelPresenter;
         const reader = response.body.getReader();
+        responseContainerPresenter.handleStartStream(controller);
+
         const decoder = new TextDecoder("utf-8");
         let buffer = '';
         const handleStreamEvent = (event, responseContainerLocation) => {
@@ -101,7 +104,10 @@ class Agent {
 
         while (true) {
             const {done, value} = await reader.read();
-            if (done) break;
+            if (done){
+                await responseContainerPresenter.handleEndStream();
+                break;
+            }
             buffer += decoder.decode(value, {stream: true});
             let lines = buffer.split("\n");
 
@@ -172,11 +178,14 @@ class Agent {
             agentId: this.agentData.id
         };
         try {
+            const controller = new AbortController();
+
             const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/chats/${chatId}/llms/text/streaming/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                signal: controller.signal,
                 body: JSON.stringify(requestData),
             });
 
@@ -185,8 +194,7 @@ class Agent {
                 alert(`Error: ${error.message}`);
                 return;
             }
-
-            await this.dataStreamContainer(response, responseContainerLocation);
+            await this.dataStreamContainer(response, responseContainerLocation,controller);
 
         } catch (error) {
             console.error('Failed to fetch:', error);
@@ -322,7 +330,6 @@ class Agent {
     }
 
     async callLLM(chatPrompt) {
-        /* TODO huggingface models only support alternating assistant/user so we need to find a solution for this */
         return await LLM.getChatCompletion(assistOS.space.id,chatPrompt);
     }
 
@@ -355,7 +362,7 @@ class Agent {
                 }
             });
         };
-        return await waitForElement(conversationContainer.lastElementChild, '#messageContainer');
+        return await waitForElement(conversationContainer.lastElementChild, '.message');
     }
 }
 
