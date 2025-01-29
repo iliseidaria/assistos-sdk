@@ -179,7 +179,6 @@ class Agent {
         };
         try {
             const controller = new AbortController();
-
             const response = await fetch(`/apis/v1/spaces/${assistOS.space.id}/chats/${chatId}/llms/text/streaming/generate`, {
                 method: 'POST',
                 headers: {
@@ -198,7 +197,6 @@ class Agent {
 
         } catch (error) {
             console.error('Failed to fetch:', error);
-            alert('Error occurred. Check the console for more details.');
         }
     }
 
