@@ -172,9 +172,16 @@ class Agent {
     }
 
     async handleNormalLLMResponse(userRequest, responseContainerLocation) {
+        const decoratedPrompt = `
+        ${this.agentData.chatPrompt}
+        ${userRequest}
+        You should adhere to this Preferences:
+        ${this.agentData.localMemory||"No preferences specified"}
+        `;
+
         const requestData = {
             modelName: this.agentData.llms.text,
-            prompt: userRequest,
+            prompt: decoratedPrompt,
             agentId: this.agentData.id
         };
         try {
@@ -187,14 +194,12 @@ class Agent {
                 signal: controller.signal,
                 body: JSON.stringify(requestData),
             });
-
             if (!response.ok) {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
                 return;
             }
             await this.dataStreamContainer(response, responseContainerLocation,controller);
-
         } catch (error) {
             console.error('Failed to fetch:', error);
         }
@@ -332,7 +337,7 @@ class Agent {
     }
 
     async createChatUnitResponse(conversationContainer, inReplyToMessageId) {
-        const streamContainerHTML = `<chat-item role="assistant" message="" data-presenter="chat-item" user="${this.agentData.id}" inReplyTo="${inReplyToMessageId}"/>`;
+        const streamContainerHTML = `<chat-item role="assistant" message="" data-presenter="chat-item" user="${this.agentData.id}" data-last-item="true" inReplyTo="${inReplyToMessageId}"/>`;
         conversationContainer.insertAdjacentHTML("beforeend", streamContainerHTML);
         const waitForElement = (container, selector) => {
             return new Promise((resolve, reject) => {

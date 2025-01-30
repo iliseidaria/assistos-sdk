@@ -18,7 +18,15 @@ async function getSpaceAnnouncement(spaceId, announcementId) {
 async function getSpaceChat(spaceId,chatId) {
     return await this.sendRequest(`/spaces/chat/${spaceId}/${chatId}`, "GET")
 }
-
+async function addSpaceChatMessage(spaceId,chatId, messageData) {
+    return await this.sendRequest(`/spaces/chat/${spaceId}/${chatId}`, "POST", messageData)
+}
+async function resetSpaceChat(spaceId,chatId){
+    return await this.sendRequest(`/spaces/chat/${spaceId}/${chatId}`, "DELETE")
+}
+async function saveSpaceChat(spaceId,chatId){
+    return await this.sendRequest(`/spaces/chat/save/${spaceId}/${chatId}`, "POST")
+}
 async function getSpaceAnnouncements(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
 }
@@ -31,9 +39,7 @@ async function updateSpaceAnnouncement(spaceId, announcementId, announcementData
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
 }
 
-async function addSpaceChatMessage(spaceId,chatId, messageData) {
-    return await this.sendRequest(`/spaces/chat/${spaceId}/${chatId}`, "POST", messageData)
-}
+
 
 async function createSpace(spaceName) {
     const bodyObject = {
@@ -254,6 +260,8 @@ module.exports = {
     getSpaceCollaborators,
     setSpaceCollaboratorRole,
     deleteSpaceCollaborator,
+    saveSpaceChat,
+    resetSpaceChat,
 }
 
 

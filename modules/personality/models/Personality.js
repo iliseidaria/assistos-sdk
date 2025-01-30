@@ -5,6 +5,7 @@ class Personality {
         this.id = personalityData.id
         this.imageId = personalityData.imageId;
         this.metadata = personalityData.metadata;
+        this.chatPrompt = personalityData.chatPrompt;
         this.voiceId = personalityData.voiceId;
         this.llms = personalityData.llms || {};
     }
