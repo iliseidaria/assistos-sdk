@@ -11,6 +11,7 @@ module.exports = {
     DEVELOPMENT_BASE_URL: "http://localhost:8080",
     COMMANDS_CONFIG: {
         ATTACHMENTS:[
+            "files",
             "effects",
             "image",
             "video",
@@ -18,6 +19,7 @@ module.exports = {
             "silence"
         ],
         ORDER: [
+            "files",
             "audio",
             "effects",
             "image",
@@ -263,6 +265,34 @@ module.exports = {
                     }
 
                 }
+            },
+            {
+                NAME:"files",
+                TYPE: "array",
+                ITEM_NAME: "file",
+                PARAMETERS: [
+                    {
+                        REQUIRED:true,
+                        NAME: "id",
+                        TYPE: "string"
+                    },
+                    {
+                        REQUIRED:true,
+                        NAME: "name",
+                        TYPE: "string"
+                    },
+                    {
+                        REQUIRED:true,
+                        NAME: "type",
+                        TYPE: "string"
+                    },
+                    {
+                        REQUIRED:true,
+                        NAME: "size",
+                        TYPE: "string"
+                    }
+                ],
+                VALIDATE: async (spaceId, paragraph) => {}
             },
             {
                 NAME: "video",
