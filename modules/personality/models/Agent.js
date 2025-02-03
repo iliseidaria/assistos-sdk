@@ -86,19 +86,21 @@ class Agent {
 
         const decoder = new TextDecoder("utf-8");
         let buffer = '';
+        let markdownBuffer = ''
         const handleStreamEvent = (event, responseContainerLocation) => {
             try {
                 if (event.data !== "") {
-                    const json = JSON.parse(event.data);
+                    const json = JSON.parse(event.data)
                     if (json.sessionId) {
-                        this.sessionId = json.sessionId;
+                        this.sessionId = json.sessionId
                     }
                     if (json.message) {
-                        responseContainerLocation.innerHTML += `${json.message}`;
+                        markdownBuffer += json.message
+                        responseContainerLocation.innerHTML = marked.parse(markdownBuffer)
                     }
                 }
             } catch (e) {
-                console.error('Failed to parse event data:', e);
+                console.error('Failed to parse event data:', e)
             }
         }
 
