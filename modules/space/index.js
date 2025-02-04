@@ -142,7 +142,7 @@ async function sendGeneralRequest(url, method, data = null, headers = {}, extern
         throw new Error(err.message);
     }
     if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.statusText}`);
+        throw new Error(`Failed to fetch:${response.status} ${response.statusText}`);
     }
     switch (response.headers.get("Content-Type")) {
         case "application/json":
@@ -196,7 +196,7 @@ async function getVideo(videoId, range) {
 }
 async function getFile(fileId, type, range) {
     const {downloadURL} = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null , {"Content-Type": type});
-    let headers = {"Content-Type": type};
+    let headers = {};
     if (range) {
         headers.Range = range;
     }
