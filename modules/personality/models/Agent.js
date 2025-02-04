@@ -66,7 +66,7 @@ const analyzeRequestPrompt = {
         }
     }
 };
-
+const util=require('../../util/index.js')
 class Agent {
     constructor(agentData) {
         this.agentData = agentData;
@@ -96,6 +96,7 @@ class Agent {
                     }
                     if (json.message) {
                         markdownBuffer += json.message
+                        responseContainerPresenter.message=markdownBuffer;
                         responseContainerLocation.innerHTML = marked.parse(markdownBuffer)
                     }
                 }
@@ -133,12 +134,10 @@ class Agent {
         }
     }
 
-    async processUserRequest(userRequest, context, responseContainerLocation) {
-        context.availableFlows = this.flows;
-        const responseLocation = await this.createChatUnitResponse(responseContainerLocation, responseContainerLocation.lastElementChild.id);
+    async processUserRequest(userRequest, context, streamLocationElement,messageId) {
 
         /* TODO huggingface models only support alternating assistant/user so we need to find a solution for this */
-        await this.handleNormalLLMResponse(userRequest, responseLocation);
+        await this.handleNormalLLMResponse(userRequest,context, streamLocationElement);
         /* //huggingface models are too dumb for this
         const decision = await this.analyzeRequest(userRequest, context);
          const promises = [];
@@ -173,17 +172,20 @@ class Agent {
          await Promise.all(promises);*/
     }
 
-    async handleNormalLLMResponse(userRequest, responseContainerLocation) {
+    async handleNormalLLMResponse(userRequest,context, responseContainerLocation) {
         const decoratedPrompt = `
         ${this.agentData.chatPrompt}
+        
+        **Conversation** 
+        ${context.length>0?context.map(({role,message})=>`${role} : ${message}`).join('\n'):'""'}
+        
+        **Respond to this request**:
         ${userRequest}
-        You should adhere to this Preferences:
-        ${this.agentData.localMemory||"No preferences specified"}
         `;
 
         const requestData = {
             modelName: this.agentData.llms.text,
-            prompt: decoratedPrompt,
+            prompt: util.unsanitize(decoratedPrompt),
             agentId: this.agentData.id
         };
         try {
@@ -338,37 +340,6 @@ class Agent {
         return await LLM.getChatCompletion(assistOS.space.id,chatPrompt);
     }
 
-    async createChatUnitResponse(conversationContainer, inReplyToMessageId) {
-        const streamContainerHTML = `<chat-item role="assistant" message="" data-presenter="chat-item" user="${this.agentData.id}" data-last-item="true" inReplyTo="${inReplyToMessageId}"/>`;
-        conversationContainer.insertAdjacentHTML("beforeend", streamContainerHTML);
-        const waitForElement = (container, selector) => {
-            return new Promise((resolve, reject) => {
-                const element = container.querySelector(selector);
-                if (element) {
-                    resolve(element);
-                } else {
-                    const observer = new MutationObserver((mutations, me) => {
-                        const element = container.querySelector(selector);
-                        if (element) {
-                            me.disconnect();
-                            resolve(element);
-                        }
-                    });
-
-                    observer.observe(container, {
-                        childList: true,
-                        subtree: true
-                    });
-
-                    setTimeout(() => {
-                        observer.disconnect();
-                        reject(new Error(`Element ${selector} did not appear in time`));
-                    }, 10000);
-                }
-            });
-        };
-        return await waitForElement(conversationContainer.lastElementChild, '.message');
-    }
 }
 
 module.exports = Agent;
