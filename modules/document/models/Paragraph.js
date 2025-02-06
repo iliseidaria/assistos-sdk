@@ -1,6 +1,8 @@
 class Paragraph {
     constructor(paragraphData) {
-        this.position = paragraphData.position;
+        if(paragraphData.position){
+            this.position = paragraphData.position
+        }
         this.id = paragraphData.id;
         this.text = paragraphData.text || "";
         this.mainIdea = paragraphData.mainIdea || "";

@@ -15,7 +15,6 @@ async function updateParagraph(spaceId, documentId, paragraphId, paragraphData) 
 async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${chapterId}/${paragraphId}`, "DELETE");
 }
-
 async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2, direction) {
     return await this.sendRequest(`/documents/chapters/paragraphs/swap/${spaceId}/${documentId}/${chapterId}/${paragraphId}/${paragraphId2}`, "PUT", { direction });
 }
