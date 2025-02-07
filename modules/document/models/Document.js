@@ -6,6 +6,7 @@ class Document {
         this.title = documentData.title || "";
         this.abstract = documentData.abstract || "";
         this.topic = documentData.topic || "";
+        this.type = documentData.type || "document"
         this.chapters = (documentData.chapters || []).map(chapterData => new Chapter(chapterData));
         this.currentChapterId = null;
         this.observers = [];

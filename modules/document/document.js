@@ -21,7 +21,7 @@ async function getDocumentsMetadata(spaceId){
     return await this.sendRequest(`/documents/metadata/${spaceId}`, "GET");
 }
 async function addDocument(spaceId, documentData){
-    documentData.metadata = ["id", "title"];
+    documentData.metadata = ["id", "title","type"];
     return await this.sendRequest(`/documents/${spaceId}`, "POST", documentData);
 }
 async function updateDocument(spaceId, documentId, documentData){
