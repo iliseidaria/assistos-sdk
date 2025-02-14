@@ -9,11 +9,11 @@ class Document {
         this.type = documentData.type || "document"
         this.chapters = (documentData.chapters || []).map(chapterData => new Chapter(chapterData));
         this.currentChapterId = null;
-        this.observers = [];
         this.metadata = ["id", "title"];
         this.video = documentData.video || "";
         this.comment= documentData.comment || "";
         this.commands = documentData.commands || {};
+        this.snapshots = documentData.snapshots || {};
     }
 
     toString() {

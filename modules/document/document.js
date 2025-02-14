@@ -87,6 +87,12 @@ async function undoOperation(spaceId, documentId){
 async function redoOperation(spaceId, documentId){
     return await this.sendRequest(`/documents/redo/${spaceId}/${documentId}`, "PUT");
 }
+async function getDocumentSnapshot(spaceId, documentId){
+    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=snapshots`, "GET");
+}
+async function updateDocumentSnapshots(spaceId, documentId, snapshots){
+    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=snapshots`, "PUT", snapshots);
+}
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
@@ -114,5 +120,7 @@ module.exports = {
     exportDocumentAsDocx,
     translateDocument,
     undoOperation,
-    redoOperation
+    redoOperation,
+    getDocumentSnapshot,
+    updateDocumentSnapshots
 };
