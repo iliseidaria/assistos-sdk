@@ -47,6 +47,7 @@ async function getChapterCommands(spaceId, documentId, chapterId) {
     if(typeof commands === "undefined") {
         return {};
     }
+    return commands;
 }
 
 async function updateChapterCommands(spaceId, documentId, chapterId, commands) {
