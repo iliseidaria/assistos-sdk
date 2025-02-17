@@ -8,6 +8,7 @@ class Personality {
         this.chatPrompt = personalityData.chatPrompt;
         this.chats=personalityData.chats;
         this.voiceId = personalityData.voiceId;
+        this.selectedChat = personalityData.selectedChat;
         this.llms = personalityData.llms || {};
     }
 

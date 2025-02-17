@@ -21,6 +21,13 @@ async function getPersonality(spaceId, fileName){
     let personality =  await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
     return new Personality(personality);
 }
+async function createNewConversation(spaceId,personalityId){
+    return await this.sendRequest(`/personalities/chats/${spaceId}/${personalityId}`,"POST");
+}
+
+async function getPersonalitiesConversations(spaceId,personalityId){
+    return await this.sendRequest(`/personalities/chats/${spaceId}/${personalityId}`,"GET")
+}
 
 async function getPersonalityByName(spaceId, name){
     function unsanitize(value) {
@@ -70,6 +77,8 @@ module.exports = {
     sendRequest,
     getAgent,
     getPersonalities,
+    createNewConversation,
+    getPersonalitiesConversations,
     getPersonalityByName,
     exportPersonality,
     models:{
