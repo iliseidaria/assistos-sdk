@@ -43,7 +43,11 @@ async function updateChapterBackgroundSound(spaceId, documentId, chapterId, back
 }
 
 async function getChapterCommands(spaceId, documentId, chapterId) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=commands`, "GET");
+    let commands = await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=commands`, "GET");
+    if(typeof commands === "undefined") {
+        return {};
+    }
+    return commands;
 }
 
 async function updateChapterCommands(spaceId, documentId, chapterId, commands) {

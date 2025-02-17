@@ -74,20 +74,8 @@ class NotificationRouter{
         await utilModule.request("/events/close", "GET");
         console.log("SSE Connection closed");
     }
-    isDuplicateObject(objectId, data){
-        let foundObj = this.objectsToRefresh.find(obj => obj.objectId === objectId);
-        if(foundObj){
-            if(typeof data === "object" && typeof foundObj.data === "object"){
-                return JSON.stringify(foundObj.data) === JSON.stringify(data);
-            }
-            return foundObj.data === data;
-        }
-        return false;
-    }
     handleContentEvent(event) {
         let parsedMessage = JSON.parse(event.data);
-        // Too computationally expensive
-        //console.log(`Notification received for: ${parsedMessage.objectId}`);
         this.objectsToRefresh.push({objectId: parsedMessage.objectId, data: parsedMessage.data});
     }
     async handleDisconnectEvent(event,callback) {

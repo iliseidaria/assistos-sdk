@@ -81,6 +81,18 @@ async function updateDocumentCommands(spaceId, documentId, commands){
 async function translateDocument(spaceId, documentId, language, personalityId){
     return await this.sendRequest(`/tasks/translate/${spaceId}/${documentId}`, "POST", {language, personalityId});
 }
+async function undoOperation(spaceId, documentId){
+    return await this.sendRequest(`/documents/undo/${spaceId}/${documentId}`, "PUT");
+}
+async function redoOperation(spaceId, documentId){
+    return await this.sendRequest(`/documents/redo/${spaceId}/${documentId}`, "PUT");
+}
+async function getDocumentSnapshot(spaceId, documentId){
+    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=snapshots`, "GET");
+}
+async function updateDocumentSnapshots(spaceId, documentId, snapshots){
+    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=snapshots`, "PUT", snapshots);
+}
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
@@ -106,5 +118,9 @@ module.exports = {
     getDocumentCommands,
     updateDocumentCommands,
     exportDocumentAsDocx,
-    translateDocument
+    translateDocument,
+    undoOperation,
+    redoOperation,
+    getDocumentSnapshot,
+    updateDocumentSnapshots
 };

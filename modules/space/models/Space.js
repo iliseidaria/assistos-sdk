@@ -71,9 +71,9 @@ class Space {
 
     async loadFlows() {
         this.flows = [];
-        const flowNames = JSON.parse(await flowModule.listFlows(this.id));
+        const flowNames = JSON.parse(await flowModule.listFlows());
         for (let flowName of flowNames) {
-            let flowMdl = await flowModule .getFlow(this.id, flowName);
+            let flowMdl = await flowModule.getFlow(this.id, flowName);
             let flowClass = flowMdl.default;
             let flowInstance = new flowClass();
             this.flows.push(flowInstance);

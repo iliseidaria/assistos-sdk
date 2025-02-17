@@ -6,24 +6,12 @@ async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 
-async function listFlows(spaceId) {
-    return await this.sendRequest(`/flows/${spaceId}`, "GET");
+async function listFlows() {
+    return await this.sendRequest(`/flows/list`, "GET");
 }
 
 async function getFlow(spaceId, flowName) {
     return await import(`/flows/${spaceId}/${flowName}`);
-}
-
-async function addFlow(spaceId, flowData) {
-    return await this.sendRequest(`/flows/${spaceId}`, "POST", flowData)
-}
-
-async function updateFlow(spaceId, flowName, flowData) {
-    return await this.sendRequest(`/flows/${spaceId}/${flowName}`, "PUT", flowData)
-}
-
-async function deleteFlow(spaceId, flowName) {
-    return await this.sendRequest(`/flows/${spaceId}/${flowName}`, "DELETE")
 }
 
 async function callServerFlow(spaceId, flowName, context, personalityId) {
@@ -63,9 +51,6 @@ async function callFlow(spaceId, flowName, context, personalityId) {
 module.exports = {
     getFlow,
     listFlows,
-    addFlow,
-    updateFlow,
-    deleteFlow,
     callFlow,
     callServerFlow,
     sendRequest,

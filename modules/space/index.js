@@ -230,7 +230,18 @@ async function deleteVideo(videoId) {
 async function deleteFile(fileId, type) {
     return await this.sendGeneralRequest(`/spaces/files/${fileId}`, "DELETE", null, {"Content-Type": type});
 }
-
+async function addContainerObject(spaceId, objectType, objectData) {
+    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectType}`, "POST", objectData);
+}
+async function getContainerObject(spaceId, objectId) {
+    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "GET");
+}
+async function updateContainerObject(spaceId, objectId, objectData) {
+    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "PUT", objectData);
+}
+async function deleteContainerObject(spaceId, objectId) {
+    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "DELETE");
+}
 module.exports = {
     createSpace,
     loadSpace,
@@ -275,7 +286,11 @@ module.exports = {
     headFile,
     deleteFile,
     getFile,
-    getFileURL
+    getFileURL,
+    getContainerObject,
+    addContainerObject,
+    updateContainerObject,
+    deleteContainerObject
 }
 
 
