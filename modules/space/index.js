@@ -242,6 +242,22 @@ async function updateContainerObject(spaceId, objectId, objectData) {
 async function deleteContainerObject(spaceId, objectId) {
     return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "DELETE");
 }
+/*embedded objects*/
+async function getEmbeddedObject(spaceId, objectURI) {
+    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+}
+async function addEmbeddedObject(spaceId, objectURI, objectData) {
+    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", objectData);
+}
+async function updateEmbeddedObject(spaceId, objectURI, objectData) {
+    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", objectData);
+}
+async function deleteEmbeddedObject(spaceId, objectURI) {
+    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
+}
+async function swapEmbeddedObjects(spaceId, objectURI, objectData) {
+    return await this.sendGeneralRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", objectData);
+}
 module.exports = {
     createSpace,
     loadSpace,
@@ -290,7 +306,12 @@ module.exports = {
     getContainerObject,
     addContainerObject,
     updateContainerObject,
-    deleteContainerObject
+    deleteContainerObject,
+    getEmbeddedObject,
+    addEmbeddedObject,
+    updateEmbeddedObject,
+    deleteEmbeddedObject,
+    swapEmbeddedObjects,
 }
 
 
