@@ -13,7 +13,7 @@ class Document {
         this.video = documentData.video || "";
         this.comment= documentData.comment || "";
         this.commands = documentData.commands || {};
-        this.snapshots = documentData.snapshots || {};
+        this.snapshots = documentData.snapshots || [];
     }
 
     toString() {

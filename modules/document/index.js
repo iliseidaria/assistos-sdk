@@ -10,5 +10,10 @@ module.exports = {
     ...paragraphAPIs,
     Document,
     Chapter,
-    Paragraph
+    Paragraph,
+    documentTypes: {
+        SNAPSHOT: 'snapshot',
+        DOCUMENT: 'document',
+        CHAT: 'chat'
+    }
 };
