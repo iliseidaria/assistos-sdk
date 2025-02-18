@@ -39,8 +39,6 @@ async function updateSpaceAnnouncement(spaceId, announcementId, announcementData
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
 }
 
-
-
 async function createSpace(spaceName) {
     const bodyObject = {
         spaceName: spaceName
