@@ -87,11 +87,18 @@ async function undoOperation(spaceId, documentId){
 async function redoOperation(spaceId, documentId){
     return await this.sendRequest(`/documents/redo/${spaceId}/${documentId}`, "PUT");
 }
-async function getDocumentSnapshot(spaceId, documentId){
-    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=snapshots`, "GET");
+
+async function getDocumentSnapshot(spaceId, documentId, snapshotId){
+    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "GET");
 }
-async function updateDocumentSnapshots(spaceId, documentId, snapshots){
-    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=snapshots`, "PUT", snapshots);
+async function getDocumentSnapshots(spaceId, documentId){
+    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}`, "GET");
+}
+async function addDocumentSnapshot(spaceId, documentId, snapshotData){
+    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}`, "POST", snapshotData);
+}
+async function deleteDocumentSnapshot(spaceId, documentId, snapshotId){
+    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "DELETE");
 }
 module.exports = {
     getDocumentTopic,
@@ -122,5 +129,7 @@ module.exports = {
     undoOperation,
     redoOperation,
     getDocumentSnapshot,
-    updateDocumentSnapshots
+    getDocumentSnapshots,
+    addDocumentSnapshot,
+    deleteDocumentSnapshot
 };

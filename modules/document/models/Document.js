@@ -9,7 +9,7 @@ class Document {
         this.type = documentData.type || "document"
         this.chapters = (documentData.chapters || []).map(chapterData => new Chapter(chapterData));
         this.currentChapterId = null;
-        this.metadata = ["id", "title"];
+        this.metadata = ["id", "title", "type"];
         this.video = documentData.video || "";
         this.comment= documentData.comment || "";
         this.commands = documentData.commands || {};
