@@ -35,11 +35,18 @@ async function updateParagraphCommands(spaceId, documentId, paragraphId, command
 async function getParagraphCommands(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=commands`, "GET");
 }
-async function chatCompleteParagraph(spaceId,documentId,paragraphId,agentId,modelName,prompt){
-    return await this.sendRequest(`/spaces/chat-completion/${spaceId}/${documentId}/${paragraphId}`,"POST",{
-        modelName,prompt,agentId
+
+async function chatCompleteParagraph({ spaceId, documentId, paragraphId, prompt, modelName=undefined, agentId=undefined }) {
+    if (spaceId === undefined) throw new Error("Parameter 'spaceId' is required")
+    if (documentId === undefined) throw new Error("Parameter 'documentId' is required")
+    if (paragraphId === undefined) throw new Error("Parameter 'paragraphId' is required")
+    if (prompt === undefined) throw new Error("Parameter 'prompt' is required")
+    if (modelName === undefined && agentId === undefined) throw new Error("Either 'modelName' or 'agentId' must be defined")
+    return this.sendRequest(`/spaces/chat-completion/${spaceId}/${documentId}/${paragraphId}`, "POST", {
+        modelName, prompt, agentId
     })
 }
+
 
 async function createTextToSpeechTask(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
