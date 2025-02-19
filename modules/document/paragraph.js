@@ -47,7 +47,6 @@ async function chatCompleteParagraph({ spaceId, documentId, paragraphId, prompt,
     })
 }
 
-
 async function createTextToSpeechTask(spaceId, documentId, paragraphId) {
     return await this.sendRequest(`/tasks/audio/${spaceId}/${documentId}/${paragraphId}`, "POST", {});
 }
