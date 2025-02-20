@@ -1,6 +1,3 @@
-const LLM = require('../../llm');
-const chatId="123456789"
-
 class Agent {
     constructor(agentData) {
         this.agentData = agentData;
