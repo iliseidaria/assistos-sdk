@@ -212,7 +212,7 @@ async function putVideo(video) {
 }
 async function putFile(file, type) {
     const {uploadURL, fileId} = await this.sendGeneralRequest(`/spaces/uploads`, "GET", null, {"Content-Type": type});
-    await this.sendGeneralRequest(uploadURL, "PUT", file, {"Content-Type": type, "Content-Length": file.byteLength}, true);
+    await this.sendGeneralRequest(uploadURL, "PUT", file, {"Content-Type": type, "Content-Length": file.byteLength});
     return fileId;
 }
 
