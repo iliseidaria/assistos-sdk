@@ -100,8 +100,8 @@ async function addDocumentSnapshot(spaceId, documentId, snapshotData){
 async function deleteDocumentSnapshot(spaceId, documentId, snapshotId){
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "DELETE");
 }
-async function replaceDocumentSnapshot(spaceId, documentId, snapshotId){
-    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "PUT");
+async function restoreDocumentSnapshot(spaceId, documentId, snapshotId, newSnapshotData){
+    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "PUT", newSnapshotData);
 }
 module.exports = {
     getDocumentTopic,
@@ -135,5 +135,5 @@ module.exports = {
     getDocumentSnapshots,
     addDocumentSnapshot,
     deleteDocumentSnapshot,
-    replaceDocumentSnapshot
+    restoreDocumentSnapshot
 };
