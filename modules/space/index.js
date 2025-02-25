@@ -193,12 +193,12 @@ async function getVideo(videoId, range) {
     return await this.getFile(videoId, "video/mp4", range);
 }
 async function getFile(fileId, type, range) {
-    const {downloadURL} = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null , {"Content-Type": type});
+    const {downloadURL, externalRequest} = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null , {"Content-Type": type});
     let headers = {};
     if (range) {
         headers.Range = range;
     }
-    return await this.sendGeneralRequest(downloadURL, "GET", null, headers, true);
+    return await this.sendGeneralRequest(downloadURL, "GET", null, headers, externalRequest);
 }
 
 async function putAudio(audio) {
@@ -211,8 +211,8 @@ async function putVideo(video) {
     return await this.putFile(video, "video/mp4");
 }
 async function putFile(file, type) {
-    const {uploadURL, fileId} = await this.sendGeneralRequest(`/spaces/uploads`, "GET", null, {"Content-Type": type});
-    await this.sendGeneralRequest(uploadURL, "PUT", file, {"Content-Type": type, "Content-Length": file.byteLength});
+    const {uploadURL, fileId, externalRequest} = await this.sendGeneralRequest(`/spaces/uploads`, "GET", null, {"Content-Type": type});
+    await this.sendGeneralRequest(uploadURL, "PUT", file, {"Content-Type": type, "Content-Length": file.byteLength}, externalRequest);
     return fileId;
 }
 
@@ -255,6 +255,10 @@ async function deleteEmbeddedObject(spaceId, objectURI) {
 }
 async function swapEmbeddedObjects(spaceId, objectURI, objectData) {
     return await this.sendGeneralRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", objectData);
+}
+
+async function startTelegramBot(spaceId, personalityId, botId){
+    return await this.sendGeneralRequest(`/telegram/startBot/${spaceId}/${personalityId}`, "POST", botId);
 }
 module.exports = {
     createSpace,
@@ -310,6 +314,7 @@ module.exports = {
     updateEmbeddedObject,
     deleteEmbeddedObject,
     swapEmbeddedObjects,
+    startTelegramBot
 }
 
 
