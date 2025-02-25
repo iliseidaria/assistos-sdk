@@ -7,6 +7,7 @@ class Personality {
         this.metadata = personalityData.metadata;
         this.chatPrompt = personalityData.chatPrompt;
         this.chats=personalityData.chats;
+        this.contextSize=personalityData.contextSize;
         this.voiceId = personalityData.voiceId;
         this.selectedChat = personalityData.selectedChat;
         this.llms = personalityData.llms || {};
