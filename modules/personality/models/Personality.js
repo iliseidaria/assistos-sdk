@@ -6,10 +6,11 @@ class Personality {
         this.imageId = personalityData.imageId;
         this.metadata = personalityData.metadata;
         this.chatPrompt = personalityData.chatPrompt;
-        this.chats=personalityData.chats;
+        this.chats = personalityData.chats;
         this.voiceId = personalityData.voiceId;
         this.selectedChat = personalityData.selectedChat;
         this.llms = personalityData.llms || {};
+        this.telegramBot = personalityData.telegramBot || {};
     }
 
     applyPersonalityToSysPromptChat(chat) {
