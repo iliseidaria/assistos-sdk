@@ -1,8 +1,12 @@
 const request = require("../util").request;
+const config = require("./../../config.json");
+const envType = require("assistos").envType;
+
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
 const Document = require("./models/Document");
+const constants = require("../../constants");
 
 async function exportDocument(spaceId, documentId, exportType){
     return await this.sendRequest(`/documents/export/${spaceId}/${documentId}`, "POST", {exportType});
@@ -23,6 +27,24 @@ async function getDocumentsMetadata(spaceId){
 async function addDocument(spaceId, documentData){
     documentData.metadata = ["id", "title","type"];
     return await this.sendRequest(`/documents/${spaceId}`, "POST", documentData);
+}
+async function convertDocument(formData){
+    const init = {
+        method: 'POST',
+        body: formData
+    };
+    let url = `${config.docsConverterUrl}/convert`;
+    if (envType === constants.ENV_TYPE.NODE) {
+        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
+        init.headers.Cookie = this.__securityContext.cookies;
+    }
+    const response = await fetch(url, init);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
 }
 async function updateDocument(spaceId, documentId, documentData){
     return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "PUT", documentData);
@@ -135,5 +157,6 @@ module.exports = {
     getDocumentSnapshots,
     addDocumentSnapshot,
     deleteDocumentSnapshot,
-    restoreDocumentSnapshot
+    restoreDocumentSnapshot,
+    convertDocument
 };
