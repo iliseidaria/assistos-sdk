@@ -1,39 +1,50 @@
 const request = require("../util").request;
-const config = require("./../../config.json");
 const envType = require("assistos").envType;
+const Document = require("./models/Document");
+const constants = require("../../constants");
 
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
-const Document = require("./models/Document");
-const constants = require("../../constants");
 
-async function exportDocument(spaceId, documentId, exportType){
+async function exportDocument(spaceId, documentId, exportType) {
     return await this.sendRequest(`/documents/export/${spaceId}/${documentId}`, "POST", {exportType});
 }
-async function exportDocumentAsDocx(spaceId, documentId){
+
+async function exportDocumentAsDocx(spaceId, documentId) {
     return await this.sendRequest(`/documents/export/docx/${spaceId}/${documentId}`, "POST");
 }
-async function importDocument(spaceId,documentFormData){
+
+async function importDocument(spaceId, documentFormData) {
     return await this.sendRequest(`/documents/import/${spaceId}`, "POST", documentFormData);
 }
-async function getDocument(spaceId, documentId){
+
+async function getDocument(spaceId, documentId) {
     let documentData = await this.sendRequest(`/documents/${spaceId}/${documentId}`, "GET");
     return new Document(documentData);
 }
-async function getDocumentsMetadata(spaceId){
+
+async function getDocumentsMetadata(spaceId) {
     return await this.sendRequest(`/documents/metadata/${spaceId}`, "GET");
 }
-async function addDocument(spaceId, documentData){
-    documentData.metadata = ["id", "title","type"];
+
+async function addDocument(spaceId, documentData) {
+    documentData.metadata = ["id", "title", "type"];
     return await this.sendRequest(`/documents/${spaceId}`, "POST", documentData);
 }
-async function convertDocument(formData){
+
+async function convertDocument(formData) {
+    let assistOSConfigs = await fetch("assistOS-configs.json");
+    assistOSConfigs = await assistOSConfigs.json();
+
     const init = {
         method: 'POST',
         body: formData
     };
-    let url = `${config.docsConverterUrl}/convert`;
+
+    // Use the docsConverterUrl from assistOS-configs.json
+    let url = `${assistOSConfigs.docsConverterUrl}/convert`;
+
     if (envType === constants.ENV_TYPE.NODE) {
         url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
         init.headers.Cookie = this.__securityContext.cookies;
@@ -46,15 +57,19 @@ async function convertDocument(formData){
 
     return await response.json();
 }
-async function updateDocument(spaceId, documentId, documentData){
+
+async function updateDocument(spaceId, documentId, documentData) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "PUT", documentData);
 }
-async function deleteDocument(spaceId, documentId){
+
+async function deleteDocument(spaceId, documentId) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "DELETE");
 }
+
 async function updateDocumentTitle(spaceId, documentId, title) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=title`, "PUT", title);
 }
+
 async function updateDocumentComment(spaceId, documentId, comment) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=comment`, "PUT", comment);
 }
@@ -62,69 +77,87 @@ async function updateDocumentComment(spaceId, documentId, comment) {
 async function updateDocumentTopic(spaceId, documentId, topic) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=topic`, "PUT", topic);
 }
+
 async function updateDocumentAbstract(spaceId, documentId, abstract) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=abstract`, "PUT", abstract);
 }
 
-async function getDocumentTopic(spaceId, documentId){
+async function getDocumentTopic(spaceId, documentId) {
     return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=topic`, "GET");
 }
-async function getDocumentAbstract(spaceId, documentId){
+
+async function getDocumentAbstract(spaceId, documentId) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=abstract`, "GET");
 }
-async function getDocumentTitle(spaceId, documentId){
+
+async function getDocumentTitle(spaceId, documentId) {
     return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=title`, "GET");
 }
-async function estimateDocumentVideoLength(spaceId, documentId){
+
+async function estimateDocumentVideoLength(spaceId, documentId) {
     return await this.sendRequest(`/documents/video/estimate/${spaceId}/${documentId}`, "GET");
 }
-async function documentToVideo(spaceId, documentId){
+
+async function documentToVideo(spaceId, documentId) {
     return await this.sendRequest(`/tasks/video/${spaceId}/${documentId}`, "POST", {});
 }
-async function getDocumentTasks(spaceId, documentId){
+
+async function getDocumentTasks(spaceId, documentId) {
     return await this.sendRequest(`/tasks/${spaceId}/${documentId}`, "GET");
 }
 
 async function deselectDocumentItem(spaceId, documentId, itemId, selectId) {
     return await this.sendRequest(`/documents/select/${spaceId}/${documentId}/${itemId}/${selectId}`, "DELETE");
 }
+
 async function getSelectedDocumentItems(spaceId, documentId) {
     return await this.sendRequest(`/documents/select/${spaceId}/${documentId}`, "GET");
 }
+
 async function selectDocumentItem(spaceId, documentId, itemId, itemData) {
     return await this.sendRequest(`/documents/select/${spaceId}/${documentId}/${itemId}`, "PUT", itemData);
 }
-async function getDocumentCommands(spaceId, documentId){
+
+async function getDocumentCommands(spaceId, documentId) {
     return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=commands`, "GET");
 }
-async function updateDocumentCommands(spaceId, documentId, commands){
+
+async function updateDocumentCommands(spaceId, documentId, commands) {
     return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=commands`, "PUT", commands);
 }
-async function translateDocument(spaceId, documentId, language, personalityId){
+
+async function translateDocument(spaceId, documentId, language, personalityId) {
     return await this.sendRequest(`/tasks/translate/${spaceId}/${documentId}`, "POST", {language, personalityId});
 }
-async function undoOperation(spaceId, documentId){
+
+async function undoOperation(spaceId, documentId) {
     return await this.sendRequest(`/documents/undo/${spaceId}/${documentId}`, "PUT");
 }
-async function redoOperation(spaceId, documentId){
+
+async function redoOperation(spaceId, documentId) {
     return await this.sendRequest(`/documents/redo/${spaceId}/${documentId}`, "PUT");
 }
 
-async function getDocumentSnapshot(spaceId, documentId, snapshotId){
+async function getDocumentSnapshot(spaceId, documentId, snapshotId) {
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "GET");
 }
-async function getDocumentSnapshots(spaceId, documentId){
+
+async function getDocumentSnapshots(spaceId, documentId) {
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}`, "GET");
 }
-async function addDocumentSnapshot(spaceId, documentId, snapshotData){
+
+async function addDocumentSnapshot(spaceId, documentId, snapshotData) {
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}`, "POST", snapshotData);
 }
-async function deleteDocumentSnapshot(spaceId, documentId, snapshotId){
+
+async function deleteDocumentSnapshot(spaceId, documentId, snapshotId) {
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "DELETE");
 }
-async function restoreDocumentSnapshot(spaceId, documentId, snapshotId, newSnapshotData){
+
+async function restoreDocumentSnapshot(spaceId, documentId, snapshotId, newSnapshotData) {
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "PUT", newSnapshotData);
 }
+
 module.exports = {
     getDocumentTopic,
     getDocumentTitle,
