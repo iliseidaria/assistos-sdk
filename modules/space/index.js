@@ -260,6 +260,10 @@ async function swapEmbeddedObjects(spaceId, objectURI, objectData) {
 async function startTelegramBot(spaceId, personalityId, botId){
     return await this.sendGeneralRequest(`/telegram/startBot/${spaceId}/${personalityId}`, "POST", botId);
 }
+
+async function removeTelegramUser(spaceId, personalityId, telegramUserId){
+    return await this.sendGeneralRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
+}
 module.exports = {
     createSpace,
     loadSpace,
@@ -314,7 +318,8 @@ module.exports = {
     updateEmbeddedObject,
     deleteEmbeddedObject,
     swapEmbeddedObjects,
-    startTelegramBot
+    startTelegramBot,
+    removeTelegramUser
 }
 
 
