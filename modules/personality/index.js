@@ -68,6 +68,13 @@ async function deletePersonality(spaceId, fileName){
 async function exportPersonality(spaceId, personalityId){
     return await this.sendRequest(`/spaces/${spaceId}/export/personalities/${personalityId}`, "GET", this.__securityContext);
 }
+
+async function sendQuery(spaceId, personalityId, chatId, prompt){
+    return await this.sendRequest(`/chats/send/${spaceId}/${personalityId}/${chatId}`, "POST", prompt);
+}
+async function createChat(spaceId, personalityId){
+    return await this.sendRequest(`/chats/${spaceId}/${personalityId}`, "POST");
+}
 module.exports = {
     getPersonalitiesMetadata,
     getPersonality,
@@ -81,6 +88,8 @@ module.exports = {
     getPersonalitiesConversations,
     getPersonalityByName,
     exportPersonality,
+    sendQuery,
+    createChat,
     models:{
         personality:require('./models/Personality.js'),
         agent:require('./models/Agent.js')
