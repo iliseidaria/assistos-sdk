@@ -17,6 +17,7 @@ async function registerUser(email, password, imageId, inviteToken) {
         imageId: imageId
     });
 }
+
 async function generateVerificationCode(email,password){
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -59,6 +60,7 @@ async function resetPassword(email, password, code) {
     }
     return await response.json();
 }
+
 async function activateUser(activationToken) {
     const headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -109,29 +111,6 @@ async function logoutUser() {
     return await this.sendRequest(`/users/logout`, "GET");
 }
 
-async function addGITCredentials(spaceId, username, token) {
-    let body = {
-        secretName: "gitCredentials",
-        secret: {
-            username: username,
-            token: token
-        }
-    }
-    return await this.sendRequest(`/users/secrets/${spaceId}`, "POST", body);
-}
-async function deleteGITCredentials(spaceId) {
-    let body = {
-        secretName: "gitCredentials"
-    }
-    return await this.sendRequest(`/users/secrets/${spaceId}`, "PUT", body);
-}
-async function userGITCredentialsExist(spaceId) {
-    let body = {
-        secretName: "gitCredentials"
-    }
-    return await this.sendRequest(`/users/secrets/exists/${spaceId}`, "POST", body);
-}
-
 async function deleteAPIKey(spaceId, type) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets/keys/${type}`, "DELETE",);
 }
@@ -151,9 +130,6 @@ module.exports = {
     loginUser,
     loadUser,
     logoutUser,
-    userGITCredentialsExist,
-    addGITCredentials,
-    deleteGITCredentials,
     editAPIKey,
     deleteAPIKey,
     sendRequest,
