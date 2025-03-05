@@ -1,5 +1,6 @@
 const crypto = require('opendsu').loadAPI('crypto');
 const {request} = require("../util");
+const constants = require("../../constants");
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
@@ -129,16 +130,17 @@ async function logout(){
     return response.ok;
 }
 async function accountExists(email){
+    email = encodeURIComponent(email);
     let response = await fetch(`/auth/accountExists/${email}`);
     return await response.json();
 }
-async function login(email, code){
-    let response = await fetch(`/auth/walletLogin`, {
+async function login(email, code, createSpace){
+    let response = await fetch(`/users/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({email,code})
+        body: JSON.stringify({email, code, createSpace})
     });
     return await response.json();
 }
