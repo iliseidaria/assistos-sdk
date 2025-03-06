@@ -14,14 +14,16 @@ async function deleteAPIKey(spaceId, type) {
 async function editAPIKey(apiKeyObj) {
     return await this.sendRequest(`/spaces/secrets/keys`, "POST", apiKeyObj);
 }
-async function getUserProfileImage(userId) {
-    return await this.sendRequest(`/users/profileImage/${userId}`, "GET");
+async function getUserProfileImage(email) {
+    return await this.sendRequest(`/users/profileImage/${email}`, "GET");
 }
-async function updateUserImage(userId, imageId) {
-    return await this.sendRequest(`/users/profileImage/${userId}`, "POST", {imageId});
+async function updateUserImage(email, imageId) {
+    return await this.sendRequest(`/users/profileImage/${email}`, "POST", {imageId});
 }
 async function logoutUser(){
-    let response = await fetch(`/users/logout`);
+    let response = await fetch(`/auth/walletLogout`, {
+        method: 'POST'
+    });
     return response.ok;
 }
 async function accountExists(email){
