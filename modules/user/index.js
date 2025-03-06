@@ -1,5 +1,6 @@
 const crypto = require('opendsu').loadAPI('crypto');
 const {request} = require("../util");
+const constants = require("../../constants");
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
@@ -124,6 +125,35 @@ async function getUserProfileImage(userId) {
 async function updateUserImage(userId, imageId) {
     return await this.sendRequest(`/users/profileImage/${userId}`, "POST", {imageId});
 }
+async function logout(){
+    let response = await fetch(`/auth/logout`);
+    return response.ok;
+}
+async function accountExists(email){
+    email = encodeURIComponent(email);
+    let response = await fetch(`/auth/accountExists/${email}`);
+    return await response.json();
+}
+async function login(email, code, createSpace){
+    let response = await fetch(`/users/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email, code, createSpace})
+    });
+    return await response.json();
+}
+async function generateAuthCode(email, refererId){
+    let response = await fetch(`/auth/generateAuthCode`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email, refererId})
+    });
+    return await response.json();
+}
 module.exports = {
     registerUser,
     activateUser,
@@ -136,5 +166,9 @@ module.exports = {
     generateVerificationCode,
     resetPassword,
     getUserProfileImage,
-    updateUserImage
+    updateUserImage,
+    logout,
+    accountExists,
+    login,
+    generateAuthCode
 }
