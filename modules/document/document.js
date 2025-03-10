@@ -34,28 +34,38 @@ async function addDocument(spaceId, documentData) {
 }
 
 async function convertDocument(formData) {
-    let assistOSConfigs = await fetch("assistOS-configs.json");
-    assistOSConfigs = await assistOSConfigs.json();
+    try {
+        const init = {
+            method: 'POST',
+            body: formData
+        };
 
-    const init = {
-        method: 'POST',
-        body: formData
-    };
+        // Use server proxy endpoint instead of direct docs converter URL
+        let url = '/documents/convert';
 
-    // Use the docsConverterUrl from assistOS-configs.json
-    let url = `${assistOSConfigs.docsConverterUrl}/convert`;
+        if (envType === constants.ENV_TYPE.NODE) {
+            url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
+            init.headers = { Cookie: this.__securityContext.cookies };
+        }
+        
+        const response = await fetch(url, init);
 
-    if (envType === constants.ENV_TYPE.NODE) {
-        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
-        init.headers.Cookie = this.__securityContext.cookies;
+        if (!response.ok) {
+            const errorText = await response.text();
+            let errorDetails = errorText;
+            try {
+                errorDetails = JSON.parse(errorText);
+            } catch (e) {
+                // Not JSON, keep as text
+            }
+            
+            throw new Error(`HTTP error! status: ${response.status}, details: ${typeof errorDetails === 'object' ? JSON.stringify(errorDetails) : errorDetails}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw error;
     }
-    const response = await fetch(url, init);
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
 }
 
 async function updateDocument(spaceId, documentId, documentData) {
