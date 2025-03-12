@@ -30,11 +30,9 @@ async function saveSpaceChat(spaceId,chatId){
 async function getSpaceAnnouncements(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
 }
-
 async function deleteSpaceAnnouncement(spaceId, announcementId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "DELETE")
 }
-
 async function updateSpaceAnnouncement(spaceId, announcementId, announcementData) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
 }
@@ -45,6 +43,51 @@ async function createSpace(spaceName) {
     }
     return await this.sendRequest(`/spaces`, "POST", bodyObject);
 }
+/* webChat config */
+async function getWebAssistantConfiguration(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration`, "GET");
+}
+async function addWebAssistantConfigurationPage(spaceId, pageData) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "POST", pageData);
+}
+async function updateWebAssistantConfigurationSettings(spaceId, settingsData) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/settings`, "PUT", settingsData);
+}
+
+async function getWebAssistantConfigurationPages(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "GET");
+}
+async function getWebAssistantConfigurationPage(spaceId, pageId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "GET");
+}
+
+async function updateWebAssistantConfigurationPage(spaceId, pageId, pageData) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "PUT", pageData);
+}
+
+async function deleteWebAssistantConfigurationPage(spaceId, pageId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "DELETE");
+}
+
+async function getWebAssistantConfigurationPageMenu(spaceId, pageId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "GET");
+}
+
+async function addWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuItem) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "POST", menuItem);
+}
+async function getWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "GET");
+}
+async function updateWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId, menuItemData) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "PUT", menuItemData);
+}
+
+async function deleteWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "DELETE");
+}
+
+/* webChat config end */
 
 async function loadSpace(spaceId) {
     let requestURL = spaceId ? `/spaces/${spaceId}` : `/spaces`;
@@ -265,6 +308,17 @@ async function removeTelegramUser(spaceId, personalityId, telegramUserId){
     return await this.sendGeneralRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
 }
 module.exports = {
+    updateWebAssistantConfigurationSettings,
+    getWebAssistantConfigurationPageMenuItem,
+    addWebAssistantConfigurationPage,
+    getWebAssistantConfigurationPages,
+    getWebAssistantConfigurationPage,
+    updateWebAssistantConfigurationPage,
+    deleteWebAssistantConfigurationPage,
+    getWebAssistantConfigurationPageMenu,
+    addWebAssistantConfigurationPageMenuItem,
+    updateWebAssistantConfigurationPageMenuItem,
+    deleteWebAssistantConfigurationPageMenuItem,
     createSpace,
     loadSpace,
     deleteSpace,
@@ -319,7 +373,8 @@ module.exports = {
     deleteEmbeddedObject,
     swapEmbeddedObjects,
     startTelegramBot,
-    removeTelegramUser
+    removeTelegramUser,
+    getWebAssistantConfiguration
 }
 
 
