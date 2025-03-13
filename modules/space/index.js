@@ -43,7 +43,11 @@ async function createSpace(spaceName) {
     }
     return await this.sendRequest(`/spaces`, "POST", bodyObject);
 }
+
 /* webChat config */
+async function getWebAssistantHomePage(spaceId){
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/home-page`, "GET");
+}
 async function getWebAssistantConfiguration(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration`, "GET");
 }
@@ -308,6 +312,7 @@ async function removeTelegramUser(spaceId, personalityId, telegramUserId){
     return await this.sendGeneralRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
 }
 module.exports = {
+    getWebAssistantHomePage,
     updateWebAssistantConfigurationSettings,
     getWebAssistantConfigurationPageMenuItem,
     addWebAssistantConfigurationPage,
