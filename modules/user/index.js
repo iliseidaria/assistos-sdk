@@ -26,9 +26,9 @@ async function logoutUser(){
     });
     return response.ok;
 }
-async function accountExists(email){
+async function userExists(email){
     email = encodeURIComponent(email);
-    let response = await fetch(`/auth/accountExists/${email}`);
+    let response = await fetch(`/auth/userExists/${email}`);
     return await response.json();
 }
 async function loginUser(email, code, createSpace){
@@ -59,7 +59,7 @@ module.exports = {
     getUserProfileImage,
     updateUserImage,
     logoutUser,
-    accountExists,
+    userExists,
     loginUser,
     generateAuthCode
 }
