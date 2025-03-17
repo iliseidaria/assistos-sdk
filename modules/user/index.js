@@ -20,6 +20,9 @@ async function getUserProfileImage(email) {
 async function updateUserImage(email, imageId) {
     return await this.sendRequest(`/users/profileImage/${email}`, "POST", {imageId});
 }
+async function getCurrentSpaceId(email) {
+    return await this.sendRequest(`/users/spaceId/${email}`, "GET");
+}
 async function logoutUser(){
     let response = await fetch(`/auth/walletLogout`, {
         method: 'POST'
@@ -61,5 +64,6 @@ module.exports = {
     logoutUser,
     userExists,
     loginUser,
-    generateAuthCode
+    generateAuthCode,
+    getCurrentSpaceId
 }
