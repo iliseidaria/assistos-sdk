@@ -4,7 +4,9 @@ const request = require("../util").request;
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
-
+async function getWidgets(spaceId) {
+    return await this.sendRequest(`/space/${spaceId}/applications/widgets`, "GET");
+}
 async function installApplication(spaceId, applicationId) {
     return await this.sendRequest(`/applications/${spaceId}/${applicationId}`, "POST");
 }
@@ -69,6 +71,7 @@ async function loadAppFlows(spaceId, appId) {
 
 module.exports = {
     installApplication,
+    getWidgets,
     uninstallApplication,
     loadApplicationsMetadata,
     getApplicationConfig,

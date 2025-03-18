@@ -65,7 +65,6 @@ class NotificationRouter{
         for (let object of this.objectsToRefresh) {
             this.emit(object.objectId, object.data);
         }
-
         this.objectsToRefresh = [];
     }
     async closeSSEConnection() {
@@ -74,10 +73,12 @@ class NotificationRouter{
         await utilModule.request("/events/close", "GET");
         console.log("SSE Connection closed");
     }
+
     handleContentEvent(event) {
         let parsedMessage = JSON.parse(event.data);
         this.objectsToRefresh.push({objectId: parsedMessage.objectId, data: parsedMessage.data});
     }
+
     async handleDisconnectEvent(event,callback) {
         let disconnectReason = JSON.parse(event.data);
         clearInterval(this.intervalId);
