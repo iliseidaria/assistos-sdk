@@ -85,10 +85,10 @@ function fillTemplate(templateObject, fillObject, depth = 0) {
     }
 }
 
-async function request(url, method, securityContext, data) {
+async function request(url, method = "GET", data, securityContext, headers = {}, externalRequest) {
     let init = {
         method: method,
-        headers: {}
+        headers: headers
     };
     if (method === "POST" || method === "PUT") {
         if (data instanceof FormData || typeof data === "function") {
@@ -105,9 +105,10 @@ async function request(url, method, securityContext, data) {
             init.headers["Content-Type"] = "application/json; charset=UTF-8";
         }
     }
-    if (envType === constants.ENV_TYPE.NODE) {
+    if (envType === constants.ENV_TYPE.NODE && !externalRequest) {
         url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
         init.headers.Cookie = securityContext.cookies;
+        init.headers["x-api-key"] = process.env.SSO_SECRETS_ENCRYPTION_KEY;
     }
     let response;
     try {
@@ -134,7 +135,7 @@ async function request(url, method, securityContext, data) {
             }
             throw new Error(JSON.stringify(errorData));
         }
-        return responseJSON.data;
+        return responseJSON;
     }
 
     let textResponse = await response.text();

@@ -1,58 +1,51 @@
 const {request} = require("../util");
-async function sendRequest(url, method, data) {
-    return await request(url, method, this.__securityContext, data);
+async function sendRequest(url, method, data, headers) {
+    return await request(url, method, data, this.__securityContext, headers);
 }
 
-async function loadUser() {
-    return await this.sendRequest(`/users`, "GET");
+async function loadUser(email) {
+    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    return {
+        email: email,
+        currentSpaceId: userInfo.currentSpaceId,
+        spaces: userInfo.spaces,
+        imageId: userInfo.imageId
+    }
 }
 
 async function deleteAPIKey(spaceId, type) {
-    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys/${type}`, "DELETE",);
+    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys/${type}`, "DELETE");
 }
 
 async function editAPIKey(apiKeyObj) {
     return await this.sendRequest(`/spaces/secrets/keys`, "POST", apiKeyObj);
 }
 async function getUserProfileImage(email) {
-    return await this.sendRequest(`/users/profileImage/${email}`, "GET");
+    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    let spaceModule = require("assistos").loadModule("space", this.__securityContext);
+    return await spaceModule.getImage(userInfo.imageId);
 }
 async function updateUserImage(email, imageId) {
-    return await this.sendRequest(`/users/profileImage/${email}`, "POST", {imageId});
+    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    userInfo.imageId = imageId;
+    return await this.sendRequest(`/auth/getInfo/${email}`, "POST", userInfo);
 }
 async function getCurrentSpaceId(email) {
-    return await this.sendRequest(`/users/spaceId/${email}`, "GET");
+    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    return userInfo.currentSpaceId;
 }
 async function logoutUser(){
-    let response = await fetch(`/auth/walletLogout`, {
-        method: 'POST'
-    });
-    return response.ok;
+    return await this.sendRequest(`/auth/walletLogout`, "POST");
 }
 async function userExists(email){
     email = encodeURIComponent(email);
-    let response = await fetch(`/auth/userExists/${email}`);
-    return await response.json();
+    return await this.sendRequest(`/auth/userExists/${email}`, "GET");
 }
-async function loginUser(email, code, createSpace){
-    let response = await fetch(`/users/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({email, code, createSpace})
-    });
-    return await response.json();
+async function loginUser(email, code){
+    return await this.sendRequest(`/auth/walletLogin`, "POST", {email, code});
 }
 async function generateAuthCode(email, refererId){
-    let response = await fetch(`/auth/generateAuthCode`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({email, refererId})
-    });
-    return await response.json();
+    return await this.sendRequest(`/auth/generateAuthCode`, "POST", {email, refererId});
 }
 module.exports = {
     loadUser,

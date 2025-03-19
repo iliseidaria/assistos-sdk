@@ -2,7 +2,7 @@ const Application = require("./models/Application.js");
 const request = require("../util").request;
 
 async function sendRequest(url, method, data) {
-    return await request(url, method, this.__securityContext, data);
+    return await request(url, method, data, this.__securityContext);
 }
 async function getWidgets(spaceId) {
     return await this.sendRequest(`/space/${spaceId}/applications/widgets`, "GET");

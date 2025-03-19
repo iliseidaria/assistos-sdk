@@ -2,7 +2,7 @@ const {request} = require("../util");
 const personalityType = "personalities";
 
 async function sendRequest(url, method, data) {
-    return await request(url, method, this.__securityContext, data);
+    return await request(url, method, data, this.__securityContext);
 }
 
 async function getPersonality(spaceId, fileName) {
