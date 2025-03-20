@@ -4,6 +4,7 @@ async function sendRequest(url, method, data, headers) {
 }
 
 async function loadUser(email) {
+    email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
     return {
         email: email,
@@ -21,16 +22,19 @@ async function editAPIKey(apiKeyObj) {
     return await this.sendRequest(`/spaces/secrets/keys`, "POST", apiKeyObj);
 }
 async function getUserProfileImage(email) {
+    email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
     let spaceModule = require("assistos").loadModule("space", this.__securityContext);
     return await spaceModule.getImage(userInfo.imageId);
 }
 async function updateUserImage(email, imageId) {
+    email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
     userInfo.imageId = imageId;
     return await this.sendRequest(`/auth/getInfo/${email}`, "POST", userInfo);
 }
 async function getCurrentSpaceId(email) {
+    email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
     return userInfo.currentSpaceId;
 }
