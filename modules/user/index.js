@@ -4,8 +4,7 @@ async function sendRequest(url, method, data, headers) {
 }
 
 async function loadUser(email) {
-    email = encodeURIComponent(email);
-    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    let userInfo = await this.sendRequest(`/auth/getInfo/${encodeURIComponent(email)}`, "GET");
     return {
         email: email,
         currentSpaceId: userInfo.currentSpaceId,
@@ -31,7 +30,7 @@ async function updateUserImage(email, imageId) {
     email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
     userInfo.imageId = imageId;
-    return await this.sendRequest(`/auth/getInfo/${email}`, "POST", userInfo);
+    return await this.sendRequest(`/auth/setInfo/${email}`, "PUT", userInfo);
 }
 async function getCurrentSpaceId(email) {
     email = encodeURIComponent(email);
