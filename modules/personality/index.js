@@ -17,8 +17,8 @@ async function getPersonalities(spaceId){
     return personalities.map(personality => new Personality(personality));
 }
 
-async function getPersonality(spaceId, fileName){
-    let personality =  await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
+async function getPersonality(spaceId, personalityId){
+    let personality =  await this.sendRequest(`/personalities/${spaceId}/${personalityId}`, "GET");
     return new Personality(personality);
 }
 async function createNewConversation(spaceId,personalityId){

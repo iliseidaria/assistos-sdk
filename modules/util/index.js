@@ -113,7 +113,11 @@ async function request(url, method = "GET", data, securityContext, headers = {},
     } catch (err) {
         throw new Error(err.message);
     }
+
     const contentType = response.headers.get('Content-Type');
+    if(!response.ok && !contentType){
+       return;
+    }
     if (contentType.includes('application/zip')) {
         return await response.blob();
     }

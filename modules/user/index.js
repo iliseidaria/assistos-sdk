@@ -4,7 +4,7 @@ async function sendRequest(url, method, data, headers) {
 }
 
 async function loadUser(email) {
-    let userInfo = await this.sendRequest(`/auth/getInfo/${encodeURIComponent(email)}`, "GET");
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${encodeURIComponent(email)}`, "GET");
     return {
         email: email,
         currentSpaceId: userInfo.currentSpaceId,
@@ -22,19 +22,19 @@ async function editAPIKey(apiKeyObj) {
 }
 async function getUserProfileImage(email) {
     email = encodeURIComponent(email);
-    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
     let spaceModule = require("assistos").loadModule("space", this.__securityContext);
     return await spaceModule.getImage(userInfo.imageId);
 }
 async function updateUserImage(email, imageId) {
     email = encodeURIComponent(email);
-    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
     userInfo.imageId = imageId;
-    return await this.sendRequest(`/auth/setInfo/${email}`, "PUT", userInfo);
+    return await this.sendRequest(`/auth/setInfo?email=${email}`, "PUT", userInfo);
 }
 async function getCurrentSpaceId(email) {
     email = encodeURIComponent(email);
-    let userInfo = await this.sendRequest(`/auth/getInfo/${email}`, "GET");
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
     return userInfo.currentSpaceId;
 }
 async function logoutUser(){

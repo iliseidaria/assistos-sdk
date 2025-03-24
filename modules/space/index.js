@@ -91,7 +91,7 @@ async function deleteWebAssistantConfigurationPageMenuItem(spaceId, pageId, menu
 
 /* webChat config end */
 
-async function loadSpace(spaceId) {
+async function getSpaceStatus(spaceId) {
     let requestURL = spaceId ? `/spaces/${spaceId}` : `/spaces`;
     return await this.sendRequest(requestURL, "GET");
 }
@@ -267,7 +267,7 @@ module.exports = {
     updateWebAssistantConfigurationPageMenuItem,
     deleteWebAssistantConfigurationPageMenuItem,
     createSpace,
-    loadSpace,
+    getSpaceStatus,
     deleteSpace,
     addKeyToSpace,
     addSpaceChatMessage,
