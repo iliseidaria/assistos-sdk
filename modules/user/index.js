@@ -4,7 +4,11 @@ async function sendRequest(url, method, data, headers) {
 }
 
 async function loadUser(email) {
-    let userInfo = await this.sendRequest(`/auth/getInfo?email=${encodeURIComponent(email)}`, "GET");
+    let url = "/auth/getInfo"
+    if(email){
+        url += `?email=${encodeURIComponent(email)}`;
+    }
+    let userInfo = await this.sendRequest(url, "GET");
     return {
         email: email,
         currentSpaceId: userInfo.currentSpaceId,
@@ -13,6 +17,13 @@ async function loadUser(email) {
     }
 }
 
+async function listUserSpaces(email) {
+    let url = "/spaces/listSpaces"
+    if(email){
+        url += `?email=${encodeURIComponent(email)}`;
+    }
+    return await this.sendRequest(url, "GET");
+}
 async function deleteAPIKey(spaceId, type) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets/keys/${type}`, "DELETE");
 }
@@ -61,5 +72,6 @@ module.exports = {
     userExists,
     loginUser,
     generateAuthCode,
-    getCurrentSpaceId
+    getCurrentSpaceId,
+    listUserSpaces
 }
