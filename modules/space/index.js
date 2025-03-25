@@ -73,8 +73,8 @@ async function deleteWebAssistantConfigurationPage(spaceId, pageId) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "DELETE");
 }
 
-async function getWebAssistantConfigurationPageMenu(spaceId, pageId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "GET");
+async function getWebAssistantConfigurationPageMenu(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/menu`, "GET");
 }
 
 async function addWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuItem) {
