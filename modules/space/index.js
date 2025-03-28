@@ -3,6 +3,7 @@ const Space = require('./models/Space.js');
 const Announcement = require('./models/Announcement.js');
 const constants = require("../../constants");
 const envType = require("assistos").envType;
+
 async function sendRequest(url, method, data) {
     return await request(url, method, this.__securityContext, data);
 }
@@ -15,24 +16,30 @@ async function getSpaceAnnouncement(spaceId, announcementId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "GET")
 }
 
-async function getSpaceChat(spaceId,chatId) {
+async function getSpaceChat(spaceId, chatId) {
     return await this.sendRequest(`/spaces/chat/${spaceId}/${chatId}`, "GET")
 }
-async function addSpaceChatMessage(spaceId,chatId, messageData) {
+
+async function addSpaceChatMessage(spaceId, chatId, messageData) {
     return await this.sendRequest(`/spaces/chat/${spaceId}/${chatId}`, "POST", messageData)
 }
-async function resetSpaceChat(spaceId,chatId){
+
+async function resetSpaceChat(spaceId, chatId) {
     return await this.sendRequest(`/spaces/chat/${spaceId}/${chatId}`, "DELETE")
 }
-async function saveSpaceChat(spaceId,chatId){
+
+async function saveSpaceChat(spaceId, chatId) {
     return await this.sendRequest(`/spaces/chat/save/${spaceId}/${chatId}`, "POST")
 }
+
 async function getSpaceAnnouncements(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
 }
+
 async function deleteSpaceAnnouncement(spaceId, announcementId) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "DELETE")
 }
+
 async function updateSpaceAnnouncement(spaceId, announcementId, announcementData) {
     return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
 }
@@ -45,15 +52,35 @@ async function createSpace(spaceName) {
 }
 
 /* webChat config */
-async function getWebAssistantHomePage(spaceId){
+
+/* themes */
+async function addWebAssistantTheme(spaceId, themeData) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes`, "POST", themeData);
+}
+
+async function updateWebAssistantTheme(spaceId, id, themeData) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes/${id}`, "PUT", themeData);
+}
+
+async function getWebAssistantThemes(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes`, "GET");
+}
+async function getWebAssistantTheme(spaceId, themeId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes/${themeId}`, "GET");
+}
+
+async function getWebAssistantHomePage(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/home-page`, "GET");
 }
+
 async function getWebAssistantConfiguration(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration`, "GET");
 }
+
 async function addWebAssistantConfigurationPage(spaceId, pageData) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "POST", pageData);
 }
+
 async function updateWebAssistantConfigurationSettings(spaceId, settingsData) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/settings`, "PUT", settingsData);
 }
@@ -61,6 +88,7 @@ async function updateWebAssistantConfigurationSettings(spaceId, settingsData) {
 async function getWebAssistantConfigurationPages(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "GET");
 }
+
 async function getWebAssistantConfigurationPage(spaceId, pageId) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "GET");
 }
@@ -80,9 +108,11 @@ async function getWebAssistantConfigurationPageMenu(spaceId) {
 async function addWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuItem) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "POST", menuItem);
 }
-async function getWebAssistantConfigurationPageMenuItem(spaceId,  menuId) {
+
+async function getWebAssistantConfigurationPageMenuItem(spaceId, menuId) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/menu/${menuId}`, "GET");
 }
+
 async function updateWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId, menuItemData) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "PUT", menuItemData);
 }
@@ -163,6 +193,7 @@ async function deleteSpaceCollaborator(spaceId, userId) {
 async function inviteSpaceCollaborators(spaceId, collaborators) {
     return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "POST", {collaborators});
 }
+
 async function setSpaceCollaboratorRole(spaceId, userId, role) {
     return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "PUT", {role});
 }
@@ -206,12 +237,15 @@ async function sendGeneralRequest(url, method, data = null, headers = {}, extern
 async function getImageURL(imageId) {
     return await this.getFileURL(imageId, "image/png");
 }
+
 async function getAudioURL(audioId) {
     return await this.getFileURL(audioId, "audio/mp3");
 }
+
 async function getVideoURL(videoId) {
     return await this.getFileURL(videoId, "video/mp4");
 }
+
 async function getFileURL(fileId, type) {
     const {downloadURL} = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null, {"Content-Type": type});
     return downloadURL;
@@ -220,12 +254,15 @@ async function getFileURL(fileId, type) {
 async function getAudioHead(audioId) {
     return await this.headFile(audioId, "audio/mp3");
 }
+
 async function getImageHead(imageId) {
     return await this.headFile(imageId, "image/png");
 }
+
 async function getVideoHead(videoId) {
     return await this.headFile(videoId, "video/mp4");
 }
+
 async function headFile(fileId, type) {
     return await this.sendGeneralRequest(`/spaces/files/${fileId}`, "HEAD", null, {"Content-Type": type});
 }
@@ -233,14 +270,20 @@ async function headFile(fileId, type) {
 async function getAudio(audioId) {
     return await this.getFile(audioId, "audio/mp3");
 }
+
 async function getImage(imageId) {
     return await this.getFile(imageId, "image/png");
 }
+
 async function getVideo(videoId, range) {
     return await this.getFile(videoId, "video/mp4", range);
 }
+
 async function getFile(fileId, type, range) {
-    const {downloadURL, externalRequest} = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null , {"Content-Type": type});
+    const {
+        downloadURL,
+        externalRequest
+    } = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null, {"Content-Type": type});
     let headers = {};
     if (range) {
         headers.Range = range;
@@ -251,67 +294,99 @@ async function getFile(fileId, type, range) {
 async function putAudio(audio) {
     return await this.putFile(audio, "audio/mp3");
 }
+
 async function putImage(image) {
     return await this.putFile(image, "image/png");
 }
+
 async function putVideo(video) {
     return await this.putFile(video, "video/mp4");
 }
+
 async function putFile(file, type) {
-    const {uploadURL, fileId, externalRequest} = await this.sendGeneralRequest(`/spaces/uploads`, "GET", null, {"Content-Type": type});
-    await this.sendGeneralRequest(uploadURL, "PUT", file, {"Content-Type": type, "Content-Length": file.byteLength}, externalRequest);
+    const {
+        uploadURL,
+        fileId,
+        externalRequest
+    } = await this.sendGeneralRequest(`/spaces/uploads`, "GET", null, {"Content-Type": type});
+    await this.sendGeneralRequest(uploadURL, "PUT", file, {
+        "Content-Type": type,
+        "Content-Length": file.byteLength
+    }, externalRequest);
     return fileId;
 }
 
 async function deleteImage(imageId) {
     return await this.deleteFile(imageId, "image/png");
 }
+
 async function deleteAudio(audioId) {
     return await this.deleteFile(audioId, "audio/mp3");
 }
+
 async function deleteVideo(videoId) {
     return await this.deleteFile(videoId, "video/mp4");
 }
+
 async function deleteFile(fileId, type) {
     return await this.sendGeneralRequest(`/spaces/files/${fileId}`, "DELETE", null, {"Content-Type": type});
 }
+
 async function addContainerObject(spaceId, objectType, objectData) {
     return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectType}`, "POST", objectData);
 }
+
 async function getContainerObject(spaceId, objectId) {
     return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "GET");
 }
+
 async function updateContainerObject(spaceId, objectId, objectData) {
     return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "PUT", objectData);
 }
+
 async function deleteContainerObject(spaceId, objectId) {
     return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "DELETE");
 }
+
 /*embedded objects*/
 async function getEmbeddedObject(spaceId, objectURI) {
     return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
 }
+
 async function addEmbeddedObject(spaceId, objectURI, objectData) {
     return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", objectData);
 }
+
 async function updateEmbeddedObject(spaceId, objectURI, objectData) {
     return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", objectData);
 }
+
 async function deleteEmbeddedObject(spaceId, objectURI) {
     return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
 }
+
 async function swapEmbeddedObjects(spaceId, objectURI, objectData) {
     return await this.sendGeneralRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", objectData);
 }
 
-async function startTelegramBot(spaceId, personalityId, botId){
+async function startTelegramBot(spaceId, personalityId, botId) {
     return await this.sendGeneralRequest(`/telegram/startBot/${spaceId}/${personalityId}`, "POST", botId);
 }
 
-async function removeTelegramUser(spaceId, personalityId, telegramUserId){
+async function removeTelegramUser(spaceId, personalityId, telegramUserId) {
     return await this.sendGeneralRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
 }
+
+async function deleteWebAssistantTheme(spaceId, themeId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes/${themeId}`, "DELETE");
+}
+
 module.exports = {
+    deleteWebAssistantTheme,
+    getWebAssistantThemes,
+    addWebAssistantTheme,
+    updateWebAssistantTheme,
+    getWebAssistantTheme,
     getWebAssistantHomePage,
     updateWebAssistantConfigurationSettings,
     getWebAssistantConfigurationPageMenuItem,
