@@ -80,8 +80,8 @@ async function getWebAssistantConfigurationPageMenu(spaceId) {
 async function addWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuItem) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "POST", menuItem);
 }
-async function getWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "GET");
+async function getWebAssistantConfigurationPageMenuItem(spaceId,  menuId) {
+    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/menu/${menuId}`, "GET");
 }
 async function updateWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId, menuItemData) {
     return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "PUT", menuItemData);
