@@ -23,7 +23,7 @@ async function callServerFlow(spaceId, flowName, context, personalityId) {
 
 async function callFlow(spaceId, flowName, context, personalityId) {
     const envType = require("assistos").envType;
-    const personalityModule = require("assistos").loadModule("personality", {});
+    const personalityModule = require("assistos").loadModule("agent", {});
     if (envType === constants.ENV_TYPE.NODE) {
         return await this.callServerFlow(spaceId, flowName, context, personalityId);
     } else if (envType === constants.ENV_TYPE.BROWSER) {
@@ -38,7 +38,7 @@ async function callFlow(spaceId, flowName, context, personalityId) {
         if (personalityId) {
             personality = await personalityModule.getPersonality(assistOS.space.id, personalityId);
         } else {
-            personality = await personalityModule.getPersonalityByName(assistOS.space.id, constants.DEFAULT_PERSONALITY_NAME);
+            personality = await personalityModule.getAgent(assistOS.space.id, constants.DEFAULT_PERSONALITY_NAME);
         }
         const executeFlow = async (context, personality) => {
             flowInstance.__securityContext = {};

@@ -227,34 +227,6 @@ async function deleteVideo(videoId) {
 async function deleteFile(fileId, type) {
     return await this.sendRequest(`/spaces/files/${fileId}`, "DELETE", null, {"Content-Type": type});
 }
-async function addContainerObject(spaceId, objectType, objectData) {
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${objectType}`, "POST", objectData);
-}
-async function getContainerObject(spaceId, objectId) {
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "GET");
-}
-async function updateContainerObject(spaceId, objectId, objectData) {
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "PUT", objectData);
-}
-async function deleteContainerObject(spaceId, objectId) {
-    return await this.sendRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "DELETE");
-}
-/*embedded objects*/
-async function getEmbeddedObject(spaceId, objectURI) {
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
-}
-async function addEmbeddedObject(spaceId, objectURI, objectData) {
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", objectData);
-}
-async function updateEmbeddedObject(spaceId, objectURI, objectData) {
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", objectData);
-}
-async function deleteEmbeddedObject(spaceId, objectURI) {
-    return await this.sendRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
-}
-async function swapEmbeddedObjects(spaceId, objectURI, objectData) {
-    return await this.sendRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", objectData);
-}
 
 async function startTelegramBot(spaceId, personalityId, botId){
     return await this.sendRequest(`/telegram/startBot/${spaceId}/${personalityId}`, "POST", botId);
@@ -318,15 +290,6 @@ module.exports = {
     deleteFile,
     getFile,
     getFileURL,
-    getContainerObject,
-    addContainerObject,
-    updateContainerObject,
-    deleteContainerObject,
-    getEmbeddedObject,
-    addEmbeddedObject,
-    updateEmbeddedObject,
-    deleteEmbeddedObject,
-    swapEmbeddedObjects,
     startTelegramBot,
     removeTelegramUser,
     getWebAssistantConfiguration

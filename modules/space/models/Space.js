@@ -21,7 +21,7 @@ class Space {
     }
 
     async getPersonalitiesMetadata(){
-        const personalityModule = require("assistos").loadModule("personality", {});
+        const personalityModule = require("assistos").loadModule("agent", {});
         this.personalitiesMetadata = await personalityModule.getPersonalitiesMetadata(this.id);
         return this.personalitiesMetadata;
     }

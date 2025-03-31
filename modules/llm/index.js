@@ -1,12 +1,11 @@
 const {request} = require("../util");
-const personalityType = "personalities";
 
 async function sendRequest(url, method, data) {
     return await request(url, method, data, this.__securityContext);
 }
 
 async function getPersonality(spaceId, fileName) {
-    const Personality = require("../personality/models/Personality");
+    const Agent = require("../agent/models/Agent");
     let personality;
     if (fileName) {
         try {
@@ -17,13 +16,13 @@ async function getPersonality(spaceId, fileName) {
     } else {
         personality = await this.getDefaultPersonality(spaceId);
     }
-    return new Personality(personality);
+    return new Agent(personality);
 }
 
 async function getDefaultPersonality(spaceId) {
-    const Personality = require("../personality/models/Personality");
+    const Agent = require("../agent/models/Agent");
     const personality = await this.sendRequest(`/personalities/default/${spaceId}`, "GET");
-    return new Personality(personality);
+    return new Agent(personality);
 }
 
 async function generateTextAdvanced(spaceId, initiatorPersonality, targetPersonality, requestPrompt, outputFormatPrompt) {

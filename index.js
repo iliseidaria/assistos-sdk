@@ -22,8 +22,8 @@ function _loadModule(moduleName) {
             return require('./modules/space');
         case 'user':
             return require('./modules/user');
-        case 'personality':
-            return require('./modules/personality');
+        case 'agent':
+            return require('./modules/agent');
         case 'flow':
             return require('./modules/flow');
         case 'util':

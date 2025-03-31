@@ -57,7 +57,7 @@ module.exports = {
                 NAME: "speech",
                 NOT_ALLOWED_ALONG: ["silence"],
                 VALIDATE: async (spaceId, paragraph, securityContext) => {
-                    const personalityModule = require('assistos').loadModule('personality', securityContext);
+                    const personalityModule = require('assistos').loadModule('agent', securityContext);
                     if (!paragraph) {
                         throw ("Paragraph not found");
                     }
@@ -68,7 +68,7 @@ module.exports = {
                         throw ("Paragraph Must have a speech command");
                     }
                     const speechPersonality = paragraph.commands["speech"].personality;
-                    const personalityData = await personalityModule.getPersonalityByName(spaceId, speechPersonality);
+                    const personalityData = await personalityModule.getAgent(spaceId, speechPersonality);
                     if (!personalityData) {
                         throw `Personality ${speechPersonality} not found`;
                     }

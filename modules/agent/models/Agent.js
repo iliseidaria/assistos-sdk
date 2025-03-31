@@ -1,4 +1,4 @@
-class Personality {
+class Agent {
     constructor(personalityData) {
         this.name = personalityData.name;
         this.description = personalityData.description;
@@ -28,4 +28,4 @@ class Personality {
     }
 }
 
-module.exports = Personality;
+module.exports = Agent;
