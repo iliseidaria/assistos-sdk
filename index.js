@@ -1,7 +1,7 @@
 const ServerSideSecurityContext = require('./modules/user/models/ServerSideSecurityContext');
 const ClientSideSecurityContext = require('./modules/user/models/ClientSideSecurityContext');
 const constants = require('./constants');
-
+const utils = require('./modules/util/utils');
 function detectEnvironment() {
     if (typeof fetch === 'function' && typeof document === 'object') {
         return constants.ENV_TYPE.BROWSER;
@@ -66,5 +66,6 @@ module.exports = {
     constants: constants,
     envType,
     ServerSideSecurityContext,
-    ClientSideSecurityContext
+    ClientSideSecurityContext,
+    utils
 };

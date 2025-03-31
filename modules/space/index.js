@@ -1,4 +1,6 @@
 const {request} = require("../util");
+const {getAPIClient} = require("../util/utils");
+const constants = require("../../constants");
 const Space = require('./models/Space.js');
 const Announcement = require('./models/Announcement.js');
 async function sendRequest(url, method, data, headers, externalRequest) {
@@ -36,10 +38,7 @@ async function updateSpaceAnnouncement(spaceId, announcementId, announcementData
 }
 
 async function createSpace(spaceName) {
-    const bodyObject = {
-        spaceName: spaceName
-    }
-    return await this.sendRequest(`/spaces`, "POST", bodyObject);
+    return await this.sendRequest(`/spaces`, "POST", {spaceName});
 }
 
 /* webChat config */
@@ -126,19 +125,30 @@ async function getAPIKeysMetadata(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
 }
 
-async function getSpaceCollaborators(spaceId) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "GET");
+async function getCollaborators(spaceId) {
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.getCollaborators();
 }
 
-async function deleteSpaceCollaborator(spaceId, userId) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "DELETE");
+async function removeCollaborator(spaceId, email) {
+    let globalClient = await getAPIClient("*", constants.APP_SPECIFIC_PLUGIN);
+    await globalClient.unlinkSpaceFromUser(email, spaceId);
+
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.removeCollaborator(email);
 }
 
-async function inviteSpaceCollaborators(spaceId, collaborators) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "POST", {collaborators});
+async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName) {
+    let globalAPIClient = await getAPIClient("*", constants.APP_SPECIFIC_PLUGIN);
+    let userEmails = collaborators.map(user => user.email);
+    await globalAPIClient.addSpaceToUsers(userEmails, spaceId);
+
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.addCollaborators(referrerEmail, collaborators, spaceId, spaceName);
 }
-async function setSpaceCollaboratorRole(spaceId, userId, role) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "PUT", {role});
+async function setCollaboratorRole(spaceId, email, role) {
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.setCollaboratorRole(email, role);
 }
 
 async function importPersonality(spaceId, personalityFormData) {
@@ -276,7 +286,7 @@ module.exports = {
     getSpaceAnnouncements,
     updateSpaceAnnouncement,
     deleteSpaceAnnouncement,
-    inviteSpaceCollaborators,
+    addCollaborators,
     sendRequest,
     getAPIKeysMetadata,
     putImage,
@@ -298,9 +308,9 @@ module.exports = {
     getAudioURL,
     getVideoURL,
     getImageURL,
-    getSpaceCollaborators,
-    setSpaceCollaboratorRole,
-    deleteSpaceCollaborator,
+    getCollaborators,
+    setCollaboratorRole,
+    removeCollaborator,
     saveSpaceChat,
     resetSpaceChat,
     putFile,

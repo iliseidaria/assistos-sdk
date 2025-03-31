@@ -1,6 +1,15 @@
 module.exports = {
-    DEFAULT_ID_LENGTH: 16,
+    DEFAULT_PERSONALITY: "Assistant",
+    SPACE_PLUGIN: "SpacePlugin",
+    APPLICATION_PLUGIN: "ApplicationPlugin",
+    AGENT_PLUGIN: "AgentWrapper",
+    APP_SPECIFIC_PLUGIN: "AppSpecificPlugin",
+    WORKSPACE_PLUGIN: "WorkspacePlugin",
+    WORKSPACE_USER_PLUGIN: "WorkspaceUser",
+    SPACE_INSTANCE_PLUGIN: "SpaceInstancePlugin",
+    GLOBAL_SERVERLESS_ID: "assistOS",
     DEFAULT_PERSONALITY_NAME: "Assistant",
+    DEFAULT_ID_LENGTH: 16,
     ENV_TYPE: {
         NODE: "node",
         BROWSER: "browser",
