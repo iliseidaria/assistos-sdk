@@ -68,6 +68,11 @@ async function convertDocument(formData) {
     }
 }
 
+
+async function uploadDoc(spaceId, docData) {
+    return await this.sendRequest(`/documents/upload/${spaceId}`, "PUT", docData);
+}
+
 async function updateDocument(spaceId, documentId, documentData) {
     return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "PUT", documentData);
 }
@@ -201,5 +206,6 @@ module.exports = {
     addDocumentSnapshot,
     deleteDocumentSnapshot,
     restoreDocumentSnapshot,
-    convertDocument
+    convertDocument,
+    uploadDoc
 };
