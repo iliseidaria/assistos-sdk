@@ -24,8 +24,6 @@ function _loadModule(moduleName) {
             return require('./modules/user');
         case 'agent':
             return require('./modules/agent');
-        case 'flow':
-            return require('./modules/flow');
         case 'util':
             return require('./modules/util');
         case 'llm':

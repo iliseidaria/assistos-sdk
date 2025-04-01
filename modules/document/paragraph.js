@@ -7,9 +7,9 @@ async function getParagraph(spaceId, documentId, paragraphId) {
     return new Paragraph(paragraph);
 }
 
-async function addParagraph(spaceId, documentId, chapterId, paragraphData) {
+async function addParagraph(spaceId, chapterId, paragraphText, commands, comments) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    return await client.createParagraph(spaceId, documentId, chapterId, paragraphData);
+    return await client.createParagraph(chapterId, paragraphText, commands, comments);
 }
 
 async function updateParagraph(spaceId, chapterId, paragraphId, paragraphText, commands, comments, additionalData) {

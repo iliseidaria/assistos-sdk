@@ -22,18 +22,33 @@ async function importDocument(spaceId, documentFormData) {
 
 async function getDocument(spaceId, documentId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getDocument(documentId);
+}
+async function loadDocument(spaceId, documentId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     let document = await client.getDocument(documentId);
+    let chapters = [];
+    for(let chapterId of document.chapters){
+        let chapter = await client.getChapter(chapterId);
+        chapters.push(chapter);
+        let paragraphs = [];
+        for(let paragraphId of chapter.paragraphs){
+            let paragraph = await client.getParagraph(paragraphId);
+            paragraphs.push(paragraph);
+        }
+        chapter.paragraphs = paragraphs;
+    }
+    document.chapters = chapters;
     return new Document(document);
 }
-
-async function getDocumentsMetadata(spaceId) {
+async function getDocuments(spaceId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getAllDocumentObjects();
 }
 
-async function addDocument(spaceId, documentData) {
+async function addDocument(spaceId, title, category, infoText, commands, comments, chapters, additionalData) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    await client.createDocument(documentData);
+    return await client.createDocument(title, category, infoText, commands, comments, chapters, additionalData);
 }
 
 async function convertDocument(formData) {
@@ -145,7 +160,8 @@ async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
 }
 
 module.exports = {
-    getDocumentsMetadata,
+    loadDocument,
+    getDocuments,
     getDocument,
     addDocument,
     updateDocument,

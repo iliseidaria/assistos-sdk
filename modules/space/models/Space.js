@@ -1,6 +1,5 @@
 const Application = require("../../application/models/Application.js");
 const Announcement = require("./Announcement.js");
-const flowModule = require("assistos").loadModule("flow", {});
 
 class Space {
     constructor(spaceData) {
@@ -18,17 +17,6 @@ class Space {
         this.installedApplications = (spaceData.installedApplications || []).map(applicationData => new Application(applicationData));
         // TODO use proper singleton pattern
         Space.instance = this;
-    }
-
-    async getPersonalitiesMetadata(){
-        const personalityModule = require("assistos").loadModule("agent", {});
-        this.personalitiesMetadata = await personalityModule.getPersonalitiesMetadata(this.id);
-        return this.personalitiesMetadata;
-    }
-
-    async getDocumentsMetadata(){
-        let documentModule = require("assistos").loadModule("document", {});
-        return await documentModule.getDocumentsMetadata(this.id);
     }
 
     observeChange(elementId, callback, callbackAsyncParamFn) {
@@ -52,11 +40,6 @@ class Space {
     }
     getNotificationId() {
         return "space";
-    }
-
-    getAnnouncement(announcementId) {
-        let announcement = this.announcements.find((announcement) => announcement.id === announcementId);
-        return announcement || console.error(`Announcement not found, announcementId: ${announcementId}`);
     }
 
     getApplicationByName(name) {

@@ -10,6 +10,11 @@ module.exports = {
     CHAT_PLUGIN: "ChatPlugin",
     FFMPEG_PLUGIN: "FfmpegPlugin",
     GLOBAL_SERVERLESS_ID: "assistOS",
+    DOCUMENT_CATEGORIES: {
+        SNAPSHOT: 'snapshot',
+        DOCUMENT: 'document',
+        CHAT: 'chat'
+    },
     DEFAULT_PERSONALITY_NAME: "Assistant",
     DEFAULT_ID_LENGTH: 16,
     ENV_TYPE: {
