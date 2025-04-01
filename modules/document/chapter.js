@@ -1,57 +1,30 @@
 const Chapter = require("./models/Chapter");
+const {getAPIClient} = require("../util/utils");
+const constants = require("../../constants");
 async function getChapter(spaceId, documentId, chapterId) {
-    let chapterData = await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "GET");
-    return new Chapter(chapterData);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let chapter = await client.getChapter(documentId, chapterId);
+    return new Chapter(chapter);
 }
 
-async function addChapter(spaceId, documentId, chapterData) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}`, "POST", chapterData);
+async function addChapter(spaceId, documentId, chapterTitle, commands, comments) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.createChapter(documentId, chapterTitle, commands, comments);
 }
 
-async function updateChapter(spaceId, documentId, chapterData) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterData.id}`, "PUT", chapterData);
+async function updateChapter(spaceId, documentId, chapterTitle, comments, commands, additionalData) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.updateChapter(documentId, chapterTitle, commands, comments, additionalData);
 }
 
 async function deleteChapter(spaceId, documentId, chapterId) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}`, "DELETE");
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.deleteChapter(documentId, chapterId);
 }
 
-async function swapChapters(spaceId, documentId, chapterId1, chapterId2, direction) {
-    return await this.sendRequest(`/documents/chapters/swap/${spaceId}/${documentId}/${chapterId1}/${chapterId2}`, "PUT", {direction});
-}
-
-async function getChapterTitle(spaceId, documentId, chapterId) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=title`, "GET");
-}
-
-async function updateChapterTitle(spaceId, documentId, chapterId, title) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=title`, "PUT", title);
-}
-async function updateChapterComment(spaceId, documentId, chapterId, comment) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=comment`, "PUT", comment);
-}
-async function updateChapterVisibility(spaceId, documentId, chapterId, visibility) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=visibility`, "PUT", visibility);
-}
-
-async function getChapterBackgroundSound(spaceId, documentId, chapterId) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=backgroundSound`, "GET");
-}
-
-async function updateChapterBackgroundSound(spaceId, documentId, chapterId, backgroundSound) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=backgroundSound`, "PUT", backgroundSound);
-}
-
-async function getChapterCommands(spaceId, documentId, chapterId) {
-    let commands = await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=commands`, "GET");
-    if(typeof commands === "undefined") {
-        return {};
-    }
-    return commands;
-}
-
-async function updateChapterCommands(spaceId, documentId, chapterId, commands) {
-    return await this.sendRequest(`/documents/chapters/${spaceId}/${documentId}/${chapterId}?fields=commands`, "PUT", commands);
+async function swapChapters(spaceId, documentId, chapterId, position) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.changeChapterOrder(documentId, chapterId, position);
 }
 
 async function compileChapterVideo(spaceId, documentId, chapterId) {
@@ -63,13 +36,5 @@ module.exports = {
     updateChapter,
     deleteChapter,
     swapChapters,
-    getChapterTitle,
-    updateChapterTitle,
-    updateChapterVisibility,
-    getChapterBackgroundSound,
-    updateChapterBackgroundSound,
-    updateChapterComment,
-    getChapterCommands,
-    updateChapterCommands,
     compileChapterVideo
 }

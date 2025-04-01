@@ -7,7 +7,7 @@ async function sendRequest(url, method, data, headers, externalRequest) {
 }
 async function getAgents(spaceId){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    let agents = await client.getAllAgents();
+    let agents = await client.getAllAgentObjects();
     return agents.map(agent => new Agent(agent));
 }
 
@@ -33,7 +33,11 @@ async function getPersonalitiesConversations(spaceId,personalityId){
 
 async function addAgent(spaceId, personalityData){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    return await client.createAgent(personalityData.name, personalityData.description);
+    let chatClient = await getAPIClient("*", constants.CHAT_PLUGIN, spaceId);
+    let agent = await client.createAgent(personalityData.name, personalityData.description);
+    let chatId = await chatClient.createChat(agent.id);
+    await chatClient.addChatToAgent(agent.id, chatId);
+    return new Agent(agent);
 }
 
 async function updateAgent(spaceId, agentId, personalityData){

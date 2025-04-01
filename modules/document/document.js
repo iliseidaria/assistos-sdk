@@ -2,6 +2,7 @@ const request = require("../util").request;
 const envType = require("assistos").envType;
 const Document = require("./models/Document");
 const constants = require("../../constants");
+const {getAPIClient} = require("../util/utils");
 
 async function sendRequest(url, method, data) {
     return await request(url, method, data, this.__securityContext);
@@ -20,17 +21,19 @@ async function importDocument(spaceId, documentFormData) {
 }
 
 async function getDocument(spaceId, documentId) {
-    let documentData = await this.sendRequest(`/documents/${spaceId}/${documentId}`, "GET");
-    return new Document(documentData);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let document = await client.getDocument(documentId);
+    return new Document(document);
 }
 
 async function getDocumentsMetadata(spaceId) {
-    return await this.sendRequest(`/documents/metadata/${spaceId}`, "GET");
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getAllDocumentObjects();
 }
 
 async function addDocument(spaceId, documentData) {
-    documentData.metadata = ["id", "title", "type"];
-    return await this.sendRequest(`/documents/${spaceId}`, "POST", documentData);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.createDocument(documentData);
 }
 
 async function convertDocument(formData) {
@@ -68,44 +71,19 @@ async function convertDocument(formData) {
     }
 }
 
-async function updateDocument(spaceId, documentId, documentData) {
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "PUT", documentData);
-}
-
 async function deleteDocument(spaceId, documentId) {
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}`, "DELETE");
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.deleteDocument(documentId);
 }
 
-async function updateDocumentTitle(spaceId, documentId, title) {
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=title`, "PUT", title);
-}
-
-async function updateDocumentComment(spaceId, documentId, comment) {
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=comment`, "PUT", comment);
-}
-
-async function updateDocumentTopic(spaceId, documentId, topic) {
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=topic`, "PUT", topic);
-}
-
-async function updateDocumentAbstract(spaceId, documentId, abstract) {
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=abstract`, "PUT", abstract);
-}
-
-async function getDocumentTopic(spaceId, documentId) {
-    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=topic`, "GET");
-}
-
-async function getDocumentAbstract(spaceId, documentId) {
-    return await this.sendRequest(`/documents/${spaceId}/${documentId}?fields=abstract`, "GET");
-}
-
-async function getDocumentTitle(spaceId, documentId) {
-    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=title`, "GET");
+async function updateDocument(spaceId, documentId, title, category, infoText, commands, comments, chapters, data) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.updateDocument(documentId, title, category, infoText, commands, comments, chapters, data);
 }
 
 async function estimateDocumentVideoLength(spaceId, documentId) {
-    return await this.sendRequest(`/documents/video/estimate/${spaceId}/${documentId}`, "GET");
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.estimateDocumentVideoLength(documentId);
 }
 
 async function documentToVideo(spaceId, documentId) {
@@ -128,14 +106,6 @@ async function selectDocumentItem(spaceId, documentId, itemId, itemData) {
     return await this.sendRequest(`/documents/select/${spaceId}/${documentId}/${itemId}`, "PUT", itemData);
 }
 
-async function getDocumentCommands(spaceId, documentId) {
-    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=commands`, "GET");
-}
-
-async function updateDocumentCommands(spaceId, documentId, commands) {
-    return await this.sendRequest(`documents/${spaceId}/${documentId}?fields=commands`, "PUT", commands);
-}
-
 async function translateDocument(spaceId, documentId, language, personalityId) {
     return await this.sendRequest(`/tasks/translate/${spaceId}/${documentId}`, "POST", {language, personalityId});
 }
@@ -149,49 +119,46 @@ async function redoOperation(spaceId, documentId) {
 }
 
 async function getDocumentSnapshot(spaceId, documentId, snapshotId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    //TODO remake logic
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "GET");
 }
 
 async function getDocumentSnapshots(spaceId, documentId) {
-    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}`, "GET");
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getDocumentSnapshots(documentId);
 }
 
-async function addDocumentSnapshot(spaceId, documentId, snapshotData) {
-    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}`, "POST", snapshotData);
+async function addDocumentSnapshot(spaceId, documentId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.snapshot(documentId);
 }
 
 async function deleteDocumentSnapshot(spaceId, documentId, snapshotId) {
-    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "DELETE");
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.deleteSnapshot(documentId, snapshotId);
 }
 
-async function restoreDocumentSnapshot(spaceId, documentId, snapshotId, newSnapshotData) {
-    return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "PUT", newSnapshotData);
+async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.restore(documentId, snapshotId);
 }
 
 module.exports = {
-    getDocumentTopic,
-    getDocumentTitle,
-    getDocumentAbstract,
     getDocumentsMetadata,
     getDocument,
     addDocument,
     updateDocument,
     deleteDocument,
-    updateDocumentTitle,
-    updateDocumentTopic,
-    updateDocumentAbstract,
     sendRequest,
     documentToVideo,
     estimateDocumentVideoLength,
     getDocumentTasks,
     exportDocument,
     importDocument,
-    updateDocumentComment,
     deselectDocumentItem,
     getSelectedDocumentItems,
     selectDocumentItem,
-    getDocumentCommands,
-    updateDocumentCommands,
     exportDocumentAsDocx,
     translateDocument,
     undoOperation,

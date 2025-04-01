@@ -7,6 +7,8 @@ module.exports = {
     WORKSPACE_PLUGIN: "WorkspacePlugin",
     WORKSPACE_USER_PLUGIN: "WorkspaceUser",
     SPACE_INSTANCE_PLUGIN: "SpaceInstancePlugin",
+    CHAT_PLUGIN: "ChatPlugin",
+    FFMPEG_PLUGIN: "FfmpegPlugin",
     GLOBAL_SERVERLESS_ID: "assistOS",
     DEFAULT_PERSONALITY_NAME: "Assistant",
     DEFAULT_ID_LENGTH: 16,

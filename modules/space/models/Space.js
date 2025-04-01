@@ -64,22 +64,5 @@ class Space {
         return app || console.error(`installed app not found in space, id: ${name}`);
     }
 
-    async getFlow(flowName) {
-        let flow = this.flows.find(flow => flow.constructor.name === flowName);
-        return flow || console.error(`Flow not found, flowName: ${flowName}`);
-    }
-
-    async loadFlows() {
-        this.flows = [];
-        const flowNames = JSON.parse(await flowModule.listFlows());
-        for (let flowName of flowNames) {
-            let flowMdl = await flowModule.getFlow(this.id, flowName);
-            let flowClass = flowMdl.default;
-            let flowInstance = new flowClass();
-            this.flows.push(flowInstance);
-        }
-        return this.flows;
-    }
-
 }
 module.exports = Space;
