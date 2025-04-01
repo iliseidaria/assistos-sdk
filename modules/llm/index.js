@@ -74,7 +74,6 @@ async function generateImage(spaceId, modelConfigs, personalityId) {
         ...modelConfigs
     }
     return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", requestData);
-
 }
 
 async function editImage(spaceId, modelName, modelConfigs, personalityId) {
