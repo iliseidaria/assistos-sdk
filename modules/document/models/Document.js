@@ -8,9 +8,8 @@ class Document {
         this.category = documentData.category || constants.DOCUMENT_CATEGORIES.DOCUMENT;
         this.chapters = (documentData.chapters || []).map(chapterData => new Chapter(chapterData));
         this.video = documentData.video || "";
-        this.comment = documentData.comment || "";
-        this.commands = documentData.commands || {};
-        this.snapshots = documentData.snapshots || [];
+        this.comments = documentData.comments || "";
+        this.commands = documentData.commands || "";
     }
 
     toString() {

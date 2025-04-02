@@ -8,8 +8,8 @@ class Chapter {
         this.paragraphs = (chapterData.paragraphs || []).map(paragraphData => new Paragraph(paragraphData));
         this.idea = chapterData.idea || "";
         this.mainIdeas = chapterData.mainIdeas || [];
-        this.comment = chapterData.comment || "";
-        this.commands = chapterData.commands || {};
+        this.comments = chapterData.comments || "";
+        this.commands = chapterData.commands || "";
     }
     async refreshParagraph(spaceId, documentId, paragraphId){
         const documentModule = require("assistos").loadModule("document", {});

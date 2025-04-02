@@ -7,9 +7,9 @@ async function getParagraph(spaceId, documentId, paragraphId) {
     return new Paragraph(paragraph);
 }
 
-async function addParagraph(spaceId, chapterId, paragraphText, commands, comments) {
+async function addParagraph(spaceId, chapterId, paragraphText, commands, comments, position) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    return await client.createParagraph(chapterId, paragraphText, commands, comments);
+    return await client.createParagraph(chapterId, paragraphText, commands, comments, position);
 }
 
 async function updateParagraph(spaceId, chapterId, paragraphId, paragraphText, commands, comments, additionalData) {
@@ -17,11 +17,11 @@ async function updateParagraph(spaceId, chapterId, paragraphId, paragraphText, c
     return await client.updateParagraph(chapterId, paragraphId, paragraphText, commands, comments, additionalData);
 }
 
-async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
+async function deleteParagraph(spaceId, chapterId, paragraphId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.deleteParagraph(chapterId, paragraphId);
 }
-async function swapParagraphs(spaceId, chapterId, paragraphId, position) {
+async function changeParagraphOrder(spaceId, chapterId, paragraphId, position) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.changeParagraphOrder(chapterId, paragraphId, position)
 }
@@ -54,7 +54,7 @@ module.exports = {
     addParagraph,
     updateParagraph,
     deleteParagraph,
-    swapParagraphs,
+    changeParagraphOrder,
     createTextToSpeechTask,
     createLipSyncTask,
     createParagraphCompileVideoTask,

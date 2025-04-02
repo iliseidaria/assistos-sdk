@@ -7,14 +7,14 @@ async function getChapter(spaceId, documentId, chapterId) {
     return new Chapter(chapter);
 }
 
-async function addChapter(spaceId, documentId, chapterTitle, commands, comments) {
+async function addChapter(spaceId, documentId, chapterTitle, commands, comments, position) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    return await client.createChapter(documentId, chapterTitle, commands, comments);
+    return await client.createChapter(documentId, chapterTitle, commands, comments, position);
 }
 
-async function updateChapter(spaceId, documentId, chapterTitle, comments, commands, additionalData) {
+async function updateChapter(spaceId, chapterId, chapterTitle, comments, commands, additionalData) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    return await client.updateChapter(documentId, chapterTitle, commands, comments, additionalData);
+    return await client.updateChapter(chapterId, chapterTitle, commands, comments, additionalData);
 }
 
 async function deleteChapter(spaceId, documentId, chapterId) {
@@ -22,7 +22,7 @@ async function deleteChapter(spaceId, documentId, chapterId) {
     return await client.deleteChapter(documentId, chapterId);
 }
 
-async function swapChapters(spaceId, documentId, chapterId, position) {
+async function changeChapterOrder(spaceId, documentId, chapterId, position) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.changeChapterOrder(documentId, chapterId, position);
 }
@@ -35,6 +35,6 @@ module.exports = {
     addChapter,
     updateChapter,
     deleteChapter,
-    swapChapters,
+    changeChapterOrder,
     compileChapterVideo
 }
