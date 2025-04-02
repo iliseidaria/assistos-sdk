@@ -99,29 +99,11 @@ async function deleteSpace(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}`, "DELETE");
 }
 
-async function addKeyToSpace(spaceId, userId, keyType, apiKey) {
-    let result;
-    let headers = {
-        "Content-type": "application/json; charset=UTF-8",
-        Cookie: this.__securityContext.cookies
-    };
-    if (apiKey) {
-        headers["apikey"] = `${apiKey}`;
-        headers["initiatorid"] = `${userId}`;
-    }
-    try {
-        result = await fetch(`/spaces/${spaceId}/secrets`,
-            {
-                method: "POST",
-                headers: headers
-            });
-    } catch (err) {
-        console.error(err);
-    }
-    return await result.text();
+async function editAPIKey(spaceId, keyType, APIKey) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "POST", {keyType, APIKey});
 }
 
-async function getAPIKeysMetadata(spaceId) {
+async function getAPIKeysMasked(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
 }
 
@@ -251,7 +233,7 @@ module.exports = {
     createSpace,
     getSpaceStatus,
     deleteSpace,
-    addKeyToSpace,
+    editAPIKey,
     addSpaceChatMessage,
     addSpaceAnnouncement,
     getSpaceAnnouncement,
@@ -260,7 +242,7 @@ module.exports = {
     deleteSpaceAnnouncement,
     addCollaborators,
     sendRequest,
-    getAPIKeysMetadata,
+    getAPIKeysMasked,
     putImage,
     deleteImage,
     Space,

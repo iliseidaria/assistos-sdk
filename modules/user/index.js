@@ -24,13 +24,7 @@ async function listUserSpaces(email) {
     }
     return await this.sendRequest(url, "GET");
 }
-async function deleteAPIKey(spaceId, type) {
-    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys/${type}`, "DELETE");
-}
 
-async function editAPIKey(apiKeyObj) {
-    return await this.sendRequest(`/spaces/secrets/keys`, "POST", apiKeyObj);
-}
 async function getUserProfileImage(email) {
     email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
@@ -63,8 +57,6 @@ async function generateAuthCode(email, refererId){
 }
 module.exports = {
     loadUser,
-    editAPIKey,
-    deleteAPIKey,
     sendRequest,
     getUserProfileImage,
     updateUserImage,
