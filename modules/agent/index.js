@@ -31,22 +31,22 @@ async function getPersonalitiesConversations(spaceId,personalityId){
     return await this.sendRequest(`/personalities/chats/${spaceId}/${personalityId}`,"GET")
 }
 
-async function addAgent(spaceId, personalityData){
+async function addAgent(spaceId, agentData){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
     let chatClient = await getAPIClient("*", constants.CHAT_PLUGIN, spaceId);
-    let agent = await client.createAgent(personalityData.name, personalityData.description);
+    let agent = await client.createAgent(agentData.name, agentData.description);
     let chatId = await chatClient.createChat(agent.id);
     await chatClient.addChatToAgent(agent.id, chatId);
     return new Agent(agent);
 }
 
-async function updateAgent(spaceId, agentId, personalityData){
+async function updateAgent(spaceId, agentId, agentData){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    return await client.updateAgent(agentId, personalityData);
+    return await client.updateAgent(agentId, agentData);
 }
 async function deleteAgent(spaceId, agentId){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    return await client.deleteAgent(spaceId, agentId);
+    return await client.deleteAgent(agentId);
 }
 
 async function exportPersonality(spaceId, personalityId){
