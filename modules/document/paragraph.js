@@ -1,7 +1,7 @@
 const Paragraph = require("./models/Paragraph");
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
-async function getParagraph(spaceId, documentId, paragraphId) {
+async function getParagraph(spaceId, paragraphId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     let paragraph = await client.getParagraph(paragraphId);
     return new Paragraph(paragraph);
