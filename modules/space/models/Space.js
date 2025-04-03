@@ -1,24 +1,21 @@
-const Application = require("../../application/models/Application.js");
 const Announcement = require("./Announcement.js");
-
+let singleton = null;
 class Space {
     constructor(spaceData) {
         this.name = spaceData.name
         this.id = spaceData.id
         this.announcements = (spaceData.announcements || []).map(announcementData => new Announcement(announcementData));
-        this.users = spaceData.users || [];
-        this.flows = [];
-        this.admins = [];
-        this.chat = spaceData.chat
-        this.pages = spaceData.pages || [];
+        this.chat = spaceData.chat;
         /* TODO REFACTOR METADATA LOGIC for personalities and include default personality in the space object */
         this.currentPersonalityId = spaceData.currentPersonalityId;
         this.observers = [];
-        this.installedApplications = (spaceData.installedApplications || []).map(applicationData => new Application(applicationData));
-        // TODO use proper singleton pattern
-        Space.instance = this;
     }
-
+    static getInstance(data) {
+        if (!singleton) {
+            singleton = new Space(data);
+        }
+        return singleton;
+    }
     observeChange(elementId, callback, callbackAsyncParamFn) {
         let obj = {elementId: elementId, callback: callback, param: callbackAsyncParamFn};
         callback.refferenceObject = obj;
@@ -42,10 +39,10 @@ class Space {
         return "space";
     }
 
-    getApplicationByName(name) {
-        let app = this.installedApplications.find((app) => app.name === name);
-        return app || console.error(`installed app not found in space, id: ${name}`);
-    }
-
 }
-module.exports = Space;
+
+module.exports = {
+    getInstance: function (data) {
+        return Space.getInstance(data);
+    },
+};

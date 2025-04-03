@@ -1,4 +1,3 @@
-const Application = require("./models/Application.js");
 const request = require("../util").request;
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
@@ -26,9 +25,13 @@ async function getApplicationConfig(spaceId, applicationId) {
     return await client.loadApplicationConfig(applicationId);
 }
 
-async function loadApplicationsMetadata(spaceId) {
+async function getAvailableApps(spaceId) {
     let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
-    return await client.loadApplicationsMetadata();
+    return await client.getAvailableApps();
+}
+async function getApplications(spaceId) {
+    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    return await client.getApplications();
 }
 async function runApplicationTask(spaceId, applicationId, taskName, taskData) {
     let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
@@ -80,7 +83,7 @@ module.exports = {
     installApplication,
     getWidgets,
     uninstallApplication,
-    loadApplicationsMetadata,
+    getAvailableApps,
     getApplicationConfig,
     getApplicationFile,
     sendRequest,
@@ -89,5 +92,5 @@ module.exports = {
     requiresUpdate,
     getApplicationTasks,
     getApplicationsPlugins,
-    Application
+    getApplications
 };
