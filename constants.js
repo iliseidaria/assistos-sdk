@@ -15,7 +15,7 @@ module.exports = {
         DOCUMENT: 'document',
         CHAT: 'chat'
     },
-    DEFAULT_PERSONALITY_NAME: "Assistant",
+    DEFAULT_AGENT_NAME: "Assistant",
     DEFAULT_ID_LENGTH: 16,
     ENV_TYPE: {
         NODE: "node",
