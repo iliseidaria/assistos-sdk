@@ -8,6 +8,8 @@ module.exports = {
     WORKSPACE_USER_PLUGIN: "WorkspaceUser",
     SPACE_INSTANCE_PLUGIN: "SpaceInstancePlugin",
     CHAT_PLUGIN: "ChatPlugin",
+    LLM_PLUGIN: "LLMPlugin",
+    WEB_ASSISTANT_PLUGIN:"WebAssistant",
     FFMPEG_PLUGIN: "FfmpegPlugin",
     GLOBAL_SERVERLESS_ID: "assistOS",
     DOCUMENT_CATEGORIES: {
