@@ -2,27 +2,27 @@ const Paragraph = require("./models/Paragraph");
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
 async function getParagraph(spaceId, paragraphId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     let paragraph = await client.getParagraph(paragraphId);
     return new Paragraph(paragraph);
 }
 
 async function addParagraph(spaceId, chapterId, paragraphText, commands, comments, position) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.createParagraph(chapterId, paragraphText, commands, comments, position);
 }
 
 async function updateParagraph(spaceId, chapterId, paragraphId, paragraphText, commands, comments, additionalData) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.updateParagraph(chapterId, paragraphId, paragraphText, commands, comments, additionalData);
 }
 
 async function deleteParagraph(spaceId, chapterId, paragraphId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.deleteParagraph(chapterId, paragraphId);
 }
 async function changeParagraphOrder(spaceId, chapterId, paragraphId, position) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.changeParagraphOrder(chapterId, paragraphId, position)
 }
 

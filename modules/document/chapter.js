@@ -2,28 +2,28 @@ const Chapter = require("./models/Chapter");
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
 async function getChapter(spaceId, documentId, chapterId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     let chapter = await client.getChapter(documentId, chapterId);
     return new Chapter(chapter);
 }
 
 async function addChapter(spaceId, documentId, chapterTitle, commands, comments, position) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.createChapter(documentId, chapterTitle, commands, comments, position);
 }
 
 async function updateChapter(spaceId, chapterId, chapterTitle, comments, commands, additionalData) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.updateChapter(chapterId, chapterTitle, commands, comments, additionalData);
 }
 
 async function deleteChapter(spaceId, documentId, chapterId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.deleteChapter(documentId, chapterId);
 }
 
 async function changeChapterOrder(spaceId, documentId, chapterId, position) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.changeChapterOrder(documentId, chapterId, position);
 }
 
