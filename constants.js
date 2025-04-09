@@ -5,7 +5,7 @@ module.exports = {
     AGENT_PLUGIN: "AgentWrapper",
     APP_SPECIFIC_PLUGIN: "AppSpecificPlugin",
     WORKSPACE_PLUGIN: "Workspace",
-    DOCUMENTS_PLUGIN: "DocumentsPlugin",
+    DOCUMENTS_PLUGIN: "Documents",
     WORKSPACE_USER_PLUGIN: "WorkspaceUser",
     SPACE_INSTANCE_PLUGIN: "SpaceInstancePlugin",
     CHAT_PLUGIN: "ChatPlugin",
@@ -16,7 +16,8 @@ module.exports = {
     DOCUMENT_CATEGORIES: {
         SNAPSHOT: 'snapshot',
         DOCUMENT: 'document',
-        CHAT: 'chat'
+        CHAT: 'chat',
+        SCRIPT_EXECUTION: 'Script_Execution'
     },
     DEFAULT_AGENT_NAME: "Assistant",
     DEFAULT_ID_LENGTH: 16,

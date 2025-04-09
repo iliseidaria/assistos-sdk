@@ -26,19 +26,7 @@ async function getDocument(spaceId, documentId) {
 }
 async function loadDocument(spaceId, documentId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
-    let document = await client.getDocument(documentId);
-    let chapters = [];
-    for(let chapterId of document.chapters){
-        let chapter = await client.getChapter(chapterId);
-        chapters.push(chapter);
-        let paragraphs = [];
-        for(let paragraphId of chapter.paragraphs){
-            let paragraph = await client.getParagraph(paragraphId);
-            paragraphs.push(paragraph);
-        }
-        chapter.paragraphs = paragraphs;
-    }
-    document.chapters = chapters;
+    let document = await client.dumpDocument(documentId);
     return new Document(document);
 }
 async function getDocuments(spaceId) {
@@ -159,6 +147,11 @@ async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
     return await client.restore(documentId, snapshotId);
 }
 
+async function runCommands(spaceId, commands) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.runScript(commands);
+    await client.buildAll();
+}
 module.exports = {
     loadDocument,
     getDocuments,
@@ -184,5 +177,6 @@ module.exports = {
     addDocumentSnapshot,
     deleteDocumentSnapshot,
     restoreDocumentSnapshot,
-    convertDocument
+    convertDocument,
+    runCommands
 };
