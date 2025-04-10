@@ -147,9 +147,9 @@ async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
     return await client.restore(documentId, snapshotId);
 }
 
-async function runCommands(spaceId, commands) {
+async function runCommands(spaceId, commands, args) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    await client.runScript(commands);
+    await client.runScript(commands, ...args);
     await client.buildAll();
 }
 module.exports = {
