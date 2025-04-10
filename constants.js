@@ -1,5 +1,6 @@
 module.exports = {
     DEFAULT_PERSONALITY: "Assistant",
+    USER_LOGIN_PLUGIN: "UserLogin",
     SPACE_PLUGIN: "SpacePlugin",
     APPLICATION_PLUGIN: "ApplicationPlugin",
     AGENT_PLUGIN: "AgentWrapper",

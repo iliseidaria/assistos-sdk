@@ -1,10 +1,9 @@
-const Announcement = require("./Announcement.js");
 let singleton = null;
 class Space {
     constructor(spaceData) {
         this.name = spaceData.name
         this.id = spaceData.id
-        this.announcements = (spaceData.announcements || []).map(announcementData => new Announcement(announcementData));
+        this.announcements = [];
         this.chat = spaceData.chat;
         /* TODO REFACTOR METADATA LOGIC for personalities and include default personality in the space object */
         this.currentPersonalityId = spaceData.currentPersonalityId;
