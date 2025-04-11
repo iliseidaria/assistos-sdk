@@ -1,140 +1,51 @@
-const {request} = require("../util");
+const {getAPIClient} = require("../util/utils");
+const constants = require("../../constants");
 
-async function sendRequest(url, method, data) {
-    return await request(url, method, data, this.__securityContext);
+const getTextResponse = async ({provider, apiKey, model, prompt, options = {}}) => {
+    let client = await getAPIClient("*", constants.LLM_PLUGIN, spaceId);
+    return await client.getTextResponse({
+        provider,
+        apiKey,
+        model,
+        prompt,
+        options
+    })
 }
-
-async function getPersonality(spaceId, fileName) {
-    const Agent = require("../agent/models/Agent");
-    let personality;
-    if (fileName) {
-        try {
-            personality = await this.sendRequest(`/spaces/fileObject/${spaceId}/${personalityType}/${fileName}`, "GET");
-        } catch (error) {
-            personality = await this.getDefaultPersonality(spaceId);
-        }
-    } else {
-        personality = await this.getDefaultPersonality(spaceId);
-    }
-    return new Agent(personality);
+const getTextStreamingResponse = async ({provider, apiKey, model, prompt, options = {}, onDataChunk}) => {
+    let client = await getAPIClient("*", constants.LLM_PLUGIN, spaceId);
+    return await client.getTextStreamingResponse({
+        provider,
+        apiKey,
+        model,
+        prompt,
+        options,
+        onDataChunk
+    })
 }
-
-async function getDefaultPersonality(spaceId) {
-    const Agent = require("../agent/models/Agent");
-    const personality = await this.sendRequest(`/personalities/default/${spaceId}`, "GET");
-    return new Agent(personality);
+const getChatCompletionResponse = async ({provider, apiKey, model, messages, options = {}}) => {
+    let client = await getAPIClient("*", constants.LLM_PLUGIN, spaceId);
+    return await client.getChatCompletionResponse({
+        provider,
+        apiKey,
+        model,
+        messages,
+        options
+    })
 }
-
-async function generateTextAdvanced(spaceId, initiatorPersonality, targetPersonality, requestPrompt, outputFormatPrompt) {
-    const requestData = {
-        initiator: initiatorPersonality,
-        target: targetPersonality,
-        text: requestPrompt,
-        outputFormat: outputFormatPrompt
-    }
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate/advanced`, "POST", requestData)
+const getChatCompletionStreamingResponse = async ({provider, apiKey, model, messages, options = {}, onDataChunk}) => {
+    let client = await getAPIClient("*", constants.LLM_PLUGIN, spaceId);
+    return await client.getChatCompletionStreamingResponse({
+        provider,
+        apiKey,
+        model,
+        messages,
+        options,
+        onDataChunk
+    });
 }
-
-async function generateText(spaceId, prompt, personalityId) {
-    const personality = await this.getPersonality(spaceId, personalityId)
-    const requestData = {
-        modelName: personality.getCurrentSettings("text"),
-        prompt: prompt
-    }
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/text/generate`, "POST", requestData)
-}
-
-async function getChatCompletion(spaceId, chat, personalityId, injectPersonalityAsSysPrompt = false) {
-    const personality = await this.getPersonality(spaceId, personalityId);
-    if (injectPersonalityAsSysPrompt) {
-        personality.applyPersonalityToSysPromptChat(chat);
-    }
-    const requestData = {
-        modelName: personality.getCurrentSettings("chat"),
-        chat: chat
-    }
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/chat/generate`, "POST", requestData);
-}
-
-
-async function textToSpeech(spaceId, modelConfigs, personalityId) {
-    const personality = await this.getPersonality(spaceId, personalityId);
-    const requestData = {
-        modelName: personality.getCurrentSettings("audio"),
-        ...modelConfigs
-    }
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/generate`, "POST", requestData);
-}
-
-async function generateImage(spaceId, modelConfigs, personalityId) {
-    const personality = await this.getPersonality(spaceId, personalityId);
-    const requestData = {
-        modelName: personality.getCurrentSettings("image"),
-        ...modelConfigs
-    }
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/generate`, "POST", requestData);
-
-}
-
-async function editImage(spaceId, modelName, modelConfigs, personalityId) {
-    const personality = await this.getPersonality(spaceId, personalityId);
-    const requestData = {
-        modelName: personality.getCurrentSettings("image"),
-        ...modelConfigs
-    }
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/image/edit`, "POST", requestData);
-}
-
-async function lipSync(spaceId, taskId, videoId, audioId, modelConfigs, personalityId) {
-    const personality = await this.getPersonality(spaceId, personalityId);
-    const requestData = {
-        modelName: personality.getCurrentSettings("video"),
-        taskId: taskId,
-        videoId: videoId,
-        audioId: audioId,
-        ...modelConfigs
-    }
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/video/lipsync`, "POST", requestData);
-}
-
-async function listVoices(spaceId, modelName) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listVoices`, "POST", {modelName});
-}
-
-async function listEmotions(spaceId, modelName) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/audio/listEmotions`, "POST", {modelName});
-}
-
-async function getLLMConfigs(spaceId) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/configs`, "GET");
-}
-
-async function listLlms(spaceId) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms`, "GET");
-}
-
-async function getDefaultModels() {
-    return await this.sendRequest(`/apis/v1/llms/defaults`, "GET");
-}
-async function getModelLanguages(spaceId, modelName) {
-    return await this.sendRequest(`/apis/v1/spaces/${spaceId}/llms/languages`, "POST", {modelName});
-}
-
 module.exports = {
-    generateText,
-    generateTextAdvanced,
-    sendRequest,
-    generateImage,
-    textToSpeech,
-    listVoices,
-    listEmotions,
-    getLLMConfigs,
-    editImage,
-    getChatCompletion,
-    lipSync,
-    listLlms,
-    getDefaultModels,
-    getPersonality,
-    getDefaultPersonality,
-    getModelLanguages
+    getTextResponse,
+    getTextStreamingResponse,
+    getChatCompletionResponse,
+    getChatCompletionStreamingResponse
 }
