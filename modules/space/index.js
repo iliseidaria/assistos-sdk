@@ -1,18 +1,10 @@
 const {request} = require("../util");
 const {getAPIClient} = require("../util/utils");
+const {userExists} = require("../user");
 const constants = require("../../constants");
 const Space = require('./models/Space.js');
-const Announcement = require('./models/Announcement.js');
 async function sendRequest(url, method, data, headers, externalRequest) {
     return await request(url, method, data, this.__securityContext, headers, externalRequest);
-}
-
-async function addSpaceAnnouncement(spaceId, announcementData) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements`, "POST", announcementData)
-}
-
-async function getSpaceAnnouncement(spaceId, announcementId) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "GET")
 }
 
 async function getSpaceChat(spaceId,chatId) {
@@ -27,18 +19,9 @@ async function resetSpaceChat(spaceId,chatId){
 async function saveSpaceChat(spaceId,chatId){
     return await this.sendRequest(`/spaces/chat/save/${spaceId}/${chatId}`, "POST")
 }
-async function getSpaceAnnouncements(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
-}
-async function deleteSpaceAnnouncement(spaceId, announcementId) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "DELETE")
-}
-async function updateSpaceAnnouncement(spaceId, announcementId, announcementData) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
-}
 
-async function createSpace(spaceName) {
-    return await this.sendRequest(`/spaces`, "POST", {spaceName});
+async function createSpace(spaceName, email) {
+    return await this.sendRequest(`/spaces`, "POST", {spaceName, email});
 }
 
 /* webChat config */
@@ -123,6 +106,16 @@ async function removeCollaborator(spaceId, email) {
 async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName) {
     let globalAPIClient = await getAPIClient("*", constants.APP_SPECIFIC_PLUGIN);
     let userEmails = collaborators.map(user => user.email);
+    let userLoginClient = await getAPIClient("*", constants.USER_LOGIN_PLUGIN);
+    for(let email of userEmails){
+        let userModule = require("assistos").loadModule("user", this.__securityContext);
+        let result = await userModule.userExists(email);
+        if(!result.account_exists){
+            let name = email.split("@")[0];
+            await userLoginClient.createUser(email, name);
+            await this.createSpace(name, email);
+        }
+    }
     await globalAPIClient.addSpaceToUsers(userEmails, spaceId);
 
     let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
@@ -235,18 +228,12 @@ module.exports = {
     deleteSpace,
     editAPIKey,
     addSpaceChatMessage,
-    addSpaceAnnouncement,
-    getSpaceAnnouncement,
-    getSpaceAnnouncements,
-    updateSpaceAnnouncement,
-    deleteSpaceAnnouncement,
     addCollaborators,
     sendRequest,
     getAPIKeysMasked,
     putImage,
     deleteImage,
     Space,
-    Announcement,
     putAudio,
     getAudio,
     deleteAudio,
