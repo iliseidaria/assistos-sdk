@@ -23,55 +23,6 @@ async function createSpace(spaceName, email) {
     return await this.sendRequest(`/spaces`, "POST", {spaceName, email});
 }
 
-/* webChat config */
-async function getWebAssistantHomePage(spaceId){
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/home-page`, "GET");
-}
-async function getWebAssistantConfiguration(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration`, "GET");
-}
-async function addWebAssistantConfigurationPage(spaceId, pageData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "POST", pageData);
-}
-async function updateWebAssistantConfigurationSettings(spaceId, settingsData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/settings`, "PUT", settingsData);
-}
-
-async function getWebAssistantConfigurationPages(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "GET");
-}
-async function getWebAssistantConfigurationPage(spaceId, pageId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "GET");
-}
-
-async function updateWebAssistantConfigurationPage(spaceId, pageId, pageData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "PUT", pageData);
-}
-
-async function deleteWebAssistantConfigurationPage(spaceId, pageId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "DELETE");
-}
-
-async function getWebAssistantConfigurationPageMenu(spaceId, pageId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "GET");
-}
-
-async function addWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuItem) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "POST", menuItem);
-}
-async function getWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "GET");
-}
-async function updateWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId, menuItemData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "PUT", menuItemData);
-}
-
-async function deleteWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "DELETE");
-}
-
-/* webChat config end */
-
 async function getSpaceStatus(spaceId) {
     let requestURL = spaceId ? `/spaces/${spaceId}` : `/spaces`;
     return await this.sendRequest(requestURL, "GET");
@@ -215,19 +166,20 @@ async function startTelegramBot(spaceId, personalityId, botId){
 async function removeTelegramUser(spaceId, personalityId, telegramUserId){
     return await this.sendRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
 }
+async function runCommands(spaceId, commands, args) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.runScript(commands, ...args);
+    await client.buildAll();
+}
+async function buildAll(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.buildAll();
+}
+async function getGraph(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getGraph();
+}
 module.exports = {
-    getWebAssistantHomePage,
-    updateWebAssistantConfigurationSettings,
-    getWebAssistantConfigurationPageMenuItem,
-    addWebAssistantConfigurationPage,
-    getWebAssistantConfigurationPages,
-    getWebAssistantConfigurationPage,
-    updateWebAssistantConfigurationPage,
-    deleteWebAssistantConfigurationPage,
-    getWebAssistantConfigurationPageMenu,
-    addWebAssistantConfigurationPageMenuItem,
-    updateWebAssistantConfigurationPageMenuItem,
-    deleteWebAssistantConfigurationPageMenuItem,
     createSpace,
     getSpaceStatus,
     deleteSpace,
@@ -268,7 +220,9 @@ module.exports = {
     getFileURL,
     startTelegramBot,
     removeTelegramUser,
-    getWebAssistantConfiguration
+    runCommands,
+    buildAll,
+    getGraph
 }
 
 
