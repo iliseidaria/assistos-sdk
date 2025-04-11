@@ -1,6 +1,5 @@
 const {request} = require("../util");
 const {getAPIClient} = require("../util/utils");
-const {userExists} = require("../user");
 const constants = require("../../constants");
 const Space = require('./models/Space.js');
 async function sendRequest(url, method, data, headers, externalRequest) {
@@ -82,12 +81,18 @@ async function deleteSpace(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}`, "DELETE");
 }
 
-async function editAPIKey(spaceId, keyType, APIKey) {
-    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "POST", {keyType, APIKey});
+async function deleteSecret(spaceId, secretKey) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets/delete`, "PUT", {secretKey});
+}
+async function addSecret(spaceId, name, secretKey, value) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets`, "POST", {name, secretKey, value});
+}
+async function editSecret(spaceId, name, secretKey, value) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets`, "PUT", {name, secretKey, value});
 }
 
-async function getAPIKeysMasked(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
+async function getSecretsMasked(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets`, "GET");
 }
 
 async function getCollaborators(spaceId) {
@@ -226,11 +231,13 @@ module.exports = {
     createSpace,
     getSpaceStatus,
     deleteSpace,
-    editAPIKey,
+    editSecret,
+    addSecret,
+    deleteSecret,
     addSpaceChatMessage,
     addCollaborators,
     sendRequest,
-    getAPIKeysMasked,
+    getSecretsMasked,
     putImage,
     deleteImage,
     Space,
