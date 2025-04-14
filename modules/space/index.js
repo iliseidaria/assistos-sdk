@@ -1,19 +1,10 @@
 const {request} = require("../util");
-const Space = require('./models/Space.js');
-const Announcement = require('./models/Announcement.js');
+const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
-const envType = require("assistos").envType;
 
-async function sendRequest(url, method, data) {
-    return await request(url, method, this.__securityContext, data);
-}
-
-async function addSpaceAnnouncement(spaceId, announcementData) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements`, "POST", announcementData)
-}
-
-async function getSpaceAnnouncement(spaceId, announcementId) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "GET")
+const Space = require('./models/Space.js');
+async function sendRequest(url, method, data, headers, externalRequest) {
+    return await request(url, method, data, this.__securityContext, headers, externalRequest);
 }
 
 async function getSpaceChat(spaceId, chatId) {
@@ -32,206 +23,72 @@ async function saveSpaceChat(spaceId, chatId) {
     return await this.sendRequest(`/spaces/chat/save/${spaceId}/${chatId}`, "POST")
 }
 
-async function getSpaceAnnouncements(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements`, "GET")
+async function createSpace(spaceName, email) {
+    return await this.sendRequest(`/spaces`, "POST", {spaceName, email});
 }
 
-async function deleteSpaceAnnouncement(spaceId, announcementId) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "DELETE")
-}
-
-async function updateSpaceAnnouncement(spaceId, announcementId, announcementData) {
-    return await this.sendRequest(`/spaces/${spaceId}/announcements/${announcementId}`, "PUT", announcementData)
-}
-
-async function createSpace(spaceName) {
-    const bodyObject = {
-        spaceName: spaceName
-    }
-    return await this.sendRequest(`/spaces`, "POST", bodyObject);
-}
-
-/* webChat config */
-
-/* themes */
-async function addWebAssistantTheme(spaceId, themeData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes`, "POST", themeData);
-}
-
-async function updateWebAssistantTheme(spaceId, id, themeData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes/${id}`, "PUT", themeData);
-}
-
-async function getWebAssistantThemes(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes`, "GET");
-}
-async function getWebAssistantTheme(spaceId, themeId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes/${themeId}`, "GET");
-}
-
-async function getWebAssistantHomePage(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/home-page`, "GET");
-}
-
-async function getWebAssistantConfiguration(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration`, "GET");
-}
-
-async function addWebAssistantConfigurationPage(spaceId, pageData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "POST", pageData);
-}
-
-async function updateWebAssistantConfigurationSettings(spaceId, settingsData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/settings`, "PUT", settingsData);
-}
-
-async function getWebAssistantConfigurationPages(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages`, "GET");
-}
-
-async function getWebAssistantConfigurationPage(spaceId, pageId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "GET");
-}
-
-async function updateWebAssistantConfigurationPage(spaceId, pageId, pageData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "PUT", pageData);
-}
-
-async function deleteWebAssistantConfigurationPage(spaceId, pageId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}`, "DELETE");
-}
-
-async function getWebAssistantConfigurationPageMenu(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/menu`, "GET");
-}
-
-async function addWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuItem) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu`, "POST", menuItem);
-}
-
-async function getWebAssistantConfigurationPageMenuItem(spaceId, menuId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/menu/${menuId}`, "GET");
-}
-
-async function updateWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId, menuItemData) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "PUT", menuItemData);
-}
-
-async function deleteWebAssistantConfigurationPageMenuItem(spaceId, pageId, menuId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/configuration/pages/${pageId}/menu/${menuId}`, "DELETE");
-}
-
-/* webChat config end */
-
-async function loadSpace(spaceId) {
+async function getSpaceStatus(spaceId) {
     let requestURL = spaceId ? `/spaces/${spaceId}` : `/spaces`;
     return await this.sendRequest(requestURL, "GET");
-}
-
-async function storeSpace(spaceId, jsonData = null, apiKey = null, userId = null) {
-    let headers = {
-        "Content-type": "application/json; charset=UTF-8",
-        Cookie: this.__securityContext.cookies
-    };
-    if (apiKey) {
-        headers["apikey"] = `${apiKey}`;
-        headers["initiatorid"] = `${userId}`;
-    }
-
-    let options = {
-        method: "PUT",
-        headers: headers,
-        body: jsonData
-    };
-    let response = await fetch(`/spaces/${spaceId}`, options);
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${response.message}`);
-    }
-
-    return await response.text();
 }
 
 async function deleteSpace(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}`, "DELETE");
 }
 
-async function addKeyToSpace(spaceId, userId, keyType, apiKey) {
-    let result;
-    let headers = {
-        "Content-type": "application/json; charset=UTF-8",
-        Cookie: this.__securityContext.cookies
-    };
-    if (apiKey) {
-        headers["apikey"] = `${apiKey}`;
-        headers["initiatorid"] = `${userId}`;
+async function deleteSecret(spaceId, secretKey) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets/delete`, "PUT", {secretKey});
+}
+
+async function addSecret(spaceId, name, secretKey, value) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets`, "POST", {name, secretKey, value});
+}
+async function editSecret(spaceId, name, secretKey, value) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets`, "PUT", {name, secretKey, value});
+
+
+async function getSecretsMasked(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets`, "GET");
+}
+
+async function getCollaborators(spaceId) {
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.getCollaborators();
+}
+
+async function removeCollaborator(spaceId, email) {
+    let globalClient = await getAPIClient("*", constants.APP_SPECIFIC_PLUGIN);
+    await globalClient.unlinkSpaceFromUser(email, spaceId);
+
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.removeCollaborator(email);
+}
+
+async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName) {
+    let globalAPIClient = await getAPIClient("*", constants.APP_SPECIFIC_PLUGIN);
+    let userEmails = collaborators.map(user => user.email);
+    let userLoginClient = await getAPIClient("*", constants.USER_LOGIN_PLUGIN);
+    for(let email of userEmails){
+        let userModule = require("assistos").loadModule("user", this.__securityContext);
+        let result = await userModule.userExists(email);
+        if(!result.account_exists){
+            let name = email.split("@")[0];
+            await userLoginClient.createUser(email, name);
+            await this.createSpace(name, email);
+        }
     }
-    try {
-        result = await fetch(`/spaces/${spaceId}/secrets`,
-            {
-                method: "POST",
-                headers: headers
-            });
-    } catch (err) {
-        console.error(err);
-    }
-    return await result.text();
+    await globalAPIClient.addSpaceToUsers(userEmails, spaceId);
+
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.addCollaborators(referrerEmail, collaborators, spaceId, spaceName);
 }
 
-async function getAPIKeysMetadata(spaceId) {
-    return await this.sendRequest(`/spaces/${spaceId}/secrets/keys`, "GET");
-}
-
-async function getSpaceCollaborators(spaceId) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "GET");
-}
-
-async function deleteSpaceCollaborator(spaceId, userId) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "DELETE");
-}
-
-async function inviteSpaceCollaborators(spaceId, collaborators) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}`, "POST", {collaborators});
-}
-
-async function setSpaceCollaboratorRole(spaceId, userId, role) {
-    return await this.sendRequest(`/spaces/collaborators/${spaceId}/${userId}`, "PUT", {role});
-}
+async function setCollaboratorRole(spaceId, email, role) {
+    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    return await client.setCollaboratorRole(email, role);
 
 async function importPersonality(spaceId, personalityFormData) {
     return await this.sendRequest(`/spaces/${spaceId}/import/personalities`, "POST", personalityFormData);
-}
-
-async function sendGeneralRequest(url, method, data = null, headers = {}, externalRequest = false) {
-    let response;
-    if (envType === constants.ENV_TYPE.NODE && !externalRequest) {
-        headers.Cookie = this.__securityContext.cookies;
-        url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
-    }
-    try {
-        response = await fetch(url, {
-            method: method,
-            headers: headers,
-            body: data || undefined
-        });
-    } catch (err) {
-        throw new Error(err.message);
-    }
-    if (!response.ok) {
-        throw new Error(`Failed to fetch:${response.status} ${response.statusText}`);
-    }
-    switch (response.headers.get("Content-Type")) {
-        case "application/json":
-            return (await response.json()).data;
-        case "application/octet-stream":
-        case "audio/mp3":
-        case "video/mp4":
-        case "image/png":
-            return await response.arrayBuffer();
-        case "text/plain":
-        default :
-            return await response.text();
-    }
 }
 
 async function getImageURL(imageId) {
@@ -247,8 +104,8 @@ async function getVideoURL(videoId) {
 }
 
 async function getFileURL(fileId, type) {
-    const {downloadURL} = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null, {"Content-Type": type});
-    return downloadURL;
+    const downloadData = await this.sendRequest(`/spaces/downloads/${fileId}`, "GET", null, {"Content-Type": type});
+    return downloadData.downloadURL;
 }
 
 async function getAudioHead(audioId) {
@@ -264,7 +121,7 @@ async function getVideoHead(videoId) {
 }
 
 async function headFile(fileId, type) {
-    return await this.sendGeneralRequest(`/spaces/files/${fileId}`, "HEAD", null, {"Content-Type": type});
+    return await this.sendRequest(`/spaces/files/${fileId}`, "HEAD", null, {"Content-Type": type});
 }
 
 async function getAudio(audioId) {
@@ -280,15 +137,13 @@ async function getVideo(videoId, range) {
 }
 
 async function getFile(fileId, type, range) {
-    const {
-        downloadURL,
-        externalRequest
-    } = await this.sendGeneralRequest(`/spaces/downloads/${fileId}`, "GET", null, {"Content-Type": type});
+    const downloadData = await this.sendRequest(`/spaces/downloads/${fileId}`, "GET", null , {"Content-Type": type});
+
     let headers = {};
     if (range) {
         headers.Range = range;
     }
-    return await this.sendGeneralRequest(downloadURL, "GET", null, headers, externalRequest);
+    return await this.sendRequest(downloadData.downloadURL, "GET", null, headers, downloadData.externalRequest);
 }
 
 async function putAudio(audio) {
@@ -304,16 +159,9 @@ async function putVideo(video) {
 }
 
 async function putFile(file, type) {
-    const {
-        uploadURL,
-        fileId,
-        externalRequest
-    } = await this.sendGeneralRequest(`/spaces/uploads`, "GET", null, {"Content-Type": type});
-    await this.sendGeneralRequest(uploadURL, "PUT", file, {
-        "Content-Type": type,
-        "Content-Length": file.byteLength
-    }, externalRequest);
-    return fileId;
+    const uploadData = await this.sendRequest(`/spaces/uploads`, "GET", null, {"Content-Type": type});
+    await this.sendRequest(uploadData.uploadURL, "PUT", file, {"Content-Type": type, "Content-Length": file.byteLength}, uploadData.externalRequest);
+    return uploadData.fileId;
 }
 
 async function deleteImage(imageId) {
@@ -329,94 +177,48 @@ async function deleteVideo(videoId) {
 }
 
 async function deleteFile(fileId, type) {
-    return await this.sendGeneralRequest(`/spaces/files/${fileId}`, "DELETE", null, {"Content-Type": type});
+    return await this.sendRequest(`/spaces/files/${fileId}`, "DELETE", null, {"Content-Type": type});
 }
 
-async function addContainerObject(spaceId, objectType, objectData) {
-    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectType}`, "POST", objectData);
+async function startTelegramBot(spaceId, personalityId, botId){
+    return await this.sendRequest(`/telegram/startBot/${spaceId}/${personalityId}`, "POST", botId);
 }
 
-async function getContainerObject(spaceId, objectId) {
-    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "GET");
+async function removeTelegramUser(spaceId, personalityId, telegramUserId){
+    return await this.sendRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
 }
-
-async function updateContainerObject(spaceId, objectId, objectData) {
-    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "PUT", objectData);
+async function runCommands(spaceId, commands, args) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.runScript(commands, ...args);
+    await client.buildAll();
 }
-
-async function deleteContainerObject(spaceId, objectId) {
-    return await this.sendGeneralRequest(`/spaces/containerObject/${spaceId}/${objectId}`, "DELETE");
+async function buildAll(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    await client.buildAll();
 }
-
-/*embedded objects*/
-async function getEmbeddedObject(spaceId, objectURI) {
-    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "GET");
+async function getGraph(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getGraph();
 }
-
-async function addEmbeddedObject(spaceId, objectURI, objectData) {
-    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "POST", objectData);
-}
-
-async function updateEmbeddedObject(spaceId, objectURI, objectData) {
-    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "PUT", objectData);
-}
-
-async function deleteEmbeddedObject(spaceId, objectURI) {
-    return await this.sendGeneralRequest(`/spaces/embeddedObject/${spaceId}/${objectURI}`, "DELETE");
-}
-
-async function swapEmbeddedObjects(spaceId, objectURI, objectData) {
-    return await this.sendGeneralRequest(`/spaces/embeddedObject/swap/${spaceId}/${objectURI}`, "PUT", objectData);
-}
-
-async function startTelegramBot(spaceId, personalityId, botId) {
-    return await this.sendGeneralRequest(`/telegram/startBot/${spaceId}/${personalityId}`, "POST", botId);
-}
-
-async function removeTelegramUser(spaceId, personalityId, telegramUserId) {
-    return await this.sendGeneralRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
-}
-
-async function deleteWebAssistantTheme(spaceId, themeId) {
-    return await this.sendRequest(`/spaces/${spaceId}/web-assistant/themes/${themeId}`, "DELETE");
-}
+async function getVariables(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getEveryVariableObject();
+} 
 
 module.exports = {
-    deleteWebAssistantTheme,
-    getWebAssistantThemes,
-    addWebAssistantTheme,
-    updateWebAssistantTheme,
-    getWebAssistantTheme,
-    getWebAssistantHomePage,
-    updateWebAssistantConfigurationSettings,
-    getWebAssistantConfigurationPageMenuItem,
-    addWebAssistantConfigurationPage,
-    getWebAssistantConfigurationPages,
-    getWebAssistantConfigurationPage,
-    updateWebAssistantConfigurationPage,
-    deleteWebAssistantConfigurationPage,
-    getWebAssistantConfigurationPageMenu,
-    addWebAssistantConfigurationPageMenuItem,
-    updateWebAssistantConfigurationPageMenuItem,
-    deleteWebAssistantConfigurationPageMenuItem,
     createSpace,
-    loadSpace,
+    getSpaceStatus,
     deleteSpace,
-    storeSpace,
-    addKeyToSpace,
+    editSecret,
+    addSecret,
+    deleteSecret,
     addSpaceChatMessage,
-    addSpaceAnnouncement,
-    getSpaceAnnouncement,
-    getSpaceAnnouncements,
-    updateSpaceAnnouncement,
-    deleteSpaceAnnouncement,
-    inviteSpaceCollaborators,
+    addCollaborators,
     sendRequest,
-    getAPIKeysMetadata,
+    getSecretsMasked,
     putImage,
     deleteImage,
     Space,
-    Announcement,
     putAudio,
     getAudio,
     deleteAudio,
@@ -432,10 +234,9 @@ module.exports = {
     getAudioURL,
     getVideoURL,
     getImageURL,
-    sendGeneralRequest,
-    getSpaceCollaborators,
-    setSpaceCollaboratorRole,
-    deleteSpaceCollaborator,
+    getCollaborators,
+    setCollaboratorRole,
+    removeCollaborator,
     saveSpaceChat,
     resetSpaceChat,
     putFile,
@@ -443,18 +244,12 @@ module.exports = {
     deleteFile,
     getFile,
     getFileURL,
-    getContainerObject,
-    addContainerObject,
-    updateContainerObject,
-    deleteContainerObject,
-    getEmbeddedObject,
-    addEmbeddedObject,
-    updateEmbeddedObject,
-    deleteEmbeddedObject,
-    swapEmbeddedObjects,
     startTelegramBot,
     removeTelegramUser,
-    getWebAssistantConfiguration
+    runCommands,
+    buildAll,
+    getGraph,
+    getVariables
 }
 
 

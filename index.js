@@ -1,7 +1,7 @@
 const ServerSideSecurityContext = require('./modules/user/models/ServerSideSecurityContext');
 const ClientSideSecurityContext = require('./modules/user/models/ClientSideSecurityContext');
 const constants = require('./constants');
-
+const utils = require('./modules/util/utils');
 function detectEnvironment() {
     if (typeof fetch === 'function' && typeof document === 'object') {
         return constants.ENV_TYPE.BROWSER;
@@ -22,10 +22,8 @@ function _loadModule(moduleName) {
             return require('./modules/space');
         case 'user':
             return require('./modules/user');
-        case 'personality':
-            return require('./modules/personality');
-        case 'flow':
-            return require('./modules/flow');
+        case 'agent':
+            return require('./modules/agent');
         case 'util':
             return require('./modules/util');
         case 'llm':
@@ -66,5 +64,6 @@ module.exports = {
     constants: constants,
     envType,
     ServerSideSecurityContext,
-    ClientSideSecurityContext
+    ClientSideSecurityContext,
+    utils
 };

@@ -1,7 +1,7 @@
 const {request} = require("../util");
 
 async function sendRequest(url, method, data) {
-    return await request(url, method, this.__securityContext, data);
+    return await request(url, method, data, this.__securityContext);
 }
 async function getGalleriesMetadata(spaceId) {
     return await this.sendRequest(`/spaces/containerObject/meta/${spaceId}/galleries`, "GET");

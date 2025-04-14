@@ -1,39 +1,29 @@
 const Paragraph = require("./models/Paragraph");
-async function getParagraph(spaceId, documentId, paragraphId) {
-    let paragraphData = await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}`, "GET");
-    return new Paragraph(paragraphData);
+const {getAPIClient} = require("../util/utils");
+const constants = require("../../constants");
+async function getParagraph(spaceId, paragraphId) {
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let paragraph = await client.getParagraph(paragraphId);
+    return new Paragraph(paragraph);
 }
 
-async function addParagraph(spaceId, documentId, chapterId, paragraphData) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${chapterId}`, "POST", paragraphData);
+async function addParagraph(spaceId, chapterId, paragraphText, commands, comments, position) {
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    return await client.createParagraph(chapterId, paragraphText, commands, comments, position);
 }
 
-async function updateParagraph(spaceId, documentId, paragraphId, paragraphData) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}`, "PUT", paragraphData);
+async function updateParagraph(spaceId, chapterId, paragraphId, paragraphText, commands, comments, additionalData) {
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    return await client.updateParagraph(chapterId, paragraphId, paragraphText, commands, comments, additionalData);
 }
 
-async function deleteParagraph(spaceId, documentId, chapterId, paragraphId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${chapterId}/${paragraphId}`, "DELETE");
+async function deleteParagraph(spaceId, chapterId, paragraphId) {
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    return await client.deleteParagraph(chapterId, paragraphId);
 }
-async function swapParagraphs(spaceId, documentId, chapterId, paragraphId, paragraphId2, direction) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/swap/${spaceId}/${documentId}/${chapterId}/${paragraphId}/${paragraphId2}`, "PUT", { direction });
-}
-async function getParagraphText(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "GET");
-}
-async function updateParagraphText(spaceId, documentId, paragraphId, text) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=text`, "PUT", text);
-}
-async function updateParagraphComment(spaceId, documentId, paragraphId, text) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=comment`, "PUT", text);
-}
-
-async function updateParagraphCommands(spaceId, documentId, paragraphId, commandsObject) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=commands`, "PUT", commandsObject);
-}
-
-async function getParagraphCommands(spaceId, documentId, paragraphId) {
-    return await this.sendRequest(`/documents/chapters/paragraphs/${spaceId}/${documentId}/${paragraphId}?fields=commands`, "GET");
+async function changeParagraphOrder(spaceId, chapterId, paragraphId, position) {
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    return await client.changeParagraphOrder(chapterId, paragraphId, position)
 }
 
 async function chatCompleteParagraph({ spaceId, documentId, paragraphId, prompt, modelName=undefined, agentId=undefined }) {
@@ -64,14 +54,9 @@ module.exports = {
     addParagraph,
     updateParagraph,
     deleteParagraph,
-    swapParagraphs,
-    updateParagraphText,
-    getParagraphText,
+    changeParagraphOrder,
     createTextToSpeechTask,
-    getParagraphCommands,
-    updateParagraphCommands,
     createLipSyncTask,
-    updateParagraphComment,
     createParagraphCompileVideoTask,
     chatCompleteParagraph
 }
