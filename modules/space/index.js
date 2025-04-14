@@ -206,6 +206,10 @@ async function getVariables(spaceId) {
     return await client.getEveryVariableObject();
 } 
 
+async function getErrorsFromLastBuild(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getErrorFromLastBuild();
+}
 module.exports = {
     createSpace,
     getSpaceStatus,
@@ -250,7 +254,8 @@ module.exports = {
     runCommands,
     buildAll,
     getGraph,
-    getVariables
+    getVariables,
+    getErrorsFromLastBuild
 }
 
 
