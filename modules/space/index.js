@@ -179,6 +179,10 @@ async function getGraph(spaceId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getGraph();
 }
+async function getVariables(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getEveryVariableObject();
+}
 module.exports = {
     createSpace,
     getSpaceStatus,
@@ -222,7 +226,8 @@ module.exports = {
     removeTelegramUser,
     runCommands,
     buildAll,
-    getGraph
+    getGraph,
+    getVariables
 }
 
 
