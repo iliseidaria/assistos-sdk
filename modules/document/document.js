@@ -73,6 +73,9 @@ async function convertDocument(formData) {
         throw error;
     }
 }
+async function uploadDoc(spaceId, docData) {
+    return await this.sendRequest(`/documents/upload/${spaceId}`, "PUT", docData);
+}
 
 async function deleteDocument(spaceId, documentId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
@@ -173,5 +176,6 @@ module.exports = {
     addDocumentSnapshot,
     deleteDocumentSnapshot,
     restoreDocumentSnapshot,
-    convertDocument
+    convertDocument,
+    uploadDoc
 };
