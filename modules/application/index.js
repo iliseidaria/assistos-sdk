@@ -1,50 +1,75 @@
 const request = require("../util").request;
-const {getAPIClient} = require("../util/utils");
+let {getAPIClient} = require("../util/utils");
+
 const constants = require("../../constants");
 
 async function sendRequest(url, method, data) {
     return await request(url, method, data, this.__securityContext);
 }
 async function getWidgets(spaceId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.getWidgets();
 }
+ async function getClient(userId, plugin, serverlessId){
+    let options = {};
+    if(this.__securityContext.cookies){
+        const sessionId = this.__securityContext.cookies.split("sessionId=")[1].split(";")[0];
+        options.sessionId= sessionId;
+    }
+    return await getAPIClient(userId, plugin, serverlessId, options);
+}
+
 async function installApplication(spaceId, applicationId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
-    return await client.installApplication(applicationId);
+
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    const appInstallationStatus = await client.installApplication(applicationId);
+    const applicationManifest = await client.getApplicationManifest(applicationId);
+    const promises = [];
+    if (applicationManifest?.secrets && Array.isArray(applicationManifest.secrets)) {
+        for (let i = 0; i < applicationManifest.secrets.length; i++) {
+            const secret = applicationManifest.secrets[i];
+            promises.push(client.installSecret(secret));
+        }
+    }
+    return await Promise.all(promises);
 }
 
 async function uninstallApplication(spaceId, applicationId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.uninstallApplication(applicationId);
 }
 
 async function getApplicationConfig(spaceId, applicationId) {
     //TODO: tons of requests when loading plugins in document page
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.loadApplicationConfig(applicationId);
 }
 
 async function getAvailableApps(spaceId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.getAvailableApps();
 }
+
 async function getApplications(spaceId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.getApplications();
 }
+
 async function runApplicationTask(spaceId, applicationId, taskName, taskData) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.runApplicationTask(taskName, taskData);
 }
+
 async function updateApplication(spaceId, applicationId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.updateApplication(applicationId);
 }
+
 async function requiresUpdate(spaceId, applicationId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.requiresUpdate(applicationId);
 }
+
 async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
     const pathSegments = relativeAppFilePath.split('/').map(segment => encodeURIComponent(segment));
     const encodedPath = pathSegments.join('/');
@@ -60,12 +85,14 @@ async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
         return await import(`/applications/files/${spaceId}/${applicationId}/${encodedPath}`);
     }
 }
+
 async function getApplicationTasks(spaceId, applicationId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.getApplicationTasks(applicationId);
 }
+
 async function getApplicationsPlugins(spaceId) {
-    let client = await getAPIClient("*", constants.APPLICATION_PLUGIN, spaceId);
+    let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     return await client.getApplicationsPlugins();
 }
 
@@ -80,6 +107,7 @@ async function loadAppObjects(appName, objectType) {
 
 
 module.exports = {
+    getClient,
     installApplication,
     getWidgets,
     uninstallApplication,
