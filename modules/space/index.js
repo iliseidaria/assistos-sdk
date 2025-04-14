@@ -45,7 +45,7 @@ async function addSecret(spaceId, name, secretKey, value) {
 }
 async function editSecret(spaceId, name, secretKey, value) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets`, "PUT", {name, secretKey, value});
-
+}
 
 async function getSecretsMasked(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets`, "GET");
@@ -86,6 +86,7 @@ async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName
 async function setCollaboratorRole(spaceId, email, role) {
     let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
     return await client.setCollaboratorRole(email, role);
+}
 
 async function importPersonality(spaceId, personalityFormData) {
     return await this.sendRequest(`/spaces/${spaceId}/import/personalities`, "POST", personalityFormData);
