@@ -1,5 +1,6 @@
 const request = require("../util").request;
 let {getAPIClient} = require("../util/utils");
+const {addSecret} = require("../space");
 
 const constants = require("../../constants");
 
@@ -20,7 +21,6 @@ async function getWidgets(spaceId) {
 }
 
 async function installApplication(spaceId, applicationId) {
-
     let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     const appInstallationStatus = await client.installApplication(applicationId);
     const applicationManifest = await client.getApplicationManifest(applicationId);
@@ -28,7 +28,7 @@ async function installApplication(spaceId, applicationId) {
     if (applicationManifest?.secrets && Array.isArray(applicationManifest.secrets)) {
         for (let i = 0; i < applicationManifest.secrets.length; i++) {
             const secret = applicationManifest.secrets[i];
-            promises.push(client.installSecret(secret));
+            promises.push(addSecret.call(this,spaceId,secret.provider, secret.keyName, ""));
         }
     }
     return await Promise.all(promises);
