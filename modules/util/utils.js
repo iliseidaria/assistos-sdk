@@ -4,6 +4,7 @@ async function getAPIClient(userId, pluginName, serverlessId, options = {}){
     if(!serverlessId){
         serverlessId = constants.GLOBAL_SERVERLESS_ID;
     }
+
     if(typeof serverlessId === "object"){
         options = serverlessId;
         serverlessId = constants.GLOBAL_SERVERLESS_ID;
