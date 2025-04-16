@@ -1,31 +1,33 @@
-const {request} = require("../util");
-const Agent = require('./models/Agent.js');
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
-async function sendRequest(url, method, data, headers, externalRequest) {
-    return await request(url, method, data, this.__securityContext, headers, externalRequest);
-}
+const {CHAT_PLUGIN} = require("../../constants");
+
 async function getAgents(spaceId){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    let agents = await client.getAllAgentObjects();
-    return agents.map(agent => new Agent(agent));
+    return await client.getAllAgentObjects();
 }
 
 async function getAgent(spaceId, agentId){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    let agent = await client.getAgent(agentId);
-    return new Agent(agent);
+    return await client.getAgent(agentId);
 }
+
 async function getDefaultAgent(spaceId){
     let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
     let agentId = await client.getDefaultAgentId(spaceId);
-    let agent = await getAgent(spaceId, agentId);
-    return new Agent(agent);
+    return await getAgent(spaceId, agentId);
 }
 
-async function createNewConversation(spaceId,personalityId){
-    return await this.sendRequest(`/personalities/chats/${spaceId}/${personalityId}`,"POST");
+async function addChatToAgent(spaceId, chatId, agentId) {
+    const client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    return await client.addChatToAgent(chatId, agentId);
 }
+
+async function removeChatFromAgent(spaceId, chatId, agentId) {
+    const client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    return await client.removeChatFromAgent(chatId, agentId);
+}
+
 
 async function getPersonalitiesConversations(spaceId,personalityId){
     return await this.sendRequest(`/personalities/chats/${spaceId}/${personalityId}`,"GET")
@@ -37,7 +39,7 @@ async function addAgent(spaceId, agentData){
     let agent = await client.createAgent(agentData.name, agentData.description);
     let chatId = await chatClient.createChat(agent.id);
     await chatClient.addChatToAgent(agent.id, chatId);
-    return new Agent(agent);
+    return agent;
 }
 
 async function updateAgent(spaceId, agentId, agentData){
@@ -49,6 +51,7 @@ async function deleteAgent(spaceId, agentId){
     return await client.deleteAgent(agentId);
 }
 
+
 async function exportPersonality(spaceId, personalityId){
     return await this.sendRequest(`/spaces/${spaceId}/export/personalities/${personalityId}`, "GET");
 }
@@ -56,19 +59,24 @@ async function exportPersonality(spaceId, personalityId){
 async function sendQuery(spaceId, personalityId, chatId, prompt){
     return await this.sendRequest(`/chats/send/${spaceId}/${personalityId}/${chatId}`, "POST", prompt);
 }
-async function createChat(spaceId, personalityId){
-    return await this.sendRequest(`/chats/${spaceId}/${personalityId}`, "POST");
+
+async function sendChatQuery(spaceId, chatId, agentId,userId,prompt){
+    let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    return await client.sendChatQuery(chatId, agentId, userId, prompt);
 }
+
+
 module.exports = {
     addAgent,
     updateAgent,
     deleteAgent,
-    sendRequest,
     getAgent,
     getAgents,
     getPersonalitiesConversations,
     exportPersonality,
-    createChat,
+    sendQuery,
+    sendChatQuery,
+    addChatToAgent,
+    removeChatFromAgent,
     getDefaultAgent,
-    Agent
 }

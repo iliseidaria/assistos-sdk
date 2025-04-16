@@ -34,6 +34,8 @@ function _loadModule(moduleName) {
             return require('./modules/gallery');
         case 'notification':
             return require('./modules/notification');
+        case 'chat':
+            return require('./modules/chat');
         default:
             return null;
     }
