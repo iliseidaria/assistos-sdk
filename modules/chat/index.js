@@ -10,6 +10,10 @@ async function getChatMessages(spaceId, chatId) {
     const client = await getAPIClient("*", CHAT_PLUGIN, spaceId);
     return await client.getChatMessages(chatId);
 }
+async function getChatMessage(spaceId, chatId, messageId) {
+    const client = await getAPIClient("*", CHAT_PLUGIN, spaceId);
+    return await client.getChatMessage(chatId, messageId);
+}
 
 async function getChatContext(spaceId, chatId) {
     const client = await getAPIClient("*", CHAT_PLUGIN, spaceId);
@@ -97,6 +101,7 @@ module.exports = {
     removeMessageFromContext,
     updateChatContextItem,
     sendMessage,
+    getChatMessage,
     sendQuery,
     sendQueryStreaming
 };

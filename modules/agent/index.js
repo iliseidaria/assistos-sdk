@@ -18,9 +18,9 @@ async function getDefaultAgent(spaceId){
     return await getAgent(spaceId, agentId);
 }
 
-async function addChatToAgent(spaceId, chatId, agentId) {
+async function addChat(spaceId, chatId, agentId) {
     const client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    return await client.addChatToAgent(chatId, agentId);
+    return await client.addChat(chatId, agentId);
 }
 
 async function removeChatFromAgent(spaceId, chatId, agentId) {
@@ -51,7 +51,6 @@ async function deleteAgent(spaceId, agentId){
     return await client.deleteAgent(agentId);
 }
 
-
 async function exportPersonality(spaceId, personalityId){
     return await this.sendRequest(`/spaces/${spaceId}/export/personalities/${personalityId}`, "GET");
 }
@@ -76,7 +75,7 @@ module.exports = {
     exportPersonality,
     sendQuery,
     sendChatQuery,
-    addChatToAgent,
+    addChat,
     removeChatFromAgent,
     getDefaultAgent,
 }
