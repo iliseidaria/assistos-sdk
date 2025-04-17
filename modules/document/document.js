@@ -149,7 +149,10 @@ async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.restore(documentId, snapshotId);
 }
-
+async function getDocumentVariables(spaceId, documentId) {
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    return await client.getVariables(documentId);
+}
 
 module.exports = {
     loadDocument,
@@ -177,5 +180,6 @@ module.exports = {
     deleteDocumentSnapshot,
     restoreDocumentSnapshot,
     convertDocument,
-    uploadDoc
+    uploadDoc,
+    getDocumentVariables
 };

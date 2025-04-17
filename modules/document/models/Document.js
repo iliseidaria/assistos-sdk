@@ -3,6 +3,7 @@ const constants = require("../../../constants");
 class Document {
     constructor(documentData) {
         this.id = documentData.id;
+        this.docId = documentData.docId;
         this.title = documentData.title || "";
         this.infoText = documentData.infoText || "";
         this.category = documentData.category || constants.DOCUMENT_CATEGORIES.DOCUMENT;
