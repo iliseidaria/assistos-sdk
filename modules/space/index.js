@@ -188,6 +188,9 @@ async function startTelegramBot(spaceId, personalityId, botId){
 async function removeTelegramUser(spaceId, personalityId, telegramUserId){
     return await this.sendRequest(`/telegram/auth/${spaceId}/${personalityId}`, "PUT", telegramUserId);
 }
+
+
+
 async function runCommands(spaceId, commands, args) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     await client.runScript(commands, ...args);
@@ -204,11 +207,14 @@ async function getGraph(spaceId) {
 async function getVariables(spaceId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getEveryVariableObject();
-} 
-
+}
 async function getErrorsFromLastBuild(spaceId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getErrorFromLastBuild();
+}
+async function defineVariable(spaceId, name, type, documentId, chapterId, paragraphId, command) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.defineVariable(name, type, documentId, chapterId, paragraphId, command);
 }
 module.exports = {
     createSpace,
@@ -255,7 +261,8 @@ module.exports = {
     buildAll,
     getGraph,
     getVariables,
-    getErrorsFromLastBuild
+    getErrorsFromLastBuild,
+    defineVariable
 }
 
 

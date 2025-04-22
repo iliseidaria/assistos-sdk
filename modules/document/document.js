@@ -149,8 +149,14 @@ async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.restore(documentId, snapshotId);
 }
-
-
+async function getDocumentVariables(spaceId, documentId) {
+    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    return await client.getVariables(documentId);
+}
+async function getVarValue(spaceId, documentId, varId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getVarValue(documentId, varId);
+}
 module.exports = {
     loadDocument,
     getDocuments,
@@ -177,5 +183,7 @@ module.exports = {
     deleteDocumentSnapshot,
     restoreDocumentSnapshot,
     convertDocument,
-    uploadDoc
+    uploadDoc,
+    getDocumentVariables,
+    getVarValue
 };
