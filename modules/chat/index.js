@@ -70,7 +70,6 @@ async function updateChatContextItem(spaceId, chatId, contextItemId, contextItem
     return await client.updateChatContextItem(chatId, contextItemId, contextItem);
 }
 
-
 async function sendMessage(spaceId, chatId, userId, message, role) {
     const client = await getAPIClient("*", CHAT_PLUGIN, spaceId);
     return await client.sendMessage(chatId, userId, message, role);
