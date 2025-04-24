@@ -88,7 +88,7 @@ async function updateDocument(spaceId, documentId, title, category, infoText, co
 }
 
 async function estimateDocumentVideoLength(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.estimateDocumentVideoLength(documentId);
 }
 

@@ -52,20 +52,20 @@ async function getSecretsMasked(spaceId) {
 }
 
 async function getCollaborators(spaceId) {
-    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getCollaborators();
 }
 
 async function removeCollaborator(spaceId, email) {
-    let globalClient = await getAPIClient("*", constants.APP_SPECIFIC_PLUGIN);
+    let globalClient = await getAPIClient("*", constants.WORKSPACE_PLUGIN);
     await globalClient.unlinkSpaceFromUser(email, spaceId);
 
-    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.removeCollaborator(email);
 }
 
 async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName) {
-    let globalAPIClient = await getAPIClient("*", constants.APP_SPECIFIC_PLUGIN);
+    let globalAPIClient = await getAPIClient("*", constants.WORKSPACE_PLUGIN);
     let userEmails = collaborators.map(user => user.email);
     let userLoginClient = await getAPIClient("*", constants.USER_LOGIN_PLUGIN);
     for(let email of userEmails){
@@ -79,12 +79,12 @@ async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName
     }
     await globalAPIClient.addSpaceToUsers(userEmails, spaceId);
 
-    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.addCollaborators(referrerEmail, collaborators, spaceId, spaceName);
 }
 
 async function setCollaboratorRole(spaceId, email, role) {
-    let client = await getAPIClient("*", constants.SPACE_INSTANCE_PLUGIN, spaceId);
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.setCollaboratorRole(email, role);
 }
 

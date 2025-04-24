@@ -1,10 +1,8 @@
 module.exports = {
     DEFAULT_PERSONALITY: "Assistant",
     USER_LOGIN_PLUGIN: "UserLogin",
-    SPACE_PLUGIN: "Space",
     APPLICATION_PLUGIN: "Application",
     AGENT_PLUGIN: "Agent",
-    APP_SPECIFIC_PLUGIN: "AppSpecificPlugin",
     WORKSPACE_PLUGIN: "Workspace",
     DOCUMENTS_PLUGIN: "Documents",
     WORKSPACE_USER_PLUGIN: "WorkspaceUser",
