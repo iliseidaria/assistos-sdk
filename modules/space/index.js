@@ -194,9 +194,9 @@ async function removeTelegramUser(spaceId, personalityId, telegramUserId){
 
 
 
-async function runCommands(spaceId, commands, args) {
+async function runCode(spaceId, commands, args) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    await client.runScript(commands, ...args);
+    await client.runCode(commands, ...args);
     await client.buildAll();
 }
 async function buildAll(spaceId) {
@@ -261,7 +261,7 @@ module.exports = {
     getFileURL,
     startTelegramBot,
     removeTelegramUser,
-    runCommands,
+    runCode,
     buildAll,
     getGraph,
     getVariables,

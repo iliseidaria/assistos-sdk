@@ -12,7 +12,7 @@ async function addChapter(spaceId, documentId, chapterTitle, commands, comments,
     return await client.createChapter(documentId, chapterTitle, commands, comments, position);
 }
 
-async function updateChapter(spaceId, chapterId, chapterTitle, comments, commands, additionalData) {
+async function updateChapter(spaceId, chapterId, chapterTitle, commands, comments, additionalData) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.updateChapter(chapterId, chapterTitle, commands, comments, additionalData);
 }
