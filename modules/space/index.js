@@ -43,6 +43,9 @@ async function deleteSecret(spaceId, secretKey) {
 async function addSecret(spaceId, name, secretKey, value) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets`, "POST", {name, secretKey, value});
 }
+async function addSecrets(spaceId, secrets) {
+    return await this.sendRequest(`/spaces/${spaceId}/secrets/multiple`, "POST", secrets);
+}
 async function editSecret(spaceId, name, secretKey, value) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets`, "PUT", {name, secretKey, value});
 }
@@ -222,6 +225,7 @@ module.exports = {
     deleteSpace,
     editSecret,
     addSecret,
+    addSecrets,
     deleteSecret,
     addSpaceChatMessage,
     addCollaborators,

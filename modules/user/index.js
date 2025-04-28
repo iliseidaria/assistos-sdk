@@ -49,8 +49,8 @@ async function userExists(email){
     email = encodeURIComponent(email);
     return await this.sendRequest(`/auth/userExists/${email}`, "GET");
 }
-async function loginUser(email, code){
-    return await this.sendRequest(`/auth/walletLogin`, "POST", {email, code});
+async function loginUser(email, code, loginMethod){
+    return await this.sendRequest(`/auth/walletLogin`, "POST", {email, code, loginMethod});
 }
 async function generateAuthCode(email, refererId){
     return await this.sendRequest(`/auth/generateAuthCode`, "POST", {email, refererId});

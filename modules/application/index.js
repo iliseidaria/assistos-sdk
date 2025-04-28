@@ -1,6 +1,6 @@
 const request = require("../util").request;
 let {getAPIClient} = require("../util/utils");
-const {addSecret} = require("../space");
+const {addSecrets} = require("../space");
 
 const constants = require("../../constants");
 
@@ -24,14 +24,16 @@ async function installApplication(spaceId, applicationId) {
     let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
     const appInstallationStatus = await client.installApplication(applicationId);
     const applicationManifest = await client.getApplicationManifest(applicationId);
-    const promises = [];
     if (applicationManifest?.secrets && Array.isArray(applicationManifest.secrets)) {
-        for (let i = 0; i < applicationManifest.secrets.length; i++) {
-            const secret = applicationManifest.secrets[i];
-            promises.push(addSecret.call(this,spaceId,secret.provider, secret.keyName, ""));
-        }
+        const secrets  = applicationManifest.secrets.map(secret => {
+            return {
+                name: secret.provider,
+                secretKey: secret.keyName,
+                value: ""
+            }
+        });
+        await addSecrets.call(this, spaceId, secrets);
     }
-    return await Promise.all(promises);
 }
 
 async function uninstallApplication(spaceId, applicationId) {

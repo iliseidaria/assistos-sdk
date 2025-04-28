@@ -17,9 +17,7 @@ async function getAgent(spaceId, agentId){
 }
 
 async function getDefaultAgent(spaceId){
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
-    let agentId = await client.getDefaultAgentId(spaceId);
-    return await getAgent(spaceId, agentId);
+    return await getAgent(spaceId, constants.DEFAULT_AGENT);
 }
 
 async function addChat(spaceId, chatId, agentId) {
