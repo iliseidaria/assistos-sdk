@@ -219,6 +219,10 @@ async function defineVariable(spaceId, name, type, documentId, chapterId, paragr
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.defineVariable(name, type, documentId, chapterId, paragraphId, command);
 }
+async function buildForDocument(spaceId, documentId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.buildOnlyForDocument(documentId);
+}
 module.exports = {
     createSpace,
     getSpaceStatus,
@@ -266,7 +270,8 @@ module.exports = {
     getGraph,
     getVariables,
     getErrorsFromLastBuild,
-    defineVariable
+    defineVariable,
+    buildForDocument
 }
 
 

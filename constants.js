@@ -16,7 +16,7 @@ module.exports = {
         SNAPSHOT: 'snapshot',
         DOCUMENT: 'document',
         CHAT: 'chat',
-        SCRIPT_EXECUTION: 'Script_Execution'
+        SCRIPT_EXECUTION: 'CODEX'
     },
     DEFAULT_AGENT_NAME: "Assistant",
     DEFAULT_ID_LENGTH: 16,
