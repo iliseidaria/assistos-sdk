@@ -7,7 +7,7 @@ module.exports = {
     WORKSPACE_PLUGIN: "Workspace",
     DOCUMENTS_PLUGIN: "Documents",
     WORKSPACE_USER_PLUGIN: "WorkspaceUser",
-    CHAT_PLUGIN: "ChatPlugin",
+    CHAT_PLUGIN: "Chat",
     LLM_PLUGIN: "LLM",
     WEB_ASSISTANT_PLUGIN: "WebAssistant",
     FFMPEG_PLUGIN: "Ffmpeg",
