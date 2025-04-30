@@ -52,8 +52,8 @@ async function userExists(email){
 async function loginUser(email, code, loginMethod){
     return await this.sendRequest(`/auth/walletLogin`, "POST", {email, code, loginMethod});
 }
-async function generateAuthCode(email, refererId){
-    return await this.sendRequest(`/auth/generateAuthCode`, "POST", {email, refererId});
+async function generateAuthCode(email, authType, refererId){
+    return await this.sendRequest(`/auth/generateAuthCode`, "POST", {email, refererId, authType});
 }
 module.exports = {
     loadUser,

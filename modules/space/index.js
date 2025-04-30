@@ -43,9 +43,7 @@ async function deleteSecret(spaceId, secretKey) {
 async function addSecret(spaceId, name, secretKey, value) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets`, "POST", {name, secretKey, value});
 }
-async function addSecrets(spaceId, secrets) {
-    return await this.sendRequest(`/spaces/${spaceId}/secrets/multiple`, "POST", secrets);
-}
+
 async function editSecret(spaceId, name, secretKey, value) {
     return await this.sendRequest(`/spaces/${spaceId}/secrets`, "PUT", {name, secretKey, value});
 }
@@ -223,13 +221,23 @@ async function buildForDocument(spaceId, documentId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.buildOnlyForDocument(documentId);
 }
+async function restartServerless(spaceId) {
+    return await this.sendRequest(`/spaces/${spaceId}/restart`, "PUT", {});
+}
+async function getCommands(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getCommands();
+}
+async function getCustomTypes(spaceId) {
+    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getCustomTypes();
+}
 module.exports = {
     createSpace,
     getSpaceStatus,
     deleteSpace,
     editSecret,
     addSecret,
-    addSecrets,
     deleteSecret,
     addSpaceChatMessage,
     addCollaborators,
@@ -271,7 +279,10 @@ module.exports = {
     getVariables,
     getErrorsFromLastBuild,
     defineVariable,
-    buildForDocument
+    buildForDocument,
+    restartServerless,
+    getCommands,
+    getCustomTypes,
 }
 
 
