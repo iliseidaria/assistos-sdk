@@ -1,11 +1,6 @@
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
 
-
-
-
-
-
 async function getAgents(spaceId){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
     return await client.getAllAgentObjects();
@@ -40,9 +35,9 @@ async function getAgentsConversations(spaceId,agentId){
 async function addAgent(spaceId, agentData){
     let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
     let chatClient = await getAPIClient("*", constants.CHAT_PLUGIN, spaceId);
-    let agent = await client.createAgent(agentData.name, agentData.description);
+    let agent = await client.createAgent(agentData.name, agentData.description, "", agentData.info);
     let chatId = await chatClient.createChat(agent.id);
-    await chatClient.addChatToAgent(agent.id, chatId);
+    //await chatClient.addChatToAgent(agent.id, chatId);
     return agent;
 }
 
