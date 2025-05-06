@@ -2,6 +2,7 @@ const ServerSideSecurityContext = require('./modules/user/models/ServerSideSecur
 const ClientSideSecurityContext = require('./modules/user/models/ClientSideSecurityContext');
 const constants = require('./constants');
 const utils = require('./modules/util/utils');
+
 function detectEnvironment() {
     if (typeof fetch === 'function' && typeof document === 'object') {
         return constants.ENV_TYPE.BROWSER;
@@ -36,6 +37,8 @@ function _loadModule(moduleName) {
             return require('./modules/notification');
         case 'chat':
             return require('./modules/chat');
+        case 'webassistant':
+            return require('./modules/webassistant');
         default:
             return null;
     }

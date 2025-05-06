@@ -1,87 +1,110 @@
-const { getAPIClient } = require("../util/utils");
-const { WEB_ASSISTANT_PLUGIN } = require("../../constants");
+const {getAPIClient} = require("../util/utils");
+const constants = require("../../constants");
+const PLUGIN = constants.WEB_ASSISTANT_PLUGIN;
 
-function withClient(fn) {
-    return async function (spaceId, ...args) {
-        const client = await getAPIClient("*", WEB_ASSISTANT_PLUGIN, spaceId);
-        return await fn.call(this, client, spaceId, ...args);
-    };
+const getClient = async spaceId => getAPIClient("*", PLUGIN, spaceId);
+
+const getWebChatThemes = async function (spaceId) {
+    const client = await getClient(spaceId);
+    return client.getWebChatThemes();
+};
+const getWebChatTheme = async function (spaceId, themeId) {
+    const client = await getClient(spaceId);
+    return client.getWebChatTheme(themeId);
+};
+const addWebChatTheme = async function (spaceId, theme) {
+    const client = await getClient(spaceId);
+    return client.addWebChatTheme(theme);
+};
+const updateWebChatTheme = async function (spaceId, themeId, theme) {
+    const client = await getClient(spaceId);
+    return client.updateWebChatTheme(themeId, theme);
+};
+const deleteWebAssistantTheme = async function (spaceId, themeId) {
+    const client = await getClient(spaceId);
+    return client.deleteWebAssistantTheme(themeId);
+};
+const getWebChatConfiguration = async function (spaceId) {
+    const client = await getClient(spaceId);
+    return client.getWebChatConfiguration();
+};
+const updateWebChatConfiguration = async function (spaceId, settings) {
+    const client = await getClient(spaceId);
+    return client.updateWebChatConfiguration(settings);
+};
+const addWebAssistantConfigurationPage = async function (spaceId, page) {
+    const client = await getClient(spaceId);
+    return client.addWebAssistantConfigurationPage(page);
+};
+const getWebAssistantConfiguration = async function (spaceId) {
+    const client = await getClient(spaceId);
+    return client.getWebAssistantConfiguration();
 }
 
+const getWebAssistantConfigurationPages = async function (spaceId) {
+    const client = await getClient(spaceId);
+    return client.getWebAssistantConfigurationPages();
+};
+const getWebAssistantConfigurationPage = async function (spaceId, pageId) {
+    const client = await getClient(spaceId);
+    return client.getWebAssistantConfigurationPage(pageId);
+};
+const updateWebAssistantConfigurationPage = async function (spaceId, pageId, page) {
+    const client = await getClient(spaceId);
+    return client.updateWebAssistantConfigurationPage(pageId, page);
+};
+const deleteWebAssistantConfigurationPage = async function (spaceId, pageId) {
+    const client = await getClient(spaceId);
+    return client.deleteWebAssistantConfigurationPage(pageId);
+};
+const getWebAssistantHomePage = async function (spaceId) {
+    const client = await getClient(spaceId);
+    return client.getWebAssistantHomePage();
+};
+const getWebAssistantConfigurationPageMenuItem = async function (spaceId, menuItemId) {
+    const client = await getClient(spaceId);
+    return client.getWebAssistantConfigurationPageMenuItem(menuItemId);
+};
+const getWebAssistantConfigurationPageMenu = async function (spaceId) {
+    const client = await getClient(spaceId);
+    return client.getWebAssistantConfigurationPageMenu();
+};
+const addWebAssistantConfigurationPageMenuItem = async function (spaceId, pageId, menuItem) {
+    const client = await getClient(spaceId);
+    return client.addWebAssistantConfigurationPageMenuItem(pageId, menuItem);
+};
+const updateWebAssistantConfigurationPageMenuItem = async function (spaceId, pageId, menuItemId, menuItem) {
+    const client = await getClient(spaceId);
+    return client.updateWebAssistantConfigurationPageMenuItem(pageId, menuItemId, menuItem);
+};
+const deleteWebAssistantConfigurationPageMenuItem = async function (spaceId, pageId, menuItemId) {
+    const client = await getClient(spaceId);
+    return client.deleteWebAssistantConfigurationPageMenuItem(pageId, menuItemId);
+};
+const getWidget = async function (spaceId, applicationId, widgetName) {
+    const client = await getClient(spaceId);
+    return client.getWidget(applicationId, widgetName);
+};
+
 module.exports = {
-    getWebChatThemes: withClient(function (client, spaceId) {
-        return client.getWebChatThemes();
-    }),
-
-    getWebChatTheme: withClient(function (client, spaceId, themeId) {
-        return client.getWebChatTheme(themeId);
-    }),
-
-    addWebChatTheme: withClient(function (client, spaceId, theme) {
-        return client.addWebChatTheme(theme);
-    }),
-
-    updateWebChatTheme: withClient(function (client, spaceId, themeId, theme) {
-        return client.updateWebChatTheme(themeId, theme);
-    }),
-
-    deleteWebAssistantTheme: withClient(function (client, spaceId, themeId) {
-        return client.deleteWebAssistantTheme(themeId);
-    }),
-
-    getWebChatConfiguration: withClient(function (client, spaceId) {
-        return client.getWebChatConfiguration();
-    }),
-
-    updateWebChatConfiguration: withClient(function (client, spaceId, settings) {
-        return client.updateWebChatConfiguration(settings);
-    }),
-
-    addWebAssistantConfigurationPage: withClient(function (client, spaceId, page) {
-        return client.addWebAssistantConfigurationPage(page);
-    }),
-
-    getWebAssistantConfigurationPages: withClient(function (client, spaceId) {
-        return client.getWebAssistantConfigurationPages();
-    }),
-
-    getWebAssistantConfigurationPage: withClient(function (client, spaceId, pageId) {
-        return client.getWebAssistantConfigurationPage(pageId);
-    }),
-
-    updateWebAssistantConfigurationPage: withClient(function (client, spaceId, pageId, page) {
-        return client.updateWebAssistantConfigurationPage(pageId, page);
-    }),
-
-    deleteWebAssistantConfigurationPage: withClient(function (client, spaceId, pageId) {
-        return client.deleteWebAssistantConfigurationPage(pageId);
-    }),
-
-    getWebAssistantHomePage: withClient(function (client, spaceId) {
-        return client.getWebAssistantHomePage();
-    }),
-
-    getWebAssistantConfigurationPageMenuItem: withClient(function (client, spaceId, menuItemId) {
-        return client.getWebAssistantConfigurationPageMenuItem(menuItemId);
-    }),
-
-    getWebAssistantConfigurationPageMenu: withClient(function (client, spaceId) {
-        return client.getWebAssistantConfigurationPageMenu();
-    }),
-
-    addWebAssistantConfigurationPageMenuItem: withClient(function (client, spaceId, pageId, menuItem) {
-        return client.addWebAssistantConfigurationPageMenuItem(pageId, menuItem);
-    }),
-
-    updateWebAssistantConfigurationPageMenuItem: withClient(function (client, spaceId, pageId, menuItemId, menuItem) {
-        return client.updateWebAssistantConfigurationPageMenuItem(pageId, menuItemId, menuItem);
-    }),
-
-    deleteWebAssistantConfigurationPageMenuItem: withClient(function (client, spaceId, pageId, menuItemId) {
-        return client.deleteWebAssistantConfigurationPageMenuItem(pageId, menuItemId);
-    }),
-
-    getWidget: withClient(function (client, spaceId, applicationId, widgetName) {
-        return client.getWidget(applicationId, widgetName);
-    })
+    getWebChatThemes,
+    getWebChatTheme,
+    addWebChatTheme,
+    updateWebChatTheme,
+    deleteWebAssistantTheme,
+    getWebChatConfiguration,
+    updateWebChatConfiguration,
+    addWebAssistantConfigurationPage,
+    getWebAssistantConfigurationPages,
+    getWebAssistantConfigurationPage,
+    updateWebAssistantConfigurationPage,
+    deleteWebAssistantConfigurationPage,
+    getWebAssistantHomePage,
+    getWebAssistantConfiguration,
+    getWebAssistantConfigurationPageMenuItem,
+    getWebAssistantConfigurationPageMenu,
+    addWebAssistantConfigurationPageMenuItem,
+    updateWebAssistantConfigurationPageMenuItem,
+    deleteWebAssistantConfigurationPageMenuItem,
+    getWidget
 };
