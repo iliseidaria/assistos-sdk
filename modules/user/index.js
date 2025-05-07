@@ -49,11 +49,33 @@ async function userExists(email){
     email = encodeURIComponent(email);
     return await this.sendRequest(`/auth/userExists/${email}`, "GET");
 }
-async function loginUser(email, code, loginMethod){
-    return await this.sendRequest(`/auth/walletLogin`, "POST", {email, code, loginMethod});
+async function walletLogin(email, code, loginMethod, challengeKey) {
+    return await this.sendRequest(`/auth/walletLogin`, 'POST', {
+        email,
+        loginMethod: loginMethod || "emailCode",
+        code: loginMethod !== "passkey" ? code : undefined,
+        assertion: loginMethod === "passkey" ? code : undefined,
+        challengeKey: loginMethod === "passkey" ? challengeKey : undefined
+    });
 }
-async function generateAuthCode(email, authType, refererId){
-    return await this.sendRequest(`/auth/generateAuthCode`, "POST", {email, refererId, authType});
+async function generateAuthCode(email, refererId, authType, registrationData){
+    return await this.sendRequest(`/auth/generateAuthCode`, "POST", {email, refererId, authType, registrationData});
+}
+async function verifyTotp(token, email, enableTotp) {
+    return await this.sendRequest(`/auth/verifyTotp`, 'POST', {
+        token,
+        email,
+        enableTotp
+    });
+}
+async function getAuthTypes(email) {
+    return await this.sendRequest(`/auth/getAuthTypes/${encodeURIComponent(email)}`, 'GET');
+}
+async function getPassKeyConfig() {
+    return await this.sendRequest(`/auth/passKeyConfig`, 'GET');
+}
+async function registerTotp() {
+    return await this.sendRequest(`/auth/registerTotp`, 'POST');
 }
 module.exports = {
     loadUser,
@@ -62,8 +84,12 @@ module.exports = {
     updateUserImage,
     logoutUser,
     userExists,
-    loginUser,
+    walletLogin,
     generateAuthCode,
     getCurrentSpaceId,
-    listUserSpaces
+    listUserSpaces,
+    verifyTotp,
+    getAuthTypes,
+    getPassKeyConfig,
+    registerTotp
 }
