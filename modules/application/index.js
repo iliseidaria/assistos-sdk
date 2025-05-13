@@ -67,7 +67,7 @@ async function updateApplication(spaceId, applicationId) {
 
 async function requiresUpdate(spaceId, applicationId) {
     let client = await this.getClient("*", constants.APPLICATION_PLUGIN, spaceId);
-    return await client.requiresUpdate(applicationId);
+    return await client.requiresUpdate(spaceId, applicationId);
 }
 
 async function getApplicationFile(spaceId, applicationId, relativeAppFilePath) {
