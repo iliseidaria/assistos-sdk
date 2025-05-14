@@ -24,9 +24,6 @@ module.exports = {
         NODE: "node",
         BROWSER: "browser",
         UNKNOWN: "unknown"
-    },
-    ENVIRONMENT_MODE: "DEVELOPMENT_BASE_URL",
-    PRODUCTION_BASE_URL: "http://demo.assistos.net:8080",
-    DEVELOPMENT_BASE_URL: "http://localhost:8080"
+    }
 }
 
