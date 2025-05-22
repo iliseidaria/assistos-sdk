@@ -3,6 +3,11 @@ const envType = require("assistos").envType;
 const Document = require("./models/Document");
 const constants = require("../../constants");
 const {getAPIClient} = require("../util/utils");
+async function getClient(pluginName, spaceId) {
+    return await getAPIClient(this.__securityContext.userId, pluginName, spaceId, {
+        email: this.__securityContext.email
+    })
+}
 
 async function sendRequest(url, method, data) {
     return await request(url, method, data, this.__securityContext);
@@ -21,23 +26,23 @@ async function importDocument(spaceId, documentFormData) {
 }
 
 async function getDocument(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.getDocument(documentId);
 }
 
 async function loadDocument(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     let document = await client.dumpDocument(documentId);
     return new Document(document);
 }
 
 async function getDocuments(spaceId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.getAllDocumentObjects();
 }
 
 async function addDocument(spaceId, title, category, infoText, commands, comments, chapters, additionalData) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.createDocument(title, category, infoText, commands, comments, chapters, additionalData);
 }
 
@@ -81,17 +86,17 @@ async function uploadDoc(spaceId, docData) {
 }
 
 async function deleteDocument(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     await client.deleteDocument(documentId);
 }
 
 async function updateDocument(spaceId, documentId, title, category, infoText, commands, comments, additionalData) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     await client.updateDocument(documentId, title, category, infoText, commands, comments, additionalData);
 }
 
 async function estimateDocumentVideoLength(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.estimateDocumentVideoLength(documentId);
 }
 
@@ -128,38 +133,38 @@ async function redoOperation(spaceId, documentId) {
 }
 
 async function getDocumentSnapshot(spaceId, documentId, snapshotId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     //TODO remake logic
     return await this.sendRequest(`documents/snapshots/${spaceId}/${documentId}/${snapshotId}`, "GET");
 }
 
 async function getDocumentSnapshots(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.getDocumentSnapshots(documentId);
 }
 
 async function addDocumentSnapshot(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.snapshot(documentId);
 }
 
 async function deleteDocumentSnapshot(spaceId, documentId, snapshotId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.deleteSnapshot(documentId, snapshotId);
 }
 
 async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
-    let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.restore(documentId, snapshotId);
 }
 
 async function getDocumentVariables(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getVariablesForDoc(documentId);
 }
 
 async function getVarValue(spaceId, documentId, varId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getVarValue(documentId, varId);
 }
 
@@ -197,6 +202,7 @@ async function updateDocumentPreferences(email, stylePreferences) {
 }
 
 module.exports = {
+    getClient,
     getPrintPreferences,
     getStylePreferences,
     getExportPreferences,

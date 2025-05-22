@@ -11,13 +11,7 @@ class Chapter {
         this.comments = chapterData.comments || "";
         this.commands = chapterData.commands || "";
     }
-    async refreshParagraph(spaceId, documentId, paragraphId){
-        const documentModule = require("assistos").loadModule("document", {});
-        let paragraphData = await documentModule.getParagraph(assistOS.space.id, documentId, paragraphId);
-        let paragraphIndex = this.paragraphs.findIndex(paragraph => paragraph.id === paragraphId);
-        this.paragraphs[paragraphIndex] = new Paragraph(paragraphData);
-        return this.paragraphs[paragraphIndex];
-    }
+
     deleteParagraph(paragraphId) {
         let paragraphIndex = this.paragraphs.findIndex(paragraph => paragraph.id === paragraphId);
         if(paragraphIndex !== -1) {
@@ -32,17 +26,6 @@ class Chapter {
     }
     getParagraphIndex(paragraphId) {
         return this.paragraphs.findIndex(paragraph => paragraph.id === paragraphId);
-    }
-    swapParagraphs(paragraphId1, paragraphId2) {
-        let index1 = this.paragraphs.findIndex(paragraph => paragraph.id === paragraphId1);
-        let index2 = this.paragraphs.findIndex(paragraph => paragraph.id === paragraphId2);
-        if(index1 !== -1 && index2 !== -1) {
-            [this.paragraphs[index1], this.paragraphs[index2]] = [this.paragraphs[index2], this.paragraphs[index1]];
-            return true;
-        }else{
-            console.error("Attempting to swap paragraphs that no longer exist in this chapter.");
-            return false;
-        }
     }
 }
 module.exports = Chapter;

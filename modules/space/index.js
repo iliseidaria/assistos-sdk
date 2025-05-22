@@ -2,7 +2,12 @@ const {request} = require("../util");
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
 
-const Space = require('./models/Space.js');
+async function getClient(pluginName, spaceId) {
+    return await getAPIClient(this.__securityContext.userId, pluginName, spaceId, {
+        email: this.__securityContext.email
+    })
+}
+
 async function sendRequest(url, method, data, headers, externalRequest) {
     return await request(url, method, data, this.__securityContext, headers, externalRequest);
 }
@@ -53,22 +58,20 @@ async function getSecretsMasked(spaceId) {
 }
 
 async function getCollaborators(spaceId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getCollaborators();
 }
 
 async function removeCollaborator(spaceId, email) {
-    let globalClient = await getAPIClient("*", constants.WORKSPACE_PLUGIN);
-    await globalClient.unlinkSpaceFromUser(email, spaceId);
-
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
+    await client.unlinkSpaceFromUser(email, spaceId);
     return await client.removeCollaborator(email);
 }
 
 async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName) {
-    let globalAPIClient = await getAPIClient("*", constants.WORKSPACE_PLUGIN);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     let userEmails = collaborators.map(user => user.email);
-    let userLoginClient = await getAPIClient("*", constants.USER_LOGIN_PLUGIN);
+    let userLoginClient =  await this.getClient(constants.USER_LOGIN_PLUGIN);
     for(let email of userEmails){
         let userModule = require("assistos").loadModule("user", this.__securityContext);
         let result = await userModule.userExists(email);
@@ -78,14 +81,13 @@ async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName
             await this.createSpace(name, email);
         }
     }
-    await globalAPIClient.addSpaceToUsers(userEmails, spaceId);
+    await client.addSpaceToUsers(userEmails, spaceId);
 
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.addCollaborators(referrerEmail, collaborators, spaceId, spaceName);
 }
 
 async function setCollaboratorRole(spaceId, email, role) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.setCollaboratorRole(email, role);
 }
 
@@ -193,50 +195,51 @@ async function removeTelegramUser(spaceId, personalityId, telegramUserId){
 
 
 async function runCode(spaceId, commands, args) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     await client.runCode(commands, ...args);
     await client.buildAll();
 }
 async function buildAll(spaceId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     await client.buildAll();
 }
 async function getGraph(spaceId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getGraph();
 }
 async function getVariables(spaceId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getEveryVariableObject();
 }
 async function getErrorsFromLastBuild(spaceId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getErrorFromLastBuild();
 }
 async function defineVariable(spaceId, name, type, documentId, chapterId, paragraphId, command) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.defineVariable(name, type, documentId, chapterId, paragraphId, command);
 }
 async function buildForDocument(spaceId, documentId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.buildOnlyForDocument(documentId);
 }
 async function restartServerless(spaceId) {
     return await this.sendRequest(`/spaces/${spaceId}/restart`, "PUT", {});
 }
 async function getCommands(spaceId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getCommands();
 }
 async function getCustomTypes(spaceId) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getCustomTypes();
 }
 async function parseCommands(spaceId, chapterId, paragraphId, commands) {
-    let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.parseCommands(chapterId, paragraphId, commands);
 }
 module.exports = {
+    getClient,
     createSpace,
     getSpaceStatus,
     deleteSpace,
@@ -249,7 +252,6 @@ module.exports = {
     getSecretsMasked,
     putImage,
     deleteImage,
-    Space,
     putAudio,
     getAudio,
     deleteAudio,
