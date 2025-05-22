@@ -37,6 +37,7 @@ async function updateUserImage(email, imageId) {
     userInfo.imageId = imageId;
     return await this.sendRequest(`/auth/setInfo?email=${email}`, "PUT", userInfo);
 }
+
 async function getCurrentSpaceId(email) {
     email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");

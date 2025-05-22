@@ -24,11 +24,13 @@ async function getDocument(spaceId, documentId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.getDocument(documentId);
 }
+
 async function loadDocument(spaceId, documentId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     let document = await client.dumpDocument(documentId);
     return new Document(document);
 }
+
 async function getDocuments(spaceId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.getAllDocumentObjects();
@@ -51,9 +53,9 @@ async function convertDocument(formData) {
 
         if (envType === constants.ENV_TYPE.NODE) {
             url = `${constants[constants.ENVIRONMENT_MODE]}${url}`;
-            init.headers = { Cookie: this.__securityContext.cookies };
+            init.headers = {Cookie: this.__securityContext.cookies};
         }
-        
+
         const response = await fetch(url, init);
 
         if (!response.ok) {
@@ -64,7 +66,7 @@ async function convertDocument(formData) {
             } catch (e) {
                 // Not JSON, keep as text
             }
-            
+
             throw new Error(`HTTP error! status: ${response.status}, details: ${typeof errorDetails === 'object' ? JSON.stringify(errorDetails) : errorDetails}`);
         }
 
@@ -73,6 +75,7 @@ async function convertDocument(formData) {
         throw error;
     }
 }
+
 async function uploadDoc(spaceId, docData) {
     return await this.sendRequest(`/documents/upload/${spaceId}`, "PUT", docData);
 }
@@ -149,15 +152,57 @@ async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
     let client = await getAPIClient("*", constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.restore(documentId, snapshotId);
 }
+
 async function getDocumentVariables(spaceId, documentId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getVariablesForDoc(documentId);
 }
+
 async function getVarValue(spaceId, documentId, varId) {
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getVarValue(documentId, varId);
 }
+
+async function getStylePreferences(email) {
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
+    return userInfo.stylePreferences || {};
+}
+
+async function getPrintPreferences(email) {
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
+    return userInfo.printPreferences || {};
+}
+
+async function getExportPreferences(email) {
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
+    return userInfo.exportPreferences || {};
+}
+
+async function updatePrintPreferences(email, printPreferences) {
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
+    userInfo.printPreferences = printPreferences;
+    return await this.sendRequest(`/auth/setInfo?email=${email}`, "PUT", userInfo);
+}
+
+async function updateExportPreferences(email, exportPreferences) {
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
+    userInfo.exportPreferences = exportPreferences;
+    return await this.sendRequest(`/auth/setInfo?email=${email}`, "PUT", userInfo);
+}
+
+async function updateDocumentPreferences(email, stylePreferences) {
+    let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
+    userInfo.stylePreferences = stylePreferences;
+    return await this.sendRequest(`/auth/setInfo?email=${email}`, "PUT", userInfo);
+}
+
 module.exports = {
+    getPrintPreferences,
+    getStylePreferences,
+    getExportPreferences,
+    updatePrintPreferences,
+    updateExportPreferences,
+    updateDocumentPreferences,
     loadDocument,
     getDocuments,
     getDocument,
