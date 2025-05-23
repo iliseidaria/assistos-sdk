@@ -16,7 +16,7 @@ async function getAgent(spaceId, agentId){
 }
 
 async function getDefaultAgent(spaceId){
-    return await getAgent(spaceId, constants.DEFAULT_AGENT);
+    return await this.getAgent(spaceId, constants.DEFAULT_AGENT);
 }
 
 async function addChat(spaceId, chatId, agentId) {
