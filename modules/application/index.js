@@ -17,7 +17,8 @@ async function getWidgets(spaceId) {
         const sessionId = this.__securityContext.cookies.split("sessionId=")[1].split(";")[0];
         options.sessionId= sessionId;
     }
-    return await getAPIClient(userId, plugin, serverlessId, options);
+    options.email = this.__securityContext.email;
+    return await getAPIClient(this.__securityContext.userId, plugin, serverlessId, options);
 }
 
 async function installApplication(spaceId, applicationId) {
