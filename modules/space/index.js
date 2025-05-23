@@ -79,7 +79,6 @@ async function addCollaborators(referrerEmail, spaceId, collaborators, spaceName
         }
     }
     await globalAPIClient.addSpaceToUsers(userEmails, spaceId);
-
     let client = await getAPIClient("*", constants.WORKSPACE_PLUGIN, spaceId);
     return await client.addCollaborators(referrerEmail, collaborators, spaceId, spaceName);
 }
