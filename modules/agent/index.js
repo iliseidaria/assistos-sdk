@@ -1,27 +1,31 @@
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
-
+async function getClient(pluginName, spaceId) {
+    return await getAPIClient(this.__securityContext.userId, pluginName, spaceId, {
+        email: this.__securityContext.email
+    })
+}
 async function getAgents(spaceId){
-    let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.getAllAgentObjects();
 }
 
 async function getAgent(spaceId, agentId){
-    let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.getAgent(agentId);
 }
 
 async function getDefaultAgent(spaceId){
-    return await getAgent(spaceId, constants.DEFAULT_AGENT);
+    return await this.getAgent(spaceId, constants.DEFAULT_AGENT);
 }
 
 async function addChat(spaceId, chatId, agentId) {
-    const client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.addChat(chatId, agentId);
 }
 
 async function removeChatFromAgent(spaceId, chatId, agentId) {
-    const client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.removeChatFromAgent(chatId, agentId);
 }
 
@@ -29,12 +33,12 @@ async function getPersonalitiesConversations(spaceId,personalityId){
     return await this.sendRequest(`/personalities/chats/${spaceId}/${personalityId}`,"GET")
 }
 async function getAgentsConversations(spaceId,agentId){
-    const client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.getConversationIds(agentId);
 }
 async function addAgent(spaceId, agentData){
-    let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
-    let chatClient = await getAPIClient("*", constants.CHAT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
+    let chatClient = await this.getClient(constants.CHAT_PLUGIN, spaceId);
     let agent = await client.createAgent(agentData.name, agentData.description, "", agentData.imageId);
     let chatId = await chatClient.createChat(agent.id);
     //await chatClient.addChatToAgent(agent.id, chatId);
@@ -42,11 +46,11 @@ async function addAgent(spaceId, agentData){
 }
 
 async function updateAgent(spaceId, agentId, agentData){
-    let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.updateAgent(agentId, agentData);
 }
 async function deleteAgent(spaceId, agentId){
-    let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.deleteAgent(agentId);
 }
 
@@ -59,7 +63,7 @@ async function sendQuery(spaceId, personalityId, chatId, prompt){
 }
 
 async function sendChatQuery(spaceId, chatId, agentId,userId,prompt){
-    let client = await getAPIClient("*", constants.AGENT_PLUGIN, spaceId);
+    let client = await this.getClient(constants.AGENT_PLUGIN, spaceId);
     return await client.sendChatQuery(chatId, agentId, userId, prompt);
 }
 
@@ -77,5 +81,6 @@ module.exports = {
     addChat,
     removeChatFromAgent,
     getDefaultAgent,
-    getAgentsConversations
+    getAgentsConversations,
+    getClient
 }

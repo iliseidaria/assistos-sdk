@@ -4,7 +4,6 @@ class Paragraph {
         this.id = paragraphData.id;
         this.text = paragraphData.text || "";
         this.mainIdea = paragraphData.mainIdea || "";
-        this.alternativeParagraphs = paragraphData.alternativeParagraphs || [];
         this.commands = paragraphData.commands || "";
         this.comments = paragraphData.comments || "";
         this.type = paragraphData.type;
