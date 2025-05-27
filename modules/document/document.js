@@ -41,9 +41,13 @@ async function getDocuments(spaceId) {
     return await client.getAllDocumentObjects();
 }
 
-async function addDocument(spaceId, title, category, infoText, commands, comments, chapters, additionalData) {
+async function addDocument(spaceId, title, category) {
+    function createDocId(title){
+        return title.replace(/[^a-zA-Z0-9_]/g, "_");
+    }
     let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
-    return await client.createDocument(title, category, infoText, commands, comments, chapters, additionalData);
+    let docId = createDocId(title);
+    return await client.createDocument(docId, category, title);
 }
 
 async function convertDocument(formData) {
