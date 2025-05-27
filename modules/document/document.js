@@ -94,9 +94,9 @@ async function deleteDocument(spaceId, documentId) {
     await client.deleteDocument(documentId);
 }
 
-async function updateDocument(spaceId, documentId, title, category, infoText, commands, comments, additionalData) {
+async function updateDocument(spaceId, documentId, title, docId, category, infoText, commands, comments, additionalData) {
     let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
-    await client.updateDocument(documentId, title, category, infoText, commands, comments, additionalData);
+    await client.updateDocument(documentId, title, docId, category, infoText, commands, comments, additionalData);
 }
 
 async function estimateDocumentVideoLength(spaceId, documentId) {
