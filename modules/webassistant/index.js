@@ -8,7 +8,14 @@ async function getClient(spaceId){
     })
 }
 
-const getWebChatThemes = async function (spaceId) {
+
+const updateWebAssistantConfigurationSettings = async function(spaceId, settings) {
+    const client = await this.getClient(spaceId);
+    return client.updateWebAssistantConfigurationSettings(settings);
+}
+
+
+const getWebAssistantThemes = async function (spaceId) {
     const client = await this.getClient(spaceId);
     return client.getWebChatThemes();
 };
@@ -28,6 +35,7 @@ const deleteWebAssistantTheme = async function (spaceId, themeId) {
     const client = await this.getClient(spaceId);
     return client.deleteWebAssistantTheme(themeId);
 };
+
 const getWebChatConfiguration = async function (spaceId) {
     const client = await this.getClient(spaceId);
     return client.getWebChatConfiguration();
@@ -44,7 +52,6 @@ const getWebAssistantConfiguration = async function (spaceId) {
     const client = await this.getClient(spaceId);
     return client.getWebAssistantConfiguration();
 }
-
 const getWebAssistantConfigurationPages = async function (spaceId) {
     const client = await this.getClient(spaceId);
     return client.getWebAssistantConfigurationPages();
@@ -65,6 +72,7 @@ const getWebAssistantHomePage = async function (spaceId) {
     const client = await this.getClient(spaceId);
     return client.getWebAssistantHomePage();
 };
+
 const getWebAssistantConfigurationPageMenuItem = async function (spaceId, menuItemId) {
     const client = await this.getClient(spaceId);
     return client.getWebAssistantConfigurationPageMenuItem(menuItemId);
@@ -85,13 +93,15 @@ const deleteWebAssistantConfigurationPageMenuItem = async function (spaceId, pag
     const client = await this.getClient(spaceId);
     return client.deleteWebAssistantConfigurationPageMenuItem(pageId, menuItemId);
 };
+
 const getWidget = async function (spaceId, applicationId, widgetName) {
     const client = await this.getClient(spaceId);
     return client.getWidget(applicationId, widgetName);
 };
 
 module.exports = {
-    getWebChatThemes,
+    getWebAssistantThemes,
+    updateWebAssistantConfigurationSettings,
     getWebChatTheme,
     addWebChatTheme,
     updateWebChatTheme,
