@@ -1,6 +1,5 @@
 const request = require("../util").request;
 const envType = require("assistos").envType;
-const Document = require("./models/Document");
 const constants = require("../../constants");
 const {getAPIClient} = require("../util/utils");
 async function getClient(pluginName, spaceId) {
@@ -32,8 +31,7 @@ async function getDocument(spaceId, documentId) {
 
 async function loadDocument(spaceId, documentId) {
     let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
-    let document = await client.dumpDocument(documentId);
-    return new Document(document);
+    return await client.dumpDocument(documentId);
 }
 
 async function getDocuments(spaceId) {

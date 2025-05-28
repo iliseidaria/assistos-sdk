@@ -1,4 +1,3 @@
-const Chapter = require("./models/Chapter");
 const {getAPIClient} = require("../util/utils");
 const constants = require("../../constants");
 async function getClient(pluginName, spaceId) {
@@ -8,8 +7,7 @@ async function getClient(pluginName, spaceId) {
 }
 async function getChapter(spaceId, documentId, chapterId) {
     let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
-    let chapter = await client.getChapter(documentId, chapterId);
-    return new Chapter(chapter);
+    return await client.getChapter(documentId, chapterId);
 }
 
 async function addChapter(spaceId, documentId, chapterTitle, commands, comments, position) {
