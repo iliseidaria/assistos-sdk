@@ -206,6 +206,10 @@ async function updateDocId(spaceId, documentId, docId) {
     let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
     return await client.updateDocId(documentId, docId);
 }
+async function setVarValue(spaceId, documentId, variableName, value) {
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.setVarValue(documentId, variableName, value);
+}
 module.exports = {
     getClient,
     getPrintPreferences,
@@ -242,5 +246,6 @@ module.exports = {
     uploadDoc,
     getDocumentVariables,
     getVarValue,
-    updateDocId
+    updateDocId,
+    setVarValue
 };
