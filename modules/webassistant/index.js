@@ -85,9 +85,9 @@ const addWebAssistantConfigurationPageMenuItem = async function (spaceId, pageId
     const client = await this.getClient(spaceId);
     return client.addWebAssistantConfigurationPageMenuItem(pageId, menuItem);
 };
-const updateWebAssistantConfigurationPageMenuItem = async function (spaceId, pageId, menuItemId, menuItem) {
+const updateWebAssistantConfigurationPageMenuItem = async function (spaceId,menuItemId, menuItem) {
     const client = await this.getClient(spaceId);
-    return client.updateWebAssistantConfigurationPageMenuItem(pageId, menuItemId, menuItem);
+    return client.updateWebAssistantConfigurationPageMenuItem(menuItemId, menuItem);
 };
 const deleteWebAssistantConfigurationPageMenuItem = async function (spaceId, pageId, menuItemId) {
     const client = await this.getClient(spaceId);
