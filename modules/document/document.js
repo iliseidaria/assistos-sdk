@@ -202,7 +202,10 @@ async function updateDocumentPreferences(email, stylePreferences) {
     userInfo.stylePreferences = stylePreferences;
     return await this.sendRequest(`/auth/setInfo?email=${email}`, "PUT", userInfo);
 }
-
+async function updateDocId(spaceId, documentId, docId) {
+    let client = await this.getClient(constants.DOCUMENTS_PLUGIN, spaceId);
+    return await client.updateDocId(documentId, docId);
+}
 module.exports = {
     getClient,
     getPrintPreferences,
@@ -238,5 +241,6 @@ module.exports = {
     convertDocument,
     uploadDoc,
     getDocumentVariables,
-    getVarValue
+    getVarValue,
+    updateDocId
 };
