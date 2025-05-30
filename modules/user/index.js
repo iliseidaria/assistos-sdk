@@ -31,6 +31,7 @@ async function getUserProfileImage(email) {
     let spaceModule = require("assistos").loadModule("space", this.__securityContext);
     return await spaceModule.getImage(userInfo.imageId);
 }
+
 async function updateUserImage(email, imageId) {
     email = encodeURIComponent(email);
     let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
@@ -43,41 +44,66 @@ async function getCurrentSpaceId(email) {
     let userInfo = await this.sendRequest(`/auth/getInfo?email=${email}`, "GET");
     return userInfo.currentSpaceId;
 }
+
 async function logoutUser(){
-    return await this.sendRequest(`/auth/walletLogout`, "POST");
+    return await this.sendRequest(`/auth/logout`, "POST");
 }
+
 async function userExists(email){
     email = encodeURIComponent(email);
     return await this.sendRequest(`/auth/userExists/${email}`, "GET");
 }
-async function walletLogin(email, code, loginMethod, challengeKey) {
-    return await this.sendRequest(`/auth/walletLogin`, 'POST', {
-        email,
-        loginMethod: loginMethod || "emailCode",
-        code: loginMethod !== "passkey" ? code : undefined,
-        assertion: loginMethod === "passkey" ? code : undefined,
-        challengeKey: loginMethod === "passkey" ? challengeKey : undefined
-    });
+
+async function emailLogin(email, code) {
+    return await this.sendRequest(`/auth/loginWithEmailCode`, 'POST', { email, code });
 }
-async function generateAuthCode(email, refererId, authType, registrationData){
-    return await this.sendRequest(`/auth/generateAuthCode`, "POST", {email, refererId, authType, registrationData});
+
+async function passkeyLogin(email, assertion, challengeKey) {
+    return await this.sendRequest(`/auth/loginWithPasskey`, 'POST', { email, assertion, challengeKey });
 }
-async function verifyTotp(token, email, enableTotp) {
-    return await this.sendRequest(`/auth/verifyTotp`, 'POST', {
+
+async function totpLogin(email, code) {
+    return await this.sendRequest(`/auth/loginWithTotp`, 'POST', { email, token: code });
+}
+
+async function generateAuthCode(email, name, refererId){
+    return await this.sendRequest(`/auth/sendCodeByEmail`, "POST", {email, name, refererId});
+}
+
+async function setupTotp() {
+    return await this.sendRequest(`/auth/setupTotp`, 'POST');
+}
+
+async function enableTotp(token, email) {
+    return await this.sendRequest(`/auth/enableTotp`, 'POST', {
         token,
-        email,
-        enableTotp
+        email
     });
 }
+
 async function getAuthTypes(email) {
     return await this.sendRequest(`/auth/getAuthTypes/${encodeURIComponent(email)}`, 'GET');
 }
-async function getPassKeyConfig() {
-    return await this.sendRequest(`/auth/passKeyConfig`, 'GET');
+
+async function generatePasskeySetupOptions() {
+    return await this.sendRequest(`/auth/generatePasskeySetupOptions`, 'POST');
 }
-async function registerTotp() {
-    return await this.sendRequest(`/auth/registerTotp`, 'POST');
+
+async function addPasskey(registrationData, challengeKey) {
+    return await this.sendRequest(`/auth/addPasskey`, 'POST', {
+        registrationData,
+        challengeKey
+    });
 }
+
+async function deletePasskey(email, credentialId) {
+    return await this.sendRequest(`/auth/deletePasskey/${encodeURIComponent(email)}/${encodeURIComponent(credentialId)}`, 'DELETE');
+}
+
+async function deleteTotp(email) {
+    return await this.sendRequest(`/auth/deleteTotp/${encodeURIComponent(email)}`, 'DELETE');
+}
+
 module.exports = {
     loadUser,
     sendRequest,
@@ -85,12 +111,17 @@ module.exports = {
     updateUserImage,
     logoutUser,
     userExists,
-    walletLogin,
+    emailLogin,
+    passkeyLogin,
+    totpLogin,
     generateAuthCode,
     getCurrentSpaceId,
     listUserSpaces,
-    verifyTotp,
+    setupTotp,
+    enableTotp,
     getAuthTypes,
-    getPassKeyConfig,
-    registerTotp
+    generatePasskeySetupOptions,
+    addPasskey,
+    deletePasskey,
+    deleteTotp
 }
