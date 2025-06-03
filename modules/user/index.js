@@ -1,11 +1,12 @@
 const {request} = require("../util");
+
 async function sendRequest(url, method, data, headers) {
     return await request(url, method, data, this.__securityContext, headers);
 }
 
 async function loadUser(email) {
     let url = "/auth/getInfo"
-    if(email){
+    if (email) {
         url += `?email=${encodeURIComponent(email)}`;
     }
     let userInfo = await this.sendRequest(url, "GET");
@@ -19,7 +20,7 @@ async function loadUser(email) {
 
 async function listUserSpaces(email) {
     let url = "/spaces/listSpaces"
-    if(email){
+    if (email) {
         url += `?email=${encodeURIComponent(email)}`;
     }
     return await this.sendRequest(url, "GET");
@@ -45,28 +46,24 @@ async function getCurrentSpaceId(email) {
     return userInfo.currentSpaceId;
 }
 
-async function logoutUser(){
+async function logoutUser() {
     return await this.sendRequest(`/auth/logout`, "POST");
 }
 
-async function userExists(email){
-    email = encodeURIComponent(email);
-    return await this.sendRequest(`/auth/userExists/${email}`, "GET");
-}
 
 async function emailLogin(email, code) {
-    return await this.sendRequest(`/auth/loginWithEmailCode`, 'POST', { email, code });
+    return await this.sendRequest(`/auth/loginWithEmailCode`, 'POST', {email, code});
 }
 
 async function passkeyLogin(email, assertion, challengeKey) {
-    return await this.sendRequest(`/auth/loginWithPasskey`, 'POST', { email, assertion, challengeKey });
+    return await this.sendRequest(`/auth/loginWithPasskey`, 'POST', {email, assertion, challengeKey});
 }
 
 async function totpLogin(email, code) {
-    return await this.sendRequest(`/auth/loginWithTotp`, 'POST', { email, token: code });
+    return await this.sendRequest(`/auth/loginWithTotp`, 'POST', {email, token: code});
 }
 
-async function generateAuthCode(email, name, refererId){
+async function generateAuthCode(email, name, refererId) {
     return await this.sendRequest(`/auth/sendCodeByEmail`, "POST", {email, name, refererId});
 }
 
@@ -81,8 +78,14 @@ async function enableTotp(token, email) {
     });
 }
 
-async function getAuthTypes(email) {
-    return await this.sendRequest(`/auth/getAuthTypes/${encodeURIComponent(email)}`, 'GET');
+async function getPublicAuthInfo(email) {
+    email = encodeURIComponent(email)
+    return await this.sendRequest(`/auth/getPublicAuthInfo/${email}`, "GET")
+}
+
+async function generatePasskeyLoginOptions(email) {
+    email = encodeURIComponent(email)
+    return await this.sendRequest(`/auth/generatePasskeyLoginOptions/${email}`, "GET")
 }
 
 async function generatePasskeySetupOptions() {
@@ -110,7 +113,6 @@ module.exports = {
     getUserProfileImage,
     updateUserImage,
     logoutUser,
-    userExists,
     emailLogin,
     passkeyLogin,
     totpLogin,
@@ -119,8 +121,9 @@ module.exports = {
     listUserSpaces,
     setupTotp,
     enableTotp,
-    getAuthTypes,
     generatePasskeySetupOptions,
+    getPublicAuthInfo,
+    generatePasskeyLoginOptions,
     addPasskey,
     deletePasskey,
     deleteTotp
