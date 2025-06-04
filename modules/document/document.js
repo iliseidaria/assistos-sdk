@@ -160,10 +160,6 @@ async function restoreDocumentSnapshot(spaceId, documentId, snapshotId) {
     return await client.restore(documentId, snapshotId);
 }
 
-async function getDocumentVariables(spaceId, documentId) {
-    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
-    return await client.getVariablesForDoc(documentId);
-}
 
 async function getVarValue(spaceId, documentId, varId) {
     let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
@@ -210,6 +206,10 @@ async function setVarValue(spaceId, documentId, variableName, value) {
     let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.setVarValue(documentId, variableName, value);
 }
+async function getDocCommandsParsed(spaceId, docId) {
+    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
+    return await client.getDocCommandsParsed(docId);
+}
 module.exports = {
     getClient,
     getPrintPreferences,
@@ -244,8 +244,8 @@ module.exports = {
     restoreDocumentSnapshot,
     convertDocument,
     uploadDoc,
-    getDocumentVariables,
     getVarValue,
     updateDocId,
-    setVarValue
+    setVarValue,
+    getDocCommandsParsed
 };

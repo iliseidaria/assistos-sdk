@@ -234,10 +234,7 @@ async function getCustomTypes(spaceId) {
     let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
     return await client.getCustomTypes();
 }
-async function parseCommands(spaceId, chapterId, paragraphId, commands) {
-    let client = await this.getClient(constants.WORKSPACE_PLUGIN, spaceId);
-    return await client.parseCommands(chapterId, paragraphId, commands);
-}
+
 module.exports = {
     getClient,
     createSpace,
@@ -288,8 +285,7 @@ module.exports = {
     buildForDocument,
     restartServerless,
     getCommands,
-    getCustomTypes,
-    parseCommands
+    getCustomTypes
 }
 
 
